@@ -2,7 +2,7 @@
   <div class="hero">
     <span class="pill">MỤC II.04 · NGHIÊN CỨU DỮ LIỆU</span>
     <h2>Ít demo thật, nhiều dữ liệu huấn luyện<span class="dot">.</span></h2>
-    <p class="lead">Fine-tune GR00T cần vài trăm demo cho mỗi tác vụ, nhưng demo teleop đắt và model lại rất nhạy với hình ảnh. Mục này giải thích ba kỹ thuật dự án dùng để có thêm dữ liệu mà không teleop thêm: <b>domain randomization</b>, <b>real2sim</b> và <b>sinh thêm demo</b>. Mỗi kỹ thuật có một khung minh hoạ tương tác để thấy nó hoạt động ra sao.</p>
+    <p class="lead">Fine-tune GR00T cần vài trăm demo cho mỗi tác vụ, nhưng demo teleop đắt và model lại rất nhạy với hình ảnh. Mục này giải thích ba kỹ thuật để có thêm dữ liệu mà không teleop thêm (dự án đã áp dụng hai kỹ thuật sau, kỹ thuật đầu mới ở mức đề xuất): <b>domain randomization</b>, <b>real2sim</b> và <b>sinh thêm demo</b>. Mỗi kỹ thuật có một khung minh hoạ tương tác để thấy nó hoạt động ra sao.</p>
     <div class="meta">
       <div><span class="ml">KỸ THUẬT</span><span class="mv">Domain randomization · real2sim · sinh thêm demo</span></div>
       <div><span class="ml">ÁP DỤNG</span><span class="mv">Apple &amp; Plate · Multi Fruit · Hammer &amp; Bin</span></div>
@@ -18,7 +18,7 @@
       <div class="cb ref"><span class="l">Môi trường gốc Arena (giống lúc ghi dữ liệu)</span><span class="t"><i style="width:92%"></i></span><span class="v">92 %</span></div>
       <div class="cb"><span class="l">Khung cảnh Galileo dựng lại (lệch ánh sáng, render)</span><span class="t"><i class="soft" style="width:56%"></i></span><span class="v">56 %</span></div>
       <div class="cb"><span class="l">Khung cảnh tự dựng (khác hẳn)</span><span class="t"><i class="soft" style="width:0%"></i></span><span class="v">0 %</span></div>
-      <p class="cb-note">Cùng checkpoint, cùng câu lệnh, cùng pipeline. Model chỉ thấy một khung cảnh lúc huấn luyện nên gắn với hình ảnh đó thay vì với quả táo. Domain randomization (card 2) là cách xử lý.</p>
+      <p class="cb-note">Cùng checkpoint, cùng câu lệnh; mốc 92 % đo bằng client NVIDIA, hai mức sau bằng pipeline của dự án. Model chỉ thấy một khung cảnh lúc huấn luyện nên gắn với hình ảnh đó thay vì với quả táo. Domain randomization (card 2) là cách xử lý.</p>
     </div>
   </div>
 

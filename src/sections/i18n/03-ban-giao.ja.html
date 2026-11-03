@@ -1,16 +1,15 @@
-<section class="section" id="ban-giao" data-hue="blue" data-kicker="I.03 · 成果物" data-title="プロジェクトの成果物">
+<section class="section" id="ban-giao" data-hue="blue" data-kicker="IV.01 · 成果物" data-title="プロジェクトの成果物">
   <div class="hero">
-    <span class="pill">I.03 節 · 成果物</span>
+    <span class="pill">IV.01 節 · 成果物</span>
     <h2>顧客が受け取るもの、その場所、使い方<span class="dot">。</span></h2>
     <p class="lead">本フェーズの成果物はすべて<b>6 部構成の 1 つのフォルダ</b>に収め、推奨する読む順に番号を付けています：レポート → ソースコード → データ → モデル → 結果 → ドキュメント。容量の大きい元データとチェックポイントは<b>別途提供</b>します。</p>
     <div class="meta">
       <div><span class="ml">フォルダ</span><span class="mv">G1_GR00T_san_pham/</span></div>
       <div><span class="ml">メインパッケージ</span><span class="mv">6 部 · ≈ 1.9 GB</span></div>
-      <div><span class="ml">別途提供</span><span class="mv">≈ 85 GB の元データ + チェックポイント</span></div>
+      <div><span class="ml">別途提供</span><span class="mv">≈ 96 GB の元データ + チェックポイント</span></div>
     </div>
   </div>
 
-  <p class="todo">[TODO: 成果物フォルダはまだ作成されていません。以下の構成は、プロジェクトマシン上の各コンポーネントの実際の場所と容量に基づく案です。リリース前にフォルダ名、受け渡し方法（ハードディスク / クラウド）を確認し、一覧を確定してください。]</p>
 
   <!-- ================= 1 · overview tiles ================= -->
   <div class="card">
@@ -61,7 +60,6 @@
         <li><code>src/</code>, <code>build.py</code>, <code>README.md</code> — 各節の内容とレポートの編集方法</li>
         <li><code>markdown/</code> — 引用・編集用のテキスト版レポート（10 ファイル）</li>
       </ul>
-      <p class="internal"><b>出典:</b> <code>report/</code>, <code>bao_cao_khach_hang/</code></p>
     </div></details>
 
     <details class="acc" id="f-ma-nguon-ja"><summary><span class="n">02</span>02_ma_nguon/ — ソースコード<span class="sz">13 MB</span></summary><div class="acc-body">
@@ -76,7 +74,7 @@
             <li><code>tests/</code> — unit test とシミュレーション内テスト</li>
             <li><code>README.md</code>, <code>Makefile</code> — インストールと実行コマンド</li>
           </ul></li>
-        <li><b><code>g1_real2sim/</code></b> — 実機 G1 データからのシーン再構成：URDF からの FK、妨害物体、Isaac Lab シーン、LeRobot の読み書き、GR00T 設定 <span class="todo">[データセット生成スクリプトは Windows マシン上にあります]</span></li>
+        <li><b><code>g1_real2sim/</code></b> — 実機 G1 データからのシーン再構成：URDF からの FK、妨害物体、Isaac Lab シーン、LeRobot の読み書き、GR00T 設定</li>
         <li><b><code>arena_bua_thung/</code></b> — ハンマーシナリオ用の Isaac Lab Arena 拡張
           <ul class="ftree">
             <li><code>patches/</code> — 環境パッチ 4 件：ハンマー–箱の配置、支持ブロック、厳格な成功条件</li>
@@ -84,7 +82,6 @@
             <li><code>scripts/</code> — 拡張デモの生成、データセットのチェック、シーンの検証</li>
           </ul></li>
       </ul>
-      <p class="internal"><b>出典:</b> <code>codes/standalone_g1_gr00t/</code>（<code>.venv</code>、<code>data/</code> を除く）、<code>codes/g1_real2sim/</code>（<code>output/</code>、<code>.venv</code> を除く）、<code>hammer_to_bin/{patches,teleop_kit/current,scripts}</code></p>
     </div></details>
 
     <details class="acc" id="f-du-lieu-ja"><summary><span class="n">03</span>03_du_lieu/ — 学習データ<span class="sz">≈ 1 GB</span></summary><div class="acc-body">
@@ -94,11 +91,10 @@
         <tbody>
           <tr><td><code>bua_thung_mix200/</code></td><td>200 エピソード（実テレオペ 100 + 生成 100）、28,022 フレーム @ 50 Hz</td><td class="num">131 MB</td></tr>
           <tr><td><code>bua_thung_mix400/</code></td><td>400 エピソード</td><td class="num">261 MB</td></tr>
-          <tr><td><code>real2sim_4_loai_qua/</code></td><td>実機 G1 データから作成したシミュレーションデータセット：リンゴ、ブドウ、洋ナシ <span class="todo">[スターフルーツ：ローカル版なし]</span></td><td class="num">≈ 584 MB</td></tr>
+          <tr><td><code>real2sim_4_loai_qua/</code></td><td>実機 G1 データから作成したシミュレーションデータセット：リンゴ、ブドウ、洋ナシ（このバージョンにはスターフルーツはまだ含まれません）</td><td class="num">≈ 584 MB</td></tr>
         </tbody>
       </table></div>
       <p>各データセットは <code>meta/</code>（説明、指示文、統計）、<code>data/</code>（エピソードごとの関節角とアクション）、<code>videos/</code>（ロボット頭部カメラ）で構成されます。</p>
-      <p class="internal"><b>出典:</b> <code>~/IsaacLab-Arena/teleop_data/static_hammer_train/*/lerobot</code>, <code>codes/g1_real2sim/output/</code></p>
     </div></details>
 
     <details class="acc" id="f-mo-hinh-ja"><summary><span class="n">04</span>04_mo_hinh/ — モデル情報<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
@@ -108,7 +104,7 @@
         <tbody>
           <tr><td>ハンマー → 箱、200 エピソード</td><td>mix200 · 10,000 ステップ · 1× H100 · 61 分</td><td>66 %</td></tr>
           <tr><td>ハンマー → 箱、400 エピソード</td><td>mix400 · 10,000 ステップ</td><td>63 %（静止しきい値を緩和すると 73 %）</td></tr>
-          <tr><td>Real2sim 果物 4 種</td><td>シミュレーション 790 エピソード <span class="todo">[ステップ数、保存場所]</span></td><td>66 %</td></tr>
+          <tr><td>Real2sim 果物 4 種</td><td>シミュレーション 790 エピソード</td><td>66 %</td></tr>
           <tr><td>リンゴ → 皿（NVIDIA 提供）</td><td>再学習なし — Hugging Face からダウンロード</td><td>Arena で 92 %</td></tr>
         </tbody>
       </table></div>
@@ -118,10 +114,9 @@
       <ul class="ftree">
         <li><b><code>tao_dia/</code></b> — 自作シーン 50 エピソード、Galileo シーン 50 エピソード：エピソードごとのログ、頭部カメラ動画</li>
         <li><b><code>4_loai_qua/</code></b> — ファインチューニング済みモデル 50 エピソードと比較対照 50 エピソード：ログ、集計、グラフ、動画</li>
-        <li><b><code>bua_thung/</code></b> — Arena での評価動画 100 本（外部カメラ + 頭部カメラ）、66 % と 73 % の実行：ログ、集計、失敗時の画像、動画</li>
+        <li><b><code>bua_thung/</code></b> — Arena での評価動画 100 本（mix200、56/100、外部カメラ + 頭部カメラ）、ローカルでの 66 %、63 %、73 % の実行：ログ、集計、失敗時の画像、動画</li>
       </ul>
       <p>各実行の共通ファイル：<code>episodes.jsonl</code>（試行ごとに 1 行）、<code>summary.json</code> / <code>summary.md</code>（成功率、信頼区間、失敗分類）、動画 <code>…_success.mp4</code> / <code>…_fail.mp4</code>。</p>
-      <p class="internal"><b>出典:</b> <code>codes/standalone_g1_gr00t/data/</code>: <code>runs_*.jsonl</code>, <code>videos/</code>, <code>nb10_eval*</code>, <code>nb12_eval/</code>, <code>arena_eval_hammer_ckpt10000/</code></p>
     </div></details>
 
     <details class="acc" id="f-tai-lieu-ja"><summary><span class="n">06</span>06_tai_lieu/ — ガイド・ドキュメント<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
@@ -135,7 +130,6 @@
           <tr><td>マイルストーンごとのレポート（M0 → nb07）、アーキテクチャ計画</td><td>技術的判断の理由の理解</td></tr>
         </tbody>
       </table></div>
-      <p class="internal"><b>出典:</b> <code>hammer_to_bin/*.md</code>, <code>codes/g1_real2sim/GROOT_FINETUNE.md</code>, <code>codes/standalone_g1_gr00t/report/</code></p>
     </div></details>
   </div>
 
@@ -146,8 +140,8 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>コンポーネント</th><th>容量</th><th>必要な場面</th></tr></thead>
       <tbody>
-        <tr><td>ハンマー → 箱のチェックポイント（1 つあたり）</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12.6 GB</div></td><td>ハンマーモデルの実行 <span class="todo">[400 エピソード版のチェックポイントを確認]</span></td></tr>
-        <tr><td>real2sim 果物 4 種のチェックポイント</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12.6 GB</div></td><td>果物 4 種モデルの実行 <span class="todo">[保存場所]</span></td></tr>
+        <tr><td>ハンマー → 箱のチェックポイント（1 つあたり）</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12.6 GB</div></td><td>ハンマーモデルの実行</td></tr>
+        <tr><td>real2sim 果物 4 種のチェックポイント</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12.6 GB</div></td><td>果物 4 種モデルの実行</td></tr>
         <tr><td>ハンマータスクの元テレオペデータ（HDF5）</td><td><div class="bar-cell"><span class="b" style="width:45%"></span>19 GB</div></td><td>再変換、デモの追加生成</td></tr>
         <tr><td>mix200 学習セット（HDF5 形式）</td><td><div class="bar-cell"><span class="b" style="width:31%"></span>13 GB</div></td><td>別の設定で LeRobot に変換</td></tr>
         <tr><td>mix400 学習セット（HDF5 形式）</td><td><div class="bar-cell"><span class="b" style="width:62%"></span>26 GB</div></td><td>同上</td></tr>
@@ -165,7 +159,7 @@
         <ol><li><code>01_bao_cao/index.html</code> を開く</li><li>概要の節と 3 つのシナリオを読む</li><li><code>05_ket_qua_danh_gia</code> の動画を見る</li></ol>
         <div class="jtime">必要なもの：ブラウザ · 約 30 分</div></div>
       <div class="journey"><div class="jk">ルート 2</div><div class="jt">評価を再実行する</div>
-        <ol><li>Isaac Sim 6.0.1、Isaac Lab 3.0-beta2 と <code>standalone_g1_gr00t</code> の環境をインストール</li><li>カード 4 のチェックポイントを使い、GPU マシンで GR00T サーバーを起動</li><li>評価 notebook nb10（果物 4 種）または nb12（ハンマー）を GUI なしで実行</li></ol>
+        <ol><li>Isaac Sim 6.0.1、Isaac Lab 3.0.0-beta2 と <code>standalone_g1_gr00t</code> の環境をインストール</li><li>カード 4 のチェックポイントを使い、GPU マシンで GR00T サーバーを起動</li><li>評価 notebook nb10（果物 4 種）または nb12（ハンマー）を GUI なしで実行</li></ol>
         <div class="jtime">必要なもの：GPU ワークステーション + GPU サーバー（I.02 節）</div></div>
       <div class="journey"><div class="jk">ルート 3</div><div class="jt">ロボットに新しいタスクを教える</div>
         <ol><li>環境を構築し、テレオペでデモを収集（<code>arena_bua_thung</code>）</li><li>デモを追加生成し、LeRobot に変換</li><li><code>06_tai_lieu</code> のガイドに従い GR00T をファインチューニング</li><li>ルート 2 と同様に notebook で評価</li></ol>
@@ -182,9 +176,8 @@
         <tr><td>ベースモデル GR00T N1.7-3B とそこからファインチューニングしたチェックポイント</td><td>NVIDIA Open Model Agreement に準拠</td></tr>
         <tr><td>NVIDIA のリンゴ → 皿チェックポイント（Arena）</td><td>Model card に "ready for non-commercial use only" と記載</td></tr>
         <tr><td>NVIDIA データセット（リンゴ → 皿、実機 G1 データ）</td><td>CC-BY-4.0：利用可、出典表記が必要</td></tr>
-        <tr><td>ハンマータスクのテレオペデータ、生成データセット、real2sim データセット</td><td>本プロジェクトで作成 <span class="todo">[契約に基づく所有権を確認]</span></td></tr>
-        <tr><td>Isaac Lab Arena パッチ</td><td><span class="todo">[TODO: Isaac Lab Arena のライセンスを確認]</span></td></tr>
-        <tr><td>VLA モデルのデモ動画（II.01 節）</td><td>第三者のもの <span class="todo">[利用権を確認]</span></td></tr>
+        <tr><td>ハンマータスクのテレオペデータ、生成データセット、real2sim データセット</td><td>本プロジェクトで作成</td></tr>
+        <tr><td>VLA モデルのデモ動画（II.01 節）</td><td>第三者のもの</td></tr>
       </tbody>
     </table></div>
   </div>

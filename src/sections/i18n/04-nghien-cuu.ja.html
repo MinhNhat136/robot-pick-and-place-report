@@ -26,7 +26,7 @@
       <div class="vchap-side">
         <div class="vchap-head"><span class="vk">7 ステップ · クリックで動画を移動</span><span class="vh">画像と指示文から動作まで</span></div>
         <ol class="vchap-list">
-            <li><button type="button" data-seek="0"><span class="ts">0:00</span><span><span class="vt"><small>IMAGE TOKENS</small>カメラ画像を画像トークンに変換</span><span class="vd">画像を小さなパッチに分割し、視覚エンコーダ（画像–キャプションのペアで学習）に通した後、言語モデルの空間に射影します。</span><span class="vp"><b>プロジェクト：</b>G1 頭部カメラの画像 640×480。GR00T N1.7 は SigLip2 エンコーダを使用します。</span></span></button></li>
+            <li><button type="button" data-seek="0"><span class="ts">0:00</span><span><span class="vt"><small>IMAGE TOKENS</small>カメラ画像を画像トークンに変換</span><span class="vd">画像を小さなパッチに分割し、視覚エンコーダ（画像–キャプションのペアで学習）に通した後、言語モデルの空間に射影します。</span><span class="vp"><b>プロジェクト：</b>G1 頭部カメラの画像 640×480。GR00T N1.7 は SigLIP-2 エンコーダを使用します。</span></span></button></li>
             <li><button type="button" data-seek="12"><span class="ts">0:12</span><span><span class="vt"><small>TEXT TOKENS</small>指示文をテキストトークンに変換</span><span class="vd">"pick up the dessert item" のような指示文を単語の断片に分割します。</span><span class="vp"><b>プロジェクト：</b>例："put the hammer in the bin"。指示文はデータ記録時と一字一句同じである必要があります。</span></span></button></li>
             <li><button type="button" data-seek="18"><span class="ts">0:18</span><span><span class="vt"><small>VISION-LANGUAGE MODEL</small>視覚–言語モデルが両方を読む</span><span class="vd">インターネットのデータで事前学習した言語モデルが、画像トークンとテキストトークンを同時に読み込みます。</span><span class="vp"><b>プロジェクト：</b>GR00T N1.7 は Cosmos-Reason2-2B（「System 2」）を使用します。</span></span></button></li>
             <li><button type="button" data-seek="23"><span class="ts">0:23</span><span><span class="vt"><small>ACTION EXPERT</small>Action expert が関節角も読む</span><span class="vd">より小さな transformer が、上記のトークンとロボットの現在の関節角を読み込みます。</span><span class="vp"><b>プロジェクト：</b>上半身 31 関節（腕、手、腰）。脚は AGILE が担当します。</span></span></button></li>
@@ -42,7 +42,7 @@
     <div class="card-head"><span class="num">3</span><h3>入力データ</h3></div>
     <p>呼び出しごとに、モデルは<b>現在の時点のみ</b>の 3 種類のデータを受け取ります：カメラ画像 1 枚、上半身の関節角、指示文です。過去のフレームの履歴は受け取らず、12 の脚関節も見ません（脚は AGILE が担当）。</p>
     <div class="io-sumrow">
-      <div><b>1</b><span>頭部カメラ画像<br><small>480×640、現在のフレーム</small></span></div>
+      <div><b>1</b><span>頭部カメラ画像<br><small>640×480、現在のフレーム</small></span></div>
       <div><b>31</b><span>上半身の関節角<br><small>腕、指、腰</small></span></div>
       <div><b>1</b><span>指示文<br><small>エピソード中は不変</small></span></div>
     </div>
@@ -80,7 +80,7 @@
       </div><div class="io-leg"><span><i></i>目標関節角 31 → そのまま関節へ</span><span><i class="cmd"></i>指令 4 → AGILE へ渡す</span></div></div>
     <div class="grid">
       <div class="sub"><div class="sl">絶対角</div><p>31 個の関節値は目標角であり、前ステップからの変化量ではありません。使用前に、クライアントは関節の可動範囲とティックごとの速度上限でクランプします（II.02、カード 7）。</p></div>
-      <div class="sub"><div class="sl">脚への指令</div><p>モデルは 12 の脚関節を直接制御しません。移動指令と腰の高さ（~0.72 m）のみを出力し、AGILE がそれを基にバランスを保ちます。本プロジェクトの 3 シナリオはいずれもその場で静止したままです。</p></div>
+      <div class="sub"><div class="sl">脚への指令</div><p>モデルは 12 の脚関節を直接制御しません。移動指令と腰の高さ（指令値 0.72 m）のみを出力し、AGILE がそれを基にバランスを保ちます。本プロジェクトの 3 シナリオはいずれもその場で静止したままです。</p></div>
     </div>
     <p class="proj"><b>本プロジェクトでは：</b>シナリオ 1 と 3 は上記のとおり 50 Hz の 40 ステップ列を使用します。シナリオ 2 は腰を固定するため脚への指令がなく、20 Hz の 16 ステップ列（同じく 0.8 s）、各ステップ 31 個の値で、呼び出しごとに 8 ステップを実行します。</p>
   </div>
@@ -153,9 +153,10 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>Checkpoint</th><th>タスク</th><th>提供元</th><th>ファインチューニングデータ</th><th class="num">成功率</th></tr></thead>
       <tbody>
-        <tr><td><b>シナリオ 1</b><br><code class="ck">GN1x-Tuned-Arena-G1-Static-PickNPlace</code></td><td>リンゴ → 皿</td><td>NVIDIA、そのまま再利用</td><td>シミュレーション内のテレオペデモ 208 件</td><td class="num">92 % 元の Arena<br>56 % 自作シーン</td></tr>
+        <tr><td><b>シナリオ 1</b><br><code class="ck">GN1x-Tuned-Arena-G1-Static-PickNPlace</code></td><td>リンゴ → 皿</td><td>NVIDIA、そのまま再利用</td><td>シミュレーション内のテレオペデモ 208 件</td><td class="num">92 % 元の Arena<br>56 % 再構築した Galileo<br>0 % 自作シーン</td></tr>
         <tr><td><b>シナリオ 2</b><br><code class="ck">g1_fruits_n17</code></td><td>4 種類の果物から正しい 1 つを選ぶ</td><td>本プロジェクトでファインチューニング</td><td>G1 実機データからの real2sim エピソード 790 件</td><td class="num">66 % (33/50)</td></tr>
         <tr><td><b>シナリオ 3</b><br><code class="ck">hammer_mix200_n17</code></td><td>ハンマー → 箱</td><td>本プロジェクトでファインチューニング</td><td>200 エピソード：テレオペ + 生成</td><td class="num">66 % (66/100)</td></tr>
+        <tr><td><b>シナリオ 3</b><br><code class="ck">hammer_mix400_n17</code></td><td>ハンマー → 箱</td><td>本プロジェクトでファインチューニング</td><td>400 エピソード：mix200 + 新規テレオペデモ 200 件</td><td class="num">63 % (63/100)、静止しきい値を緩和すると 73 %</td></tr>
       </tbody>
     </table></div>
     <p class="proj"><b>ライセンス：</b>N1.7 は NVIDIA Open Model Agreement に準拠し、Arena チェックポイントには "non-commercial use" と記載されています。</p>
@@ -172,9 +173,9 @@
         <li>1 つのモデルで腕、手、腰を同時に制御します。</li>
       </ul></div>
       <div class="sub"><div class="sl warn">制約</div><div class="st">画像に敏感で、タスクごとの調整が必要</div><ul>
-        <li>シーンに依存します：リンゴタスクは照明が異なると 92 % から 56 % に、シーン全体が異なると 0 % に低下しました（II.04 節）。</li>
+        <li>シーンに依存します：リンゴタスクは照明が異なると 92 % から 56 % に、シーン全体が異なると 0 % に低下しました（III.01 節）。</li>
         <li>他のタスクに再利用できません：リンゴのチェックポイントは 4 種類の果物タスクで 0 % でした。</li>
-        <li>1 回の呼び出しはネットワーク経由で約 1.3 s（モデルの計算は約 100 ms）かかり、0.8 s の動作列より長くなります（I.02 節）。</li>
+        <li>1 回の呼び出しはネットワーク経由で約 1.05–1.3 s（モデルの計算は約 100 ms）かかり、0.8 s の動作列より長くなります（I.02 節）。</li>
         <li>NVIDIA の Arena チェックポイントには "non-commercial use" と記載されています。</li>
       </ul></div>
     </div>

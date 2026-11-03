@@ -82,7 +82,7 @@
       <div class="sub goal"><div class="goal-h"><span class="goal-n">3</span><span class="sl">KỊCH BẢN 2</span></div><div class="st">Tận dụng dữ liệu robot thật</div><p>Chuyển dữ liệu teleop G1 thật (chỉ góc khớp và video) thành dataset mô phỏng bằng real2sim; fine-tune model chọn đúng quả theo câu lệnh.</p><div class="goal-tags"><span>III.02</span><span>Câu hỏi 4</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">4</span><span class="sl">KỊCH BẢN 3</span></div><div class="st">Dạy một tác vụ hoàn toàn mới</div><p>Trọn chu trình "búa → thùng": dựng môi trường, teleop bằng kính thực tế ảo, sinh thêm dữ liệu, fine-tune, đánh giá; ghi lại số demo và thời gian cần.</p><div class="goal-tags"><span>III.03</span><span>Câu hỏi 2</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">5</span><span class="sl">VISUAL GAP</span></div><div class="st">Thử nghiệm và phân tích khác biệt hình ảnh</div><p>Đo tỉ lệ thành công thay đổi ra sao khi ảnh model nhận khác lúc ghi dữ liệu: giữa các khung cảnh mô phỏng và giữa ảnh thật với ảnh render; tìm yếu tố gây sụt giảm, đề xuất cách thu hẹp như domain randomization.</p><div class="goal-tags"><span>Kịch bản 1, 2</span><span>Câu hỏi 3, 4</span></div></div>
-      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">XUYÊN SUỐT</span></div><div class="st">Đánh giá định lượng, lặp lại được</div><p>Chấm vòng kín bằng điều kiện thành công rõ ràng, ≥ 50 episode mỗi cấu hình, khoảng tin cậy Wilson 95 %, phân tích thất bại theo pha; mỗi lần chạy chỉ đổi một yếu tố.</p><div class="goal-tags"><span>V.01</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">XUYÊN SUỐT</span></div><div class="st">Đánh giá định lượng, lặp lại được</div><p>Chấm vòng kín bằng điều kiện thành công rõ ràng, ≥ 50 episode mỗi cấu hình, khoảng tin cậy Wilson 95 %, phân tích thất bại theo pha; mỗi lần chạy chỉ đổi một yếu tố.</p><div class="goal-tags"><span>III.01–III.03</span></div></div>
     </div>
   </div>
 
@@ -117,7 +117,7 @@
         <div class="res-top"><div><div class="res-k">KỊCH BẢN 3</div><div class="res-t">Búa → thùng</div></div>
           <div class="res-best"><span>73<small>%</small></span><em>73/100 · 95 %: 64–81 %</em></div></div>
         <ul class="res-steps"><li><span class="rl">Chưa fine-tune</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li><span class="rl">Fine-tune 200 episode</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li><li><span class="rl">Fine-tune 400 episode</span><span class="rb"><i style="width:63%"></i></span><span class="rv">63<small>%</small></span></li><li class="top"><span class="rl">Nới ngưỡng đứng yên</span><span class="rb"><i style="width:73%"></i></span><span class="rv">73<small>%</small></span></li></ul>
-        <p class="res-take">Tác vụ mới từ 0 % lên 73 % chỉ với dữ liệu tự thu thập và ~1 giờ huấn luyện mỗi lần.</p>
+        <p class="res-take">Tác vụ mới từ 0 % lên 73 % chỉ với dữ liệu tự thu thập và 1–2 giờ huấn luyện mỗi lần (61 phút với mix200, 2 giờ 15 với mix400).</p>
         <a class="res-more" href="#hm3">Xem chi tiết kịch bản →</a>
       </div>
     </div>

@@ -46,7 +46,7 @@
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Robot, camera &amp; control</th><th>Details</th></tr></thead>
         <tbody>
-          <tr><td>Robot</td><td>Unitree G1 + Dex3 hands, standing at (0.25, 0.08) m, facing the +x axis; legs balanced by the AGILE controller, pelvis height ~0.73–0.75 m</td></tr>
+          <tr><td>Robot</td><td>Unitree G1 + Dex3 hands, standing at (0.25, 0.08) m, facing the +x axis; legs balanced by the AGILE controller, pelvis height ~0.73–0.75 m (command 0.72 m)</td></tr>
           <tr><td>Camera</td><td>Mounted on <code>head_link</code>, 640×480, 15 mm focal length, tilted down ~35°</td></tr>
           <tr><td>Rate</td><td>Physics 200 Hz, control 50 Hz (4 physics steps / command)</td></tr>
           <tr><td>Episode</td><td>At most 300 steps = 6 s; each model call returns a chunk of 40 steps</td></tr>
@@ -84,7 +84,7 @@
   <div class="card">
     <div class="card-head"><span class="num">5</span><h3>Problems encountered</h3></div>
     <p>When Arena's pipeline was recreated with the project's own package, every control stage worked correctly, but the success rate depended strongly on the <b>camera images</b> the model received.</p>
-    <div class="callout warn"><b>Visual gap:</b> same checkpoint, same instruction, same pipeline; changing only the simulated scene takes the success rate from <b>92 %</b> down to <b>56 %</b> and then <b>0 %</b>.</div>
+    <div class="callout warn"><b>Visual gap:</b> same checkpoint, same instruction; changing only the simulated scene takes the success rate from <b>92 %</b> (NVIDIA client, original Arena) down to <b>56 %</b> and then <b>0 %</b> (project pipeline).</div>
     <div class="grid two">
       <div class="sub"><div class="sl">PROBLEM 1</div><div class="st">The model fails in scenes that differ from the dataset</div><p>The project-built scene (box table, grid floor, dome light) gives <b>0/50</b> successes, with only 11/50 lifting the apple. The model reaches out like in the demos but never commands a grasp.</p></div>
       <div class="sub"><div class="sl">PROBLEM 2</div><div class="st">Rebuilding the exact scene is still not enough</div><p>The reconstructed Galileo scene matches the dataset's layout and camera angle but reaches only <b>56 %</b>, versus 92 % in the original Arena. The remaining difference is mainly lighting and rendering.</p></div>
@@ -160,7 +160,7 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>Step</th><th>Measured figures</th></tr></thead>
       <tbody>
-        <tr><td>Model communication</td><td>40-step chunk per call; average latency ~1.1 s/call (the simulation waits for the model, so results are unaffected)</td></tr>
+        <tr><td>Model communication</td><td>40-step chunk per call; latency ~1.2 s/call (median over 50 episodes; the simulation waits for the model, so results are unaffected)</td></tr>
         <tr><td>Open-loop against the dataset</td><td>MAE left arm 0.032 · right arm 0.019 · left hand 0.008 rad (3 episodes, 11 chunks)</td></tr>
         <tr><td>Instruction</td><td>Dataset instruction 0.025 rad; Arena default instruction 0.047 rad; nonsense instruction 0.039 rad</td></tr>
         <tr><td>AGILE legs</td><td>Bit-exact with the reference implementation; stands stably for 500 ticks, torso 0.73–0.75 m, maximum tilt ~10°</td></tr>
@@ -184,7 +184,7 @@
       </tbody>
     </table></div>
     <div class="grid two">
-      <div class="sub"><div class="sl">FINDING 1</div><div class="st">Vision determines the outcome</div><p>Same checkpoint, instruction and pipeline: 92 % → 56 % → 0 % solely from changing the scene. The two confidence intervals 0–7 % and 42–69 % do not overlap.</p></div>
+      <div class="sub"><div class="sl">FINDING 1</div><div class="st">Vision determines the outcome</div><p>Same checkpoint and instruction: 92 % (NVIDIA client, original Arena) → 56 % → 0 % (project pipeline) solely from changing the scene. The two confidence intervals 0–7 % and 42–69 % do not overlap.</p></div>
       <div class="sub"><div class="sl">FINDING 2</div><div class="st">Failures lie in the perception and approach phase</div><p>In the project-built scene the model almost never lifts the apple (22 %). In Galileo, once lifted, 78 % are placed on the plate — the manipulation skill is still there.</p></div>
       <div class="sub"><div class="sl">FINDING 3</div><div class="st">The project's own pipeline works correctly</div><p>28 successes with final distances of 1–6 cm, together with the open-loop and replay checks, rule out data translation errors.</p></div>
       <div class="sub"><div class="sl">FINDING 4</div><div class="st">Implications for deployment</div><p>A model fine-tuned on a single scene does not generalise; data must be collected in the working environment, or visual diversity must be increased during training.</p></div>
@@ -203,11 +203,11 @@
 
   <div class="card">
     <div class="card-head"><span class="num">10</span><h3>Scenario conclusion</h3></div>
-    <div class="panel"><div class="pl">CONCLUSION</div><p>A model fine-tuned on a single scene is <b>highly sensitive to visuals</b>: 56 % when the scene resembles the recording conditions, 0 % when it differs. Real-world deployment requires collecting data directly in the working environment or increasing visual diversity during training.</p></div>
+    <div class="panel"><div class="pl">CONCLUSION</div><p>A model fine-tuned on a single scene is <b>highly sensitive to visuals</b>: 92 % in the original environment used for recording, 56 % when only the lighting differs, 0 % when the scene is completely different. Real-world deployment requires collecting data directly in the working environment or increasing visual diversity during training.</p></div>
     <ul>
       <li>The pipeline has been <b>mastered and independently reproduced</b>; the code is ready to swap in a real-robot backend.</li>
       <li>The exact instruction used during data recording must be used; each configuration needs ≥ 50 episodes to draw conclusions.</li>
-      <li>Not yet done: control run in the original Docker Arena; Galileo scene with ±2 cm shuffling; warm-up phase after reset.</li>
+      <li>Not yet done: running the project pipeline inside the original Docker Arena for a direct comparison with the 92 % baseline; Galileo scene with ±2 cm shuffling; warm-up phase after reset.</li>
     </ul>
   </div>
 </section>

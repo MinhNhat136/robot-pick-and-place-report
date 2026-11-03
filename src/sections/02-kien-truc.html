@@ -28,7 +28,7 @@
     <div class="card-head"><span class="num">2</span><h3>Phần mềm &amp; phiên bản</h3></div>
     <p>Mỗi cột là các lớp phần mềm của một máy, xếp từ nền tảng (dưới) lên ứng dụng của dự án (trên, tô đậm).</p>
     <div class="stacks">
-      <div class="stack "><div class="stack-h"><b>Máy trạm</b><span>MÔ PHỎNG</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>Hệ điều hành</small></div><em>LTS</em></li><li class="base"><div><b>Driver NVIDIA + CUDA</b><small>Isaac Sim 6.1 cần driver ≥ 595</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12, cài cục bộ</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Cặp chính thức với Isaac Sim 6.0</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Chạy trong Docker 29; nhánh riêng cho bài búa</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>Client g1gr00t + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">Thêm: Jupyter, pytest, pandas, matplotlib cho notebook và kiểm thử.</p></div>
+      <div class="stack "><div class="stack-h"><b>Máy trạm</b><span>MÔ PHỎNG</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>Hệ điều hành</small></div><em>LTS</em></li><li class="base"><div><b>Driver NVIDIA + CUDA</b><small>Bản 580 đủ cho Isaac Sim 6.0; Isaac Sim 6.1 sẽ cần ≥ 595</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12, cài cục bộ</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Cặp chính thức với Isaac Sim 6.0</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Chạy trong Docker 29; nhánh riêng cho bài búa</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>Client g1gr00t + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">Thêm: Jupyter, pytest, pandas, matplotlib cho notebook và kiểm thử.</p></div>
       <div class="stack "><div class="stack-h"><b>Máy chủ GPU</b><span>MODEL</span></div><ol><li class="base"><div><b>Linux + Driver NVIDIA</b><small></small></div><em>575.57</em></li><li class=""><div><b>Isaac-GR00T</b><small>Môi trường Python bằng uv; đúng commit Arena đã kiểm thử</small></div><em>4b1dca9</em></li><li class=""><div><b>Cosmos-Reason2-2B</b><small>Backbone thị giác–ngôn ngữ, tải từ Hugging Face</small></div><em>2B</em></li><li class="sw-app"><div><b>GR00T N1.7-3B + checkpoint</b><small>Policy server ZeroMQ; checkpoint mỗi bản 12,6 GB</small></div><em>3B</em></li></ol><p class="stack-note">Cần chấp nhận giấy phép model của NVIDIA trên Hugging Face.</p></div>
       <div class="stack plan"><div class="stack-h"><b>Robot thật</b><span>GIAI ĐOẠN SAU</span></div><ol><li class="base"><div><b>Máy tính trên robot</b><small>Hoặc máy tính đặt cạnh robot</small></div></li><li class=""><div><b>Unitree SDK2</b><small>Gói unitree_sdk2py, đã khai báo trong cấu hình</small></div><em>—</em></li><li class="sw-app"><div><b>Client g1gr00t</b><small>Dùng lại nguyên vẹn; chỉ thêm backend robot thật</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">Chưa triển khai trong giai đoạn này.</p></div>
     </div>
@@ -41,15 +41,15 @@
       <div><small>TẦN SỐ ĐIỀU KHIỂN</small><b>50<i>Hz</i></b><span>Vật lý 200 Hz, 4 bước mỗi tick · real2sim 20 Hz</span></div>
       <div><small>MỖI LẦN GỌI MODEL</small><b>40<i>bước</i></b><span>= 0,8 s chuyển động · real2sim 16 bước, thực thi 8</span></div>
       <div><small>INFER TRÊN SERVER</small><b>~100<i>ms</i></b><span>Model tính một chuỗi 40 bước trên H100</span></div>
-      <div><small>ĐỘ TRỄ MODEL</small><b>~1,3<i>s</i></b><span>Trung bình khi đánh giá, qua SSH tunnel tới H100</span></div>
+      <div><small>ĐỘ TRỄ MODEL</small><b>~1,2<i>s</i></b><span>Trung vị mỗi lần gọi khi đánh giá, qua SSH tunnel tới H100</span></div>
     </div>
     <div class="cmpbars">
       <div class="cmpbars-h"><b>Ngân sách thời gian: chuyển động so với độ trễ model</b><span>giây · thang 0–4 s</span></div>
       <div class="cb ref"><span class="l">Một chuỗi chuyển động (robot có sẵn để làm)</span><span class="t"><i class="" style="width:20%"></i></span><span class="v">0,8 s</span></div>
       <div class="cb"><span class="l">Thời gian infer trên server</span><span class="t"><i class="" style="width:2.5%"></i></span><span class="v">~0,1 s</span></div>
-      <div class="cb"><span class="l">Độ trễ trung bình khi đánh giá</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1,3–1,6 s</span></div>
+      <div class="cb"><span class="l">Độ trễ khi đánh giá (trung vị)</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1,2–1,5 s</span></div>
       <div class="cb"><span class="l">Lần gọi đầu tiên (khởi động)</span><span class="t"><i class="range" style="width:85%"></i></span><span class="v">1,7–3,4 s</span></div>
-      <div class="cb"><span class="l">4 robot gọi cùng lúc</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">3,5–3,9 s</span></div>
+      <div class="cb"><span class="l">4 robot gọi cùng lúc</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">~3,6 s · p95 4,2 s</span></div>
       <p class="cb-note">Model trả lời <b>chậm hơn</b> thời gian robot thực hiện xong một chuỗi. Trong mô phỏng không sao vì mô phỏng dừng chờ; trên robot thật, robot sẽ khựng giữa các chuỗi nếu không gọi trước và không đặt GPU gần robot. Bản thân model chỉ mất ~100 ms; phần lớn độ trễ còn lại nằm ở đường truyền qua SSH tunnel và đóng gói dữ liệu.</p>
     </div>
   </div>
@@ -96,7 +96,7 @@
     <div class="card-head"><span class="num">6</span><h3>Phân tích hiệu năng</h3></div>
     <p>Đọc chung ba card trên: ở mỗi khâu, thời gian và tài nguyên thực sự bị tiêu tốn ở đâu, và điều đó có ý nghĩa gì cho giai đoạn sau.</p>
     <div class="grid three">
-      <div class="sub"><div class="sl">SUY LUẬN</div><div class="st">Nút thắt là đường truyền, không phải model</div><p>Model chỉ tính ~100 ms, nhưng mỗi lần gọi mất ~1,3 s, lâu hơn một chuỗi chuyển động (0,8 s). Phần chênh chủ yếu nằm ở SSH tunnel và đóng gói dữ liệu. Khi 4 robot gọi cùng lúc, độ trễ lên 3,5–3,9 s vì server xử lý lần lượt.</p></div>
+      <div class="sub"><div class="sl">SUY LUẬN</div><div class="st">Nút thắt là đường truyền, không phải model</div><p>Model chỉ tính ~100 ms, nhưng mỗi lần gọi mất ~1,05–1,3 s, lâu hơn một chuỗi chuyển động (0,8 s). Phần chênh chủ yếu nằm ở SSH tunnel và đóng gói dữ liệu. Khi 4 robot gọi cùng lúc, độ trễ lên ~3,6 s (p95 4,2 s) vì server xử lý lần lượt.</p></div>
       <div class="sub"><div class="sl">THU DỮ LIỆU</div><div class="st">Nút thắt là hình ảnh tới kính</div><p>Render và chờ CloudXR chiếm 42 % mỗi vòng lặp, gấp gần 4 lần mô phỏng vật lý (11 %). RAM tăng ~15 MB/s trong lúc ghi, nên mỗi demo cần lưu đều đặn thay vì ghi liền một phiên dài.</p></div>
       <div class="sub"><div class="sl">HUẤN LUYỆN</div><div class="st">Một H100 là đủ, nếu không bị chia sẻ</div><p>10.000 bước fine-tune mất 61 phút và dùng ≈ 53 GB bộ nhớ GPU, vừa một H100. Khi GPU bị job khác chiếm, tốc độ chậm gần 8 lần (2,9 s/bước so với 0,36 s/bước).</p></div>
     </div>

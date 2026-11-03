@@ -158,7 +158,7 @@
     const wrap = R.$(".page > .wrap");
     const sec = R.$("section.section:not([hidden])");
     if (!wrap || !sec) return;
-    // last card actually shown (internal cards are hidden in customer mode)
+    // last card actually shown (cards of other languages are hidden)
     const cards = R.$$(":scope > .card", sec).filter(c => c.offsetParent !== null);
     const last = cards[cards.length - 1] || sec;
     // the section footer (project · version · date) lives inside that card

@@ -34,13 +34,13 @@
       ["liq-bounce", "Độ nảy khi dừng", 1, 2.6, .05, 1.6, "", css("--liq-bounce")],
       ["liq-sens", "Độ nhạy theo tốc độ cuộn", .5, 6, .1, 2.2, "", v => { if (R.liquid) R.liquid.max = 8.2 - v; }],
     ], [
-      ["liq-on", "Bật chuyển động", true, v => root.classList.toggle("no-liquid", !v)],
+      ["liq-on", "Bật chuyển động", false, v => root.classList.toggle("no-liquid", !v)],
     ]],
   ];
   const PRESETS = {
     "Mặc định": {},
-    "Nhẹ nhàng": { "bg-a1": .4, "bg-a2": .35, "glass-fill": .3, "liq-stretch": .01, "liq-squeeze": .005, "liq-lag": 3, "liq-bounce": 1.3 },
-    "Nổi bật": { "bg-a1": .85, "bg-a2": .8, "bg-c": .12, "glass-fill": .12, "glass-sat": 200, "liq-stretch": .04, "liq-lag": 14, "liq-bounce": 2 },
+    "Nhẹ nhàng": { "bg-a1": .4, "bg-a2": .35, "glass-fill": .3, "liq-stretch": .01, "liq-squeeze": .005, "liq-lag": 3, "liq-bounce": 1.3, "liq-on": true },
+    "Nổi bật": { "bg-a1": .85, "bg-a2": .8, "bg-c": .12, "glass-fill": .12, "glass-sat": 200, "liq-stretch": .04, "liq-lag": 14, "liq-bounce": 2, "liq-on": true },
     "Tĩnh": { "liq-on": false, "refract-on": false },
   };
 
@@ -86,7 +86,6 @@
       });
       body += `</fieldset>`;
     }
-    body += `<fieldset><legend>CHẾ ĐỘ XEM</legend><label class="tn-toggle">Bản gửi khách hàng (ẩn TODO, ghi chú nội bộ)<input type="checkbox" id="mode-toggle"></label></fieldset>`;
     body += `<p class="tuner-note">Thay đổi chỉ lưu trong trình duyệt này. Bấm "Sao chép CSS" để lấy giá trị làm mặc định cho báo cáo.</p></div>` +
       `<div class="tuner-f"><button type="button" data-reset>Đặt lại</button><button type="button" class="solid" data-copy>Sao chép CSS</button></div>`;
     panel.innerHTML = body;
@@ -129,7 +128,6 @@
   R.tuner = {
     init() {
       build();
-      if (R.mode) R.mode.init();   // binds the "Bản gửi khách hàng" switch now inside the panel
       const saved = load();
       Object.entries({ ...defaults(), ...saved }).forEach(([k, v]) => setValue(k, v, false));
       state = saved;

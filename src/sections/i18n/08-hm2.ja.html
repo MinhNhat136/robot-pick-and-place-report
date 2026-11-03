@@ -38,7 +38,7 @@
       <tbody>
         <tr><td>テーブル</td><td>グリッド床上のシンプルなテーブル。照明は dome 700 + sun 600</td></tr>
         <tr><td>皿</td><td>kinematic の皿、半径 0.115 m。エピソード 0 では (0.40; 0.08) m に配置</td></tr>
-        <tr><td>果物</td><td>シンプルなブロック形状の 4 種類（リンゴ、洋ナシ、オレンジ、ブドウ = 緑のブロック）。摩擦 1.5</td></tr>
+        <tr><td>果物</td><td>シンプルなブロック形状の 4 種類（リンゴ、洋ナシ、スターフルーツ、ブドウ = 緑のブロック）。摩擦 1.5</td></tr>
         <tr><td>目標</td><td>エピソード 0：ブドウ、(0.41; −0.12) m</td></tr>
         <tr><td>妨害物</td><td>手の掃引範囲外に置いた果物 2 個（エピソード 0：リンゴ、洋ナシ）</td></tr>
         <tr><td>ランダム化</td><td>エピソードごとに目標果物、果物の位置と向き、皿の位置、妨害果物を変更。seed は個別</td></tr>
@@ -127,7 +127,6 @@
         <tr><td>評価シーン</td><td class="num">100</td><td class="num">—</td><td>リンゴ 30、洋ナシ 24、スターフルーツ 26、ブドウ 20</td></tr>
       </tbody>
     </table></div>
-    <p class="todo">[TODO: 果物ごとの再生成功率（保持エピソード / 実エピソード）。]</p>
   </div>
 
   <div class="card">
@@ -155,7 +154,6 @@
   <div class="card">
     <div class="card-head"><span class="num">8</span><h3>ファインチューニング</h3></div>
     <p>NVIDIA 公式ガイド（fine-tuning on sim data）に従いました：GR00T N1.7-3B、<code>NEW_EMBODIMENT</code>、カメラ <code>rs_view</code>、state/action 5 グループ（31 次元）、horizon 16 ステップ @ 20 Hz（0.8 s）。H100 で batch 32。LLM は凍結、視覚 + projector + diffusion を調整。color jitter（明るさ 0.3 · コントラスト 0.4 · 彩度 0.5 · 色相 0.08）。</p>
-    <p class="todo">[TODO: ステップ数、学習時間、loss 曲線、テストセットでの open-loop MAE、評価に使用したチェックポイント、ReplayPolicy の確認結果。]</p>
   </div>
 
   <div class="card">
@@ -197,7 +195,7 @@
       <thead><tr><th>フェーズ（50 エピソード）</th><th class="num">エピソード数</th><th class="num">割合</th></tr></thead>
       <tbody>
         <tr><td>目標果物を持ち上げ</td><td class="num">39</td><td class="num">78 %</td></tr>
-        <tr><td>果物が皿の上（持ち上げたもののうち）</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr><td>持ち上げ、果物が皿の上</td><td class="num">34</td><td class="num">68 %</td></tr>
         <tr class="hl"><td>成功（妨害物を動かさない）</td><td class="num">33</td><td class="num">66 %</td></tr>
       </tbody>
     </table></div>

@@ -41,8 +41,8 @@
 .dl-lic .wn{border-left:3px solid var(--warn)}
 .dl-lic .in{border-left:3px solid var(--accent)}
 
-@media (max-width:1200px){.dl-tiles,.dl-paths,.dl-lic{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:960px){
+@media screen and (max-width:1200px){.dl-tiles,.dl-paths,.dl-lic{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media screen and (max-width:960px){
   .dl-tiles,.dl-paths,.dl-lic{grid-template-columns:1fr}
   .dl-big .row{grid-template-columns:1fr 70px}
   .dl-big .bar{grid-column:1 / -1;grid-row:2}

@@ -16,81 +16,103 @@
 }
 @media print{.section[hidden]{display:block !important}}
 
-/* ---------- PDF = plain research report ----------
-   Only text, images, simple diagrams and tables. ui/print.js adds numbered headings
-   (PHẦN / I.02 / I.02.1) and a Word-style table of contents just before printing. */
-@page{size:A4;margin:20mm 18mm 20mm}
+/* ---------- PDF = report with content cards ----------
+   Cards keep their blocks (border, header band, sub-boxes, tables, diagrams) on plain white paper:
+   no glass, blur, shadows or animation. Responsive breakpoints are screen-only, so the print uses the
+   desktop layout, scaled with zoom to fit A4. ui/print.js adds a section heading (I.02 · Title),
+   a part title before the first section of each part, and a table of contents at the top. */
+@page{size:A4;margin:14mm 12mm 16mm}
+/* Author margin boxes replace Chrome's own header/footer (date, page title, file URL) even when
+   "Headers and footers" is ticked in the print dialog; only the page number is printed. */
+@page{
+  @top-left{content:" "}@top-center{content:" "}@top-right{content:" "}@bottom-left{content:" "}@bottom-center{content:" "}
+  @bottom-right{content:counter(page);font:9pt "IBM Plex Sans",Arial,sans-serif;color:#7a828e}}
 .print-toc,.print-h,.print-part{display:none}
 @media print{
   html,body,.app,.main,.page,.wrap{background:#fff !important}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body::before,body::after,.main::before,.main::after{display:none !important}
   *,*::before,*::after{box-shadow:none !important;text-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;
-    animation:none !important;transition:none !important;transform:none !important}
+    animation:none !important;transition:none !important}
+  .main .card,.main .hero,.main .fact,.main .kpi,.main .res-tile{transform:none !important;opacity:1 !important}
+  .page{display:block !important;padding:0 !important;max-width:none !important}
+  .toc,.toc-rail{display:none !important}
+  .wrap{zoom:.86;max-width:none !important;padding:0 !important;margin:0 !important}
 
-  /* one serif face, black text, no letter-spaced labels */
-  .section,.print-toc{font-family:"Times New Roman","Liberation Serif","Noto Serif",serif !important;color:#000}
-  .section *:not(svg):not(svg *){font-family:inherit !important;letter-spacing:0 !important;color:#000 !important;text-transform:none !important}
-  .section code,.section kbd,.section pre,.section pre *{font-family:"Liberation Mono","DejaVu Sans Mono",monospace !important;font-size:9.5pt !important}
+  /* surfaces: white blocks with a thin border instead of glass */
+  .main .hero,.main .card,.main .fact,.main .kpi,.main .res-tile{background:#fff !important;border:1px solid #d9dee6 !important}
+  .main .hero::before,.main .hero::after,.main .card::before,.main .card::after,
+  .main .fact::after,.main .kpi::after,.main .res-tile::after{display:none !important}
+  .main .card{border-radius:12px !important;margin:0 0 14px !important;break-inside:auto}
+  .card-head{background:oklch(0.97 0.02 var(--h)) !important;border-bottom:1px solid #e2e6ec !important;break-after:avoid;break-inside:avoid}
+  .main .hero{border-radius:14px !important;padding:22px 26px !important;margin:0 0 14px !important}
+  .main .hero .pill{display:none !important}
+  .main .hero h2{font-size:26px !important}
 
-  /* flatten: boxes lose fills, borders, rounding. Empty elements (bar fills, swatches, dots) keep their colour. */
-  .section *:not(:empty):not(svg):not(svg *):not(img):not(video):not(canvas){background:none !important;border-color:transparent !important;border-radius:0 !important}
-  .section *::before,.section *::after{background-image:none !important}
-  .section *{border-radius:0 !important}
-  .section{font-size:11.5pt;line-height:1.5}
-  .section *:not(svg):not(svg *):not(h1):not(h2):not(h3):not(h4){font-size:inherit !important;line-height:inherit !important}
-  .section b,.section strong{font-weight:700}
+  /* keep small blocks whole; long cards may continue on the next page */
+  .sub,.callout,.panel,.fact,.kpi,.res-tile,figure,.chart,.cmpbars,.tbl-wrap tr,.step,.dg-lane,.pp-io,.pd-flow,
+  .ds-pane,.grid > *,details.acc,img,svg,canvas,h4{break-inside:avoid}
+  h4{break-after:avoid}
+  p,li{orphans:3;widows:3}
 
-  /* section opening */
+  /* section opening: part title + section heading */
   .section{break-before:page}
-  .print-part{display:block;font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;text-transform:uppercase;margin:0 0 18pt;text-align:center}
-  .print-h{display:block;font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;margin:0 0 10pt;break-after:avoid}
-  .main .hero{border:0 !important;padding:0 !important;margin:0 0 6pt;overflow:visible}
-  .main .hero::before,.main .hero::after,.hero .pill,.hero h1,.hero h2{display:none !important}
-  .hero .lead{margin:0 0 6pt;max-width:none}
-  .hero .meta{display:block !important;margin:0;padding:0}
-  .hero .meta > div{display:inline !important}
-  .hero .meta > div::after{content:" · "}
-  .hero .meta > div:last-child::after{content:""}
-  .hero .meta .ml{display:inline}
-  .hero .meta .ml::after{content:": "}
-  .hero .meta .mv{display:inline;font-weight:400}
+  .print-part{display:block;font:700 13px/1.3 var(--mono);letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:0 0 4px}
+  .print-h{display:block;font:800 22px/1.25 var(--sans);color:var(--ink);margin:0 0 14px;padding:0 0 8px;border-bottom:2px solid var(--accent);break-after:avoid}
 
-  /* cards = numbered subsections */
-  .main .card{border:0 !important;padding:0 !important;margin:14pt 0 0;overflow:visible !important;break-inside:auto !important}
-  .main .card::before,.main .card::after{display:none !important}
-  .card-head{display:block !important;margin:0 0 6pt !important;padding:0 !important;border:0 !important;break-after:avoid}
-  .card-head .num,.card-head .tag{display:none !important}
-  .card-head h3{font-size:12.5pt !important;font-weight:700;margin:0}
-  .card-head h3[data-pn]::before{content:attr(data-pn) "  "}
-  .card h4{font-size:11.5pt !important;font-weight:700;font-style:italic;margin:10pt 0 4pt;break-after:avoid}
-  .card p,.card li{orphans:3;widows:3;text-align:justify}
-  .card p{margin:0 0 6pt}
+  /* tables fit the page */
+  .tbl-wrap{overflow:visible !important}
+  .tbl{width:100%}
+  .tbl thead{display:table-header-group}
 
-  /* tables: thin black rules */
-  .tbl-wrap{overflow:visible !important;border:0 !important}
-  .section table{border-collapse:collapse !important;width:100%;font-size:10pt !important}
-  .section table *{font-size:10pt !important}
-  .section th,.section td{border:0.6pt solid #000 !important;padding:3pt 5pt !important;vertical-align:top}
-  .section th{font-weight:700}
-  .section tr,.section thead{break-inside:avoid}
+  /* media */
+  .main img,.main video{max-width:100%}
+  figure.fig video,figure.fig img{max-height:110mm;object-fit:contain}
 
-  /* figures and diagrams */
-  .main img,.main video{max-height:80mm;width:auto;max-width:100%;object-fit:contain}
-  figure,img,svg,canvas,.chart,.cmpbars,.perf{break-inside:avoid}
-  figure figcaption{font-style:italic;font-size:10pt !important;text-align:center}
-  .section svg text{font-family:"Liberation Sans",Arial,sans-serif}
-
-  /* decoration and controls */
-  .btn,button:empty,input,select,.cv-ctrl,.vref,[data-m3-play],[data-m3-reset],.tab-list{display:none !important}
-  .section svg[stroke="currentColor"][stroke-width="1.8"],.pf-link,.pf-ico,.pf-model-ico,.section .ic,.section .icon,.section [class$="-ic"],.section [class*="-ic "]{display:none !important}
+  /* interactive controls are not useful on paper */
+  .btn,[data-table-toggle],input[type=range],select,.vref,.ds-play,.gen-btns,[data-m3-play],[data-m3-reset],.tab-list{display:none !important}
 }
 
-/* Word-style table of contents (ui/print.js) */
+/* Table of contents (ui/print.js): part bands, bold sections, card lines, dotted leaders, page numbers */
+.pg-mark{display:none}
 @media print{
-  .print-toc{display:block;font-size:11.5pt;line-height:1.45;color:#000}
-  .print-toc h1{font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;text-align:center;margin:0 0 16pt}
-  .print-toc a{color:#000;text-decoration:none;display:block}
-  .print-toc .t1{font-weight:700;margin-top:8pt}
-  .print-toc .t2{padding-left:8mm}
-  .print-toc .t3{padding-left:18mm;font-size:10.5pt}
+  .pg-mark{display:inline;position:absolute;font-size:1px;line-height:0;color:#fff}
+  .print-toc{display:block;font-family:var(--sans);color:#1c2330;break-after:page}
+  .print-toc h1{font:800 26pt/1.1 var(--sans);letter-spacing:-.01em;color:var(--ink);margin:0}
+  .print-toc .toc-sub{font:600 9.5pt/1.4 var(--mono);letter-spacing:.08em;color:var(--accent);margin:6pt 0 14pt;padding:0 0 10pt;border-bottom:2px solid var(--accent)}
+  .print-toc .toc-row{display:flex;align-items:baseline;gap:0;color:inherit;text-decoration:none;break-inside:avoid}
+  .print-toc .toc-tn{flex:none;font-variant-numeric:tabular-nums}
+  .print-toc .toc-tt{flex:0 1 auto;min-width:0}
+  .print-toc .toc-tl{flex:1 1 12mm;min-width:12mm;margin:0 6pt;border-bottom:1.2pt dotted #b4bcc8;transform:translateY(-3pt)}
+  .print-toc .toc-tp{flex:none;min-width:8mm;text-align:right;font-variant-numeric:tabular-nums}
+
+  .print-toc .t1{margin:13pt 0 4pt;padding:5pt 9pt;border-radius:6pt;background:oklch(0.95 0.035 var(--h));border-left:3pt solid var(--accent);
+    font:700 10pt/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);break-after:avoid}
+  .print-toc .t1 .toc-tn{margin-right:8pt;font-family:var(--mono);letter-spacing:.12em}
+  .print-toc .t1 .toc-tl{border-bottom-color:transparent}
+  .print-toc .t2{margin:7pt 0 1pt;padding-left:9pt;font:700 11pt/1.35 var(--sans);color:var(--ink);break-after:avoid}
+  .print-toc .t2 .toc-tn{width:15mm;font-family:var(--mono);font-size:10pt;color:var(--accent)}
+  .print-toc .t3{padding-left:calc(9pt + 15mm);font:400 9.5pt/1.5 var(--sans);color:#4a5260}
+  .print-toc .t3 .toc-tn{width:18mm;font-family:var(--mono);font-size:8.5pt;color:#8a929e}
+  .print-toc .t3 .toc-tl{border-bottom-color:#d3d8e0}
+}
+
+/* Cover page (ui/print.js): first page of the PDF, without a page number */
+.print-cover{display:none}
+@page :first{@bottom-right{content:none}}
+@media print{
+  .print-cover{display:flex;flex-direction:column;height:262mm;break-after:page;font-family:var(--sans);color:var(--ink)}
+  .print-cover .pc-band{border-radius:6mm;padding:20mm 14mm 16mm;color:#fff;
+    background:linear-gradient(135deg,oklch(0.42 0.13 var(--h)),oklch(0.55 0.14 calc(var(--h) - 20)))}
+  .print-cover .pc-kind{font:700 10pt/1 var(--mono);letter-spacing:.22em;opacity:.85}
+  .print-cover .pc-title{font:800 30pt/1.15 var(--sans);letter-spacing:-.015em;margin:9mm 0 7mm}
+  .print-cover .pc-sub{font:600 12pt/1.3 var(--sans);opacity:.9;padding-top:5mm;border-top:1px solid rgba(255,255,255,.45)}
+  .print-cover .pc-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin:10mm 0 0}
+  .print-cover figure{margin:0}
+  .print-cover img{display:block;width:100%;height:46mm;object-fit:cover;border-radius:3.5mm}
+  .print-cover figcaption{font:600 9pt/1.3 var(--sans);color:var(--ink-3);margin-top:2.5mm;text-align:center}
+  .print-cover .pc-meta{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6mm 8mm;padding-top:7mm;border-top:2px solid var(--accent)}
+  .print-cover .pc-meta > div{display:flex;flex-direction:column;gap:1.5mm}
+  .print-cover .pc-k{font:700 7.5pt/1 var(--mono);letter-spacing:.16em;color:var(--accent)}
+  .print-cover .pc-v{font:700 11pt/1.3 var(--sans);color:var(--ink)}
 }

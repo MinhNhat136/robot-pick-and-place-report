@@ -82,7 +82,7 @@
       <div class="sub goal"><div class="goal-h"><span class="goal-n">3</span><span class="sl">シナリオ 2</span></div><div class="st">実機ロボットデータの活用</div><p>実機 G1 のテレオペデータ（関節角度と動画のみ）を real2sim でシミュレーション用データセットに変換し、指示どおりの果物を選ぶようモデルをファインチューニングします。</p><div class="goal-tags"><span>III.02</span><span>問い 4</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">4</span><span class="sl">シナリオ 3</span></div><div class="st">まったく新しいタスクを教える</div><p>「ハンマー → 箱」の全サイクル：環境構築、VR ヘッドセットによるテレオペ、データの追加生成、ファインチューニング、評価を行い、必要なデモ数と時間を記録します。</p><div class="goal-tags"><span>III.03</span><span>問い 2</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">5</span><span class="sl">VISUAL GAP</span></div><div class="st">画像の差異の実験と分析</div><p>モデルが受け取る画像がデータ記録時と異なる場合（シミュレーションのシーン間、実画像とレンダリング画像の間）に成功率がどう変わるかを測定し、低下の要因を特定して、domain randomization などの差を縮める方法を提案します。</p><div class="goal-tags"><span>シナリオ 1、2</span><span>問い 3、4</span></div></div>
-      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">横断</span></div><div class="st">定量的で再現可能な評価</div><p>明確な成功条件による閉ループ評価、構成ごとに ≥ 50 エピソード、Wilson 95 % 信頼区間、フェーズ別の失敗分析を行います。各実行で変更する要因は 1 つだけとします。</p><div class="goal-tags"><span>V.01</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">横断</span></div><div class="st">定量的で再現可能な評価</div><p>明確な成功条件による閉ループ評価、構成ごとに ≥ 50 エピソード、Wilson 95 % 信頼区間、フェーズ別の失敗分析を行います。各実行で変更する要因は 1 つだけとします。</p><div class="goal-tags"><span>III.01–III.03</span></div></div>
     </div>
   </div>
 
@@ -117,7 +117,7 @@
         <div class="res-top"><div><div class="res-k">シナリオ 3</div><div class="res-t">ハンマー → 箱</div></div>
           <div class="res-best"><span>73<small>%</small></span><em>73/100 · 95 %: 64–81 %</em></div></div>
         <ul class="res-steps"><li><span class="rl">ファインチューニングなし</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li><span class="rl">200 エピソードでファインチューニング</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li><li><span class="rl">400 エピソードでファインチューニング</span><span class="rb"><i style="width:63%"></i></span><span class="rv">63<small>%</small></span></li><li class="top"><span class="rl">静止しきい値を緩和</span><span class="rb"><i style="width:73%"></i></span><span class="rv">73<small>%</small></span></li></ul>
-        <p class="res-take">自前収集データと 1 回あたり約 1 時間の学習だけで、新しいタスクが 0 % から 73 % に向上しました。</p>
+        <p class="res-take">自前収集データと 1 回あたり 1–2 時間の学習（mix200 で 61 分、mix400 で 2 時間 15 分）だけで、新しいタスクが 0 % から 73 % に向上しました。</p>
         <a class="res-more" href="#hm3">シナリオの詳細を見る →</a>
       </div>
     </div>

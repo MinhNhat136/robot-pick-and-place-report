@@ -29,7 +29,7 @@
 .pdf-btn svg{width:22px;height:22px}
 
 @media print{.lang-btn,.lang-menu,.pdf-btn{display:none !important}}
-@media (max-width:960px){.pdf-btn{right:128px;bottom:16px}.lang-btn{right:72px;bottom:16px}.lang-menu{right:16px;bottom:76px}}
+@media screen and (max-width:960px){.pdf-btn{right:128px;bottom:16px}.lang-btn{right:72px;bottom:16px}.lang-menu{right:16px;bottom:76px}}
 
 /* Translated sections (build.py merges src/sections/i18n/*): every top-level child carries data-i18n.
    Show the chosen language where the section has it, Vietnamese otherwise. */

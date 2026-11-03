@@ -45,7 +45,7 @@
 .ms-list .mo.bad{background:var(--warn-bg);color:var(--warn)}
 .ms-list .mo.key{background:var(--accent);color:#fff}
 
-@media (max-width:960px){
+@media screen and (max-width:960px){
   .gantt-row,.gantt-axis{grid-template-columns:96px 1fr;gap:10px}
   .gantt-row .gl .t{font-size:12px}
   .gantt-row .bar span{display:none}

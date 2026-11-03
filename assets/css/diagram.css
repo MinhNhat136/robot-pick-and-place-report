@@ -62,7 +62,7 @@
 .dg-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:22px;font-size:12px;color:var(--muted)}
 .dg-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 
-@media (max-width:960px){
+@media screen and (max-width:960px){
   .dg-head{display:none}
   .dg-lane,.dg-loop-row{grid-template-columns:1fr;gap:18px 0;padding:12px}
   .dg-lane .lane-label{padding-left:10px}
@@ -83,7 +83,7 @@
 .dg-link span{grid-column:var(--col,5);justify-self:center;position:relative;width:2px;background:var(--accent);opacity:.7}
 .dg-link span::after{content:"";position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);border:5px solid transparent;border-top:7px solid var(--accent)}
 .dg-link em{grid-column:var(--lcol,4);align-self:center;justify-self:end;font:600 10px var(--mono);font-style:normal;color:var(--accent-ink);white-space:nowrap}
-@media (max-width:960px){.dg-link{display:none}}
+@media screen and (max-width:960px){.dg-link{display:none}}
 
 /* elbow connector: from the node in column 5 of the lane above to column 4 of the lane below */
 .dg-link.elbow{height:34px}
@@ -141,7 +141,7 @@
 .cs-foot > div{border:1px dashed var(--accent-border);border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.55)}
 .cs-foot .bk{font:600 9.5px var(--mono);letter-spacing:.1em;color:var(--accent-strong)}
 .cs-foot p{margin:4px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-3)}
-@media (max-width:1000px){
+@media screen and (max-width:1000px){
   .cs-flow{grid-template-columns:1fr;row-gap:14px}
   .cs-flow > *{grid-column:1 !important;grid-row:auto !important}
   .cs-loop,.cs-head.mid{display:none}
@@ -196,7 +196,7 @@
 .pp-st em{font-style:normal;font-size:11.5px;line-height:1.2;color:var(--muted);text-align:center;white-space:nowrap}
 .pp-st.done em{color:var(--accent-ink)}
 .pp-st.cur em{color:var(--accent-ink);font-weight:700}
-@media (max-width:700px){.pp-st em{font-size:10px;white-space:normal}.pp-tgk{font-size:8px;letter-spacing:.06em}}
+@media screen and (max-width:700px){.pp-st em{font-size:10px;white-space:normal}.pp-tgk{font-size:8px;letter-spacing:.06em}}
 @media print{.pp-track{display:none}}
 .pp-io + .cmpbars,.cmpbars + .cmpbars,.perf + .ds-lab,.cmpbars + .vstack-wrap{margin-top:14px}
-@media (max-width:1000px){.pp-io{grid-template-columns:1fr}.pp-box.step{border:0;border-top:1px solid var(--accent-border);border-bottom:1px solid var(--accent-border)}.pp-ar{height:0;justify-self:center}.pp-ar::after{transform:rotate(90deg)}}
+@media screen and (max-width:1000px){.pp-io{grid-template-columns:1fr}.pp-box.step{border:0;border-top:1px solid var(--accent-border);border-bottom:1px solid var(--accent-border)}.pp-ar{height:0;justify-self:center}.pp-ar::after{transform:rotate(90deg)}}

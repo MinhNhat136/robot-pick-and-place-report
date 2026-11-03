@@ -38,7 +38,7 @@
       <tbody>
         <tr><td>Table</td><td>Simple table on a grid floor; dome light 700 + sun 600</td></tr>
         <tr><td>Plate</td><td>Kinematic plate, radius 0.115 m; in episode 0 placed at (0.40; 0.08) m</td></tr>
-        <tr><td>Fruit</td><td>4 kinds as simple blocks (apple, pear, orange, grapes = green block); friction 1.5</td></tr>
+        <tr><td>Fruit</td><td>4 kinds as simple blocks (apple, pear, star fruit, grapes = green block); friction 1.5</td></tr>
         <tr><td>Target</td><td>Episode 0: grapes at (0.41; −0.12) m</td></tr>
         <tr><td>Distractors</td><td>2 fruit placed outside the hand's sweep area (episode 0: apple, pear)</td></tr>
         <tr><td>Randomization</td><td>Each episode changes the target fruit, fruit position and orientation, plate position and distractor fruit; separate seed</td></tr>
@@ -127,7 +127,6 @@
         <tr><td>Evaluation scenes</td><td class="num">100</td><td class="num">—</td><td>30 apple, 24 pear, 26 star fruit, 20 grapes</td></tr>
       </tbody>
     </table></div>
-    <p class="todo">[TODO: replay success rate per fruit (episodes kept / real episodes).]</p>
   </div>
 
   <div class="card">
@@ -155,7 +154,6 @@
   <div class="card">
     <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
     <p>Following NVIDIA's official guide (fine-tuning on sim data): GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, camera <code>rs_view</code>, 5 state/action groups (31 dims), horizon 16 steps @ 20 Hz (0.8 s); batch 32 on H100; LLM frozen, vision + projector + diffusion tuned; color jitter (brightness 0.3 · contrast 0.4 · saturation 0.5 · hue 0.08).</p>
-    <p class="todo">[TODO: number of steps, training time, loss curve, open-loop MAE on the test set, checkpoint used for evaluation, ReplayPolicy check result.]</p>
   </div>
 
   <div class="card">
@@ -197,7 +195,7 @@
       <thead><tr><th>Phase (50 episodes)</th><th class="num">Episodes</th><th class="num">Rate</th></tr></thead>
       <tbody>
         <tr><td>Target fruit lifted</td><td class="num">39</td><td class="num">78 %</td></tr>
-        <tr><td>Fruit on the plate (among those lifted)</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr><td>Lifted and fruit placed on the plate</td><td class="num">34</td><td class="num">68 %</td></tr>
         <tr class="hl"><td>Success (distractors not moved)</td><td class="num">33</td><td class="num">66 %</td></tr>
       </tbody>
     </table></div>

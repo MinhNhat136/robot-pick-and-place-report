@@ -117,10 +117,9 @@ details.acc .acc-body p{margin:6px 0}
 .flow .step .sv{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:5px;line-height:1.35}
 .flow .step .sd{font-size:12.5px;color:var(--ink-3);margin-top:4px;line-height:1.45}
 pre.diagram{margin:12px 0;overflow:auto;border:1px solid rgba(34,38,30,.12);background:var(--surface-2);border-radius:12px;padding:16px 18px;font:500 12px/1.6 var(--mono);color:var(--ink-2)}
-/* ---------- customer mode / TODO ---------- */
+/* ---------- TODO note (editing aid; remove before release) ---------- */
 .todo{background:#fff4d6;color:#7a5600;border:1px dashed #e0b84a;border-radius:6px;padding:1px 6px;font-size:.92em}
 div.todo,p.todo{display:block;padding:10px 14px;margin:10px 0}
-body.customer .todo,body.customer .internal{display:none !important}
 .grid > figure.fig{align-self:start}
 
 /* ---------- problem statement: input → model → output strip ---------- */
@@ -149,17 +148,17 @@ body.customer .todo,body.customer .internal{display:none !important}
 .task dt{font:600 9.5px var(--mono);letter-spacing:.08em;color:var(--faint);padding-top:3px;white-space:nowrap}
 .task dd{margin:0;color:var(--ink-3)}
 
-@media (max-width:960px){
+@media screen and (max-width:960px){
   .io{grid-template-columns:1fr}
   .io-arrow{transform:rotate(90deg);height:20px}
   .tasks{grid-template-columns:1fr}
 }
 .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
-@media (max-width:1200px){.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:960px){.grid.four{grid-template-columns:1fr}}
+@media screen and (max-width:1200px){.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media screen and (max-width:960px){.grid.four{grid-template-columns:1fr}}
 .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid.pair{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (max-width:960px){.grid.three,.grid.pair{grid-template-columns:1fr}}
+@media screen and (max-width:960px){.grid.three,.grid.pair{grid-template-columns:1fr}}
 /* flow that stays on one row on wide screens (no orphan step) */
 @media (min-width:1201px){.flow.one-row{flex-wrap:nowrap}.flow.one-row .step{flex:1 1 0;min-width:0}}
 
@@ -216,7 +215,7 @@ body.customer .todo,body.customer .internal{display:none !important}
 .io-grp ol{list-style:none;margin:7px 0 0;padding:0;display:flex;flex-direction:column;gap:3px}
 .io-grp li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);background:#fff;border-radius:6px;padding:3px 6px}
 .io-grp li em{font:700 10px var(--mono);font-style:normal;color:var(--accent-strong);min-width:16px;text-align:right}
-@media (max-width:1100px){.io-grid,.io-out{grid-template-columns:1fr}.io-grps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media screen and (max-width:1100px){.io-grid,.io-out{grid-template-columns:1fr}.io-grps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .io-body{margin-top:4px}
 .bd-j{cursor:pointer}
@@ -231,7 +230,7 @@ body.customer .todo,body.customer .internal{display:none !important}
 .io-robot{margin:0;border:1px solid rgba(34,38,30,.12);border-radius:14px;overflow:hidden;background:#fff}
 .io-robot svg{display:block;width:100%;aspect-ratio:1/1;height:auto;background:oklch(0.985 0.006 var(--h))}
 .io-robot figcaption{padding:9px 12px;font-size:12px;line-height:1.45;color:var(--muted)}
-@media (max-width:900px){.io-sumrow{grid-template-columns:1fr}}
+@media screen and (max-width:900px){.io-sumrow{grid-template-columns:1fr}}
 
 .io-chunkviz{margin:14px 0}
 .io-chunkviz svg{display:block;width:100%;height:auto}
@@ -250,4 +249,4 @@ body.customer .todo,body.customer .internal{display:none !important}
 .pd-flow b{display:block;margin-top:4px;font-size:13.5px;color:var(--ink)}
 .pd-flow small{display:block;margin-top:3px;font-size:12px;line-height:1.4;color:var(--muted)}
 .pd-flow::after{content:none}
-@media (max-width:900px){.pd-flow{grid-template-columns:1fr 1fr}.pd-flow > div:nth-child(2)::after{display:none}}
+@media screen and (max-width:900px){.pd-flow{grid-template-columns:1fr 1fr}.pd-flow > div:nth-child(2)::after{display:none}}

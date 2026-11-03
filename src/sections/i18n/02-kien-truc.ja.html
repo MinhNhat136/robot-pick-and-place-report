@@ -28,7 +28,7 @@
     <div class="card-head"><span class="num">2</span><h3>ソフトウェア &amp; バージョン</h3></div>
     <p>各列は 1 台のマシンのソフトウェア層で、基盤（下）からプロジェクトのアプリケーション（上、強調表示）の順に並べています。</p>
     <div class="stacks">
-      <div class="stack "><div class="stack-h"><b>ワークステーション</b><span>シミュレーション</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>オペレーティングシステム</small></div><em>LTS</em></li><li class="base"><div><b>NVIDIA ドライバー + CUDA</b><small>Isaac Sim 6.1 はドライバー ≥ 595 が必要</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12、ローカルにインストール</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Isaac Sim 6.0 の公式な組み合わせ</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Docker 29 で実行、ハンマータスク用の専用ブランチ</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>g1gr00t クライアント + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">その他：notebook とテスト用に Jupyter、pytest、pandas、matplotlib。</p></div>
+      <div class="stack "><div class="stack-h"><b>ワークステーション</b><span>シミュレーション</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>オペレーティングシステム</small></div><em>LTS</em></li><li class="base"><div><b>NVIDIA ドライバー + CUDA</b><small>Isaac Sim 6.0 にはバージョン 580 で十分、Isaac Sim 6.1 では ≥ 595 が必要になる予定</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12、ローカルにインストール</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Isaac Sim 6.0 の公式な組み合わせ</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Docker 29 で実行、ハンマータスク用の専用ブランチ</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>g1gr00t クライアント + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">その他：notebook とテスト用に Jupyter、pytest、pandas、matplotlib。</p></div>
       <div class="stack "><div class="stack-h"><b>GPU サーバー</b><span>モデル</span></div><ol><li class="base"><div><b>Linux + NVIDIA ドライバー</b><small></small></div><em>575.57</em></li><li class=""><div><b>Isaac-GR00T</b><small>uv による Python 環境、Arena で検証済みの commit に固定</small></div><em>4b1dca9</em></li><li class=""><div><b>Cosmos-Reason2-2B</b><small>視覚–言語バックボーン、Hugging Face から取得</small></div><em>2B</em></li><li class="sw-app"><div><b>GR00T N1.7-3B + checkpoint</b><small>ZeroMQ policy server、checkpoint は 1 つあたり 12.6 GB</small></div><em>3B</em></li></ol><p class="stack-note">Hugging Face 上で NVIDIA のモデルライセンスへの同意が必要です。</p></div>
       <div class="stack plan"><div class="stack-h"><b>実機ロボット</b><span>次フェーズ</span></div><ol><li class="base"><div><b>ロボット搭載コンピューター</b><small>またはロボットの近くに置くコンピューター</small></div></li><li class=""><div><b>Unitree SDK2</b><small>unitree_sdk2py パッケージ、設定に記載済み</small></div><em>—</em></li><li class="sw-app"><div><b>g1gr00t クライアント</b><small>そのまま再利用し、実機用バックエンドのみ追加</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">本フェーズでは未実装です。</p></div>
     </div>
@@ -41,15 +41,15 @@
       <div><small>制御周波数</small><b>50<i>Hz</i></b><span>物理 200 Hz、1 tick あたり 4 ステップ · real2sim 20 Hz</span></div>
       <div><small>モデル呼び出し 1 回あたり</small><b>40<i>ステップ</i></b><span>= 0.8 s の動作 · real2sim は 16 ステップ、うち 8 ステップを実行</span></div>
       <div><small>サーバー上の推論</small><b>~100<i>ms</i></b><span>H100 上でモデルが 40 ステップのシーケンスを計算</span></div>
-      <div><small>モデルの遅延</small><b>~1.3<i>s</i></b><span>評価時の平均、SSH tunnel 経由で H100 へ</span></div>
+      <div><small>モデルの遅延</small><b>~1.2<i>s</i></b><span>評価時の 1 回あたりの中央値、SSH tunnel 経由で H100 へ</span></div>
     </div>
     <div class="cmpbars">
       <div class="cmpbars-h"><b>時間予算：動作時間とモデル遅延の比較</b><span>秒 · 目盛 0–4 s</span></div>
       <div class="cb ref"><span class="l">1 つの動作シーケンス（ロボットが実行できる動作の長さ）</span><span class="t"><i class="" style="width:20%"></i></span><span class="v">0.8 s</span></div>
       <div class="cb"><span class="l">サーバー上の推論時間</span><span class="t"><i class="" style="width:2.5%"></i></span><span class="v">~0.1 s</span></div>
-      <div class="cb"><span class="l">評価時の平均遅延</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1.3–1.6 s</span></div>
+      <div class="cb"><span class="l">評価時の遅延（中央値）</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1.2–1.5 s</span></div>
       <div class="cb"><span class="l">初回呼び出し（ウォームアップ）</span><span class="t"><i class="range" style="width:85%"></i></span><span class="v">1.7–3.4 s</span></div>
-      <div class="cb"><span class="l">ロボット 4 台が同時に呼び出し</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">3.5–3.9 s</span></div>
+      <div class="cb"><span class="l">ロボット 4 台が同時に呼び出し</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">~3.6 s · p95 4.2 s</span></div>
       <p class="cb-note">モデルの応答は、ロボットが 1 つのシーケンスを実行し終える時間より<b>遅い</b>状態です。シミュレーションでは応答を待つ間シミュレーションが停止するため問題ありませんが、実機では次の呼び出しを先行して行い、GPU をロボットの近くに置かない限り、シーケンスの合間でロボットが止まってしまいます。モデル自体の計算は ~100 ms のみで、残りの遅延の大部分は SSH tunnel 経由の通信とデータのシリアライズにあります。</p>
     </div>
   </div>
@@ -96,7 +96,7 @@
     <div class="card-head"><span class="num">6</span><h3>性能分析</h3></div>
     <p>上の 3 つのカードを合わせて読み、各工程で時間とリソースが実際にどこで消費されているか、それが次フェーズにとって何を意味するかを整理します。</p>
     <div class="grid three">
-      <div class="sub"><div class="sl">推論</div><div class="st">ボトルネックはモデルではなく通信</div><p>モデルの計算は ~100 ms のみですが、1 回の呼び出しには ~1.3 s かかり、1 つの動作シーケンス（0.8 s）より長くなります。差の大部分は SSH tunnel とデータのシリアライズにあります。ロボット 4 台が同時に呼び出すと、サーバーが順番に処理するため遅延は 3.5–3.9 s に増えます。</p></div>
+      <div class="sub"><div class="sl">推論</div><div class="st">ボトルネックはモデルではなく通信</div><p>モデルの計算は ~100 ms のみですが、1 回の呼び出しには ~1.05–1.3 s かかり、1 つの動作シーケンス（0.8 s）より長くなります。差の大部分は SSH tunnel とデータのシリアライズにあります。ロボット 4 台が同時に呼び出すと、サーバーが順番に処理するため遅延は ~3.6 s（p95 4.2 s）に増えます。</p></div>
       <div class="sub"><div class="sl">データ収集</div><div class="st">ボトルネックはヘッドセットへの映像</div><p>レンダリングと CloudXR の待機が各ループの 42 % を占め、物理シミュレーション（11 %）の約 4 倍です。記録中は RAM が ~15 MB/s で増えるため、長いセッションを続けて記録するのではなく、デモごとに定期的に保存する必要があります。</p></div>
       <div class="sub"><div class="sl">学習</div><div class="st">共用でなければ H100 1 枚で十分</div><p>ファインチューニング 10,000 ステップは 61 分で、GPU メモリは ≈ 53 GB と H100 1 枚に収まります。GPU が他のジョブに占有されると、速度は約 8 倍遅くなります（2.9 s/ステップ 対 0.36 s/ステップ）。</p></div>
     </div>

@@ -19,13 +19,6 @@
           "file": "02-kien-truc.html",
           "label_en": "Infrastructure & performance",
           "label_ja": "インフラと性能"
-        },
-        {
-          "id": "ban-giao",
-          "label": "Sản phẩm đầu ra",
-          "file": "03-ban-giao.html",
-          "label_en": "Deliverables",
-          "label_ja": "成果物"
         }
       ],
       "kicker_en": "PART I",
@@ -107,8 +100,15 @@
     {
       "hue": "blue",
       "kicker": "PHẦN IV",
-      "title": "Kiểm chứng kết quả",
+      "title": "Bàn giao & kiểm chứng",
       "items": [
+        {
+          "id": "ban-giao",
+          "label": "Sản phẩm đầu ra",
+          "file": "03-ban-giao.html",
+          "label_en": "Deliverables",
+          "label_ja": "成果物"
+        },
         {
           "id": "kc-moi-truong",
           "label": "Cài đặt môi trường",
@@ -132,9 +132,9 @@
         }
       ],
       "kicker_en": "PART IV",
-      "title_en": "Result verification",
+      "title_en": "Delivery & verification",
       "kicker_ja": "第 IV 部",
-      "title_ja": "結果の検証"
+      "title_ja": "成果物と検証"
     },
     {
       "hue": "blue",

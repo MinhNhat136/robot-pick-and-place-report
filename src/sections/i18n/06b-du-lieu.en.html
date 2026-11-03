@@ -2,7 +2,7 @@
   <div class="hero">
     <span class="pill">SECTION II.04 · DATA RESEARCH</span>
     <h2>Few real demos, plenty of training data<span class="dot">.</span></h2>
-    <p class="lead">Fine-tuning GR00T needs a few hundred demos per task, but teleop demos are expensive and the model is highly sensitive to visuals. This section explains the three techniques the project uses to get more data without more teleop: <b>domain randomization</b>, <b>real2sim</b> and <b>demo generation</b>. Each technique has an interactive illustration showing how it works.</p>
+    <p class="lead">Fine-tuning GR00T needs a few hundred demos per task, but teleop demos are expensive and the model is highly sensitive to visuals. This section explains three techniques for getting more data without more teleop (the project has applied the latter two; the first is still only a proposal): <b>domain randomization</b>, <b>real2sim</b> and <b>demo generation</b>. Each technique has an interactive illustration showing how it works.</p>
     <div class="meta">
       <div><span class="ml">TECHNIQUES</span><span class="mv">Domain randomization · real2sim · demo generation</span></div>
       <div><span class="ml">APPLIED TO</span><span class="mv">Apple &amp; Plate · Multi Fruit · Hammer &amp; Bin</span></div>
@@ -18,7 +18,7 @@
       <div class="cb ref"><span class="l">Original Arena environment (same as during data recording)</span><span class="t"><i style="width:92%"></i></span><span class="v">92 %</span></div>
       <div class="cb"><span class="l">Rebuilt Galileo scene (different lighting, rendering)</span><span class="t"><i class="soft" style="width:56%"></i></span><span class="v">56 %</span></div>
       <div class="cb"><span class="l">Self-built scene (completely different)</span><span class="t"><i class="soft" style="width:0%"></i></span><span class="v">0 %</span></div>
-      <p class="cb-note">Same checkpoint, same instruction, same pipeline. The model saw only one scene during training, so it latched onto that image instead of the apple. Domain randomization (card 2) is the remedy.</p>
+      <p class="cb-note">Same checkpoint, same instruction; the 92 % figure was measured with the NVIDIA client, the other two with the project's pipeline. The model saw only one scene during training, so it latched onto that image instead of the apple. Domain randomization (card 2) is the remedy.</p>
     </div>
   </div>
 

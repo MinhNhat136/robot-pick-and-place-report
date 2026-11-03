@@ -2,7 +2,7 @@
   <div class="hero">
     <span class="pill">II.04 節 · データ研究</span>
     <h2>少ない実デモから、多くの学習データを<span class="dot">。</span></h2>
-    <p class="lead">GR00T のファインチューニングにはタスクごとに数百件のデモが必要ですが、テレオペデモはコストが高く、モデルは画像の変化に非常に敏感です。本節では、テレオペを増やさずにデータを増やすために本プロジェクトが用いる 3 つの手法、<b>domain randomization</b>、<b>real2sim</b>、<b>デモ追加生成</b>を説明します。各手法には動作を確認できるインタラクティブな図解があります。</p>
+    <p class="lead">GR00T のファインチューニングにはタスクごとに数百件のデモが必要ですが、テレオペデモはコストが高く、モデルは画像の変化に非常に敏感です。本節では、テレオペを増やさずにデータを増やすための 3 つの手法、<b>domain randomization</b>、<b>real2sim</b>、<b>デモ追加生成</b>を説明します（本プロジェクトでは後の 2 つを適用済みで、最初の手法はまだ提案段階です）。各手法には動作を確認できるインタラクティブな図解があります。</p>
     <div class="meta">
       <div><span class="ml">手法</span><span class="mv">Domain randomization · real2sim · デモ追加生成</span></div>
       <div><span class="ml">適用先</span><span class="mv">Apple &amp; Plate · Multi Fruit · Hammer &amp; Bin</span></div>
@@ -18,7 +18,7 @@
       <div class="cb ref"><span class="l">元の Arena 環境（データ記録時と同じ）</span><span class="t"><i style="width:92%"></i></span><span class="v">92 %</span></div>
       <div class="cb"><span class="l">再構築した Galileo シーン（照明・レンダリングが異なる）</span><span class="t"><i class="soft" style="width:56%"></i></span><span class="v">56 %</span></div>
       <div class="cb"><span class="l">独自構築のシーン（まったく異なる）</span><span class="t"><i class="soft" style="width:0%"></i></span><span class="v">0 %</span></div>
-      <p class="cb-note">チェックポイント、指示文、パイプラインはすべて同じです。モデルは学習時に 1 つのシーンしか見ていないため、リンゴではなくその画像に結びついてしまいます。対処法は domain randomization（カード 2）です。</p>
+      <p class="cb-note">チェックポイントと指示文は同じです。92 % は NVIDIA クライアントで、残りの 2 つは本プロジェクトのパイプラインで測定しました。モデルは学習時に 1 つのシーンしか見ていないため、リンゴではなくその画像に結びついてしまいます。対処法は domain randomization（カード 2）です。</p>
     </div>
   </div>
 

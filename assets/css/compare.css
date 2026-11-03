@@ -80,7 +80,7 @@ table.cmp{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;f
 .case-tabs button[aria-selected="true"] .ct-spark i{background:var(--accent)}
 .case-tabs + .tab-panel,.case-tabs ~ .tab-panel{padding-top:18px}
 
-@media (max-width:960px){
+@media screen and (max-width:960px){
   .tab-list.case-tabs{grid-template-columns:1fr;gap:8px}
   .case-tabs button{padding:10px 12px}
   .cmp th.rl,.cmp td.rl{width:118px;min-width:118px;font-size:12px;padding:9px 10px}
@@ -113,5 +113,5 @@ table.cmp{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;f
 .res-take{margin:0;font-size:13px;line-height:1.55;color:var(--ink-2);flex:1}
 .res-more{align-self:flex-start;font:600 11px var(--mono);color:var(--accent-ink);background:#fff;border:1px solid var(--accent-border);border-radius:9px;padding:7px 11px;cursor:pointer;text-decoration:none}
 .res-more:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-@media (max-width:1200px){.res-tiles{grid-template-columns:1fr}}
+@media screen and (max-width:1200px){.res-tiles{grid-template-columns:1fr}}
 @media print{.res-more{display:none}}

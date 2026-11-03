@@ -103,7 +103,7 @@
     <div class="card-head"><span class="num">5</span><h3>観測の送信</h3></div>
     <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st cur" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
     <div class="pp-io">
-      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>画像 480×640</li><li>上半身の関節角 31</li><li>指示文</li></ul></div>
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>画像 640×480</li><li>上半身の関節角 31</li><li>指示文</li></ul></div>
       <span class="pp-ar"></span>
       <div class="pp-box step"><span class="pp-k">処理<em>nb02</em><em>nb01</em></span><ul><li>契約に従ってパッケージ化し、次元数をチェック</li><li>ZeroMQ（msgpack）で get_action を送信</li><li>サーバーが GR00T N1.7 を実行</li></ul></div>
       <span class="pp-ar"></span>
@@ -193,7 +193,7 @@
       <div class="cmpbars-h"><b>成功率：同じモデルでシーンのみ変更</b><span>50 エピソード</span></div>
       <div class="cb"><span class="l">独自構築のシーン</span><span class="t"><i class="soft" style="width:1%"></i></span><span class="v">0 / 50</span></div>
       <div class="cb"><span class="l">Galileo シーン（データ収録時と同じ）</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
-      <p class="cb-note">120 tick でサーバー呼び出しはちょうど 3 回です。独自構築のシーンでもロボットは 50 回中 11 回リンゴを持ち上げましたが、皿の上には置けませんでした。Galileo シーンを再構築すると、リンゴと皿の最小距離（中央値）は 20.6 cm から 3.8 cm に縮小しました。</p>
+      <p class="cb-note">成功したエピソードは約 120 tick で、サーバー呼び出しちょうど 3 回に相当します。独自構築のシーンでもロボットは 50 回中 11 回リンゴを持ち上げましたが、皿の上には置けませんでした。Galileo シーンを再構築すると、リンゴと皿の最小距離（中央値）は 20.6 cm から 3.8 cm に縮小しました。</p>
     </div>
   </div>
 

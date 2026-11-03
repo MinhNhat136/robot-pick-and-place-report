@@ -46,7 +46,7 @@
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Robot, camera &amp; điều khiển</th><th>Chi tiết</th></tr></thead>
         <tbody>
-          <tr><td>Robot</td><td>Unitree G1 + bàn tay Dex3, đứng tại (0,25; 0,08) m, quay mặt theo trục +x; chân giữ thăng bằng bằng bộ điều khiển AGILE, hông cao ~0,73–0,75 m</td></tr>
+          <tr><td>Robot</td><td>Unitree G1 + bàn tay Dex3, đứng tại (0,25; 0,08) m, quay mặt theo trục +x; chân giữ thăng bằng bằng bộ điều khiển AGILE, hông cao ~0,73–0,75 m (lệnh 0,72 m)</td></tr>
           <tr><td>Camera</td><td>Gắn trên <code>head_link</code>, 640×480, tiêu cự 15 mm, chúc xuống ~35°</td></tr>
           <tr><td>Tần số</td><td>Vật lý 200 Hz, điều khiển 50 Hz (4 bước vật lý / lệnh)</td></tr>
           <tr><td>Episode</td><td>Tối đa 300 bước = 6 s; mỗi lần gọi model trả về chuỗi 40 bước</td></tr>
@@ -84,7 +84,7 @@
   <div class="card">
     <div class="card-head"><span class="num">5</span><h3>Vấn đề gặp phải</h3></div>
     <p>Khi tạo lại pipeline của Arena bằng package tự viết, mọi khâu điều khiển đều chạy đúng, nhưng tỉ lệ thành công phụ thuộc mạnh vào <b>hình ảnh camera</b> mà model nhận được.</p>
-    <div class="callout warn"><b>Visual gap:</b> cùng checkpoint, cùng câu lệnh, cùng pipeline, chỉ đổi khung cảnh mô phỏng mà tỉ lệ thành công đi từ <b>92 %</b> xuống <b>56 %</b> rồi <b>0 %</b>.</div>
+    <div class="callout warn"><b>Visual gap:</b> cùng checkpoint, cùng câu lệnh, chỉ đổi khung cảnh mô phỏng mà tỉ lệ thành công đi từ <b>92 %</b> (client NVIDIA, Arena gốc) xuống <b>56 %</b> rồi <b>0 %</b> (pipeline của dự án).</div>
     <div class="grid two">
       <div class="sub"><div class="sl">VẤN ĐỀ 1</div><div class="st">Khung cảnh khác dataset thì model không làm được</div><p>Khung cảnh tự dựng (bàn hộp, sàn lưới, đèn dome) cho <b>0/50</b> thành công, chỉ 11/50 nhấc được táo. Model vươn tay giống demo nhưng không bao giờ ra lệnh nắm.</p></div>
       <div class="sub"><div class="sl">VẤN ĐỀ 2</div><div class="st">Dựng lại đúng khung cảnh vẫn chưa đủ</div><p>Khung cảnh Galileo dựng lại khớp bố trí và góc camera với dataset nhưng chỉ đạt <b>56 %</b>, so với 92 % trong Arena gốc. Khác biệt còn lại chủ yếu ở ánh sáng và cách render.</p></div>
@@ -160,7 +160,7 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>Bước</th><th>Số liệu đo được</th></tr></thead>
       <tbody>
-        <tr><td>Giao tiếp model</td><td>Chuỗi 40 bước mỗi lần gọi; độ trễ trung bình ~1,1 s/lần (mô phỏng chờ model nên không ảnh hưởng kết quả)</td></tr>
+        <tr><td>Giao tiếp model</td><td>Chuỗi 40 bước mỗi lần gọi; độ trễ ~1,2 s/lần (trung vị 50 episode; mô phỏng chờ model nên không ảnh hưởng kết quả)</td></tr>
         <tr><td>Open-loop với dataset</td><td>MAE tay trái 0,032 · tay phải 0,019 · bàn tay trái 0,008 rad (3 episode, 11 chunk)</td></tr>
         <tr><td>Câu lệnh</td><td>Câu trong dataset 0,025 rad; câu mặc định Arena 0,047 rad; câu vô nghĩa 0,039 rad</td></tr>
         <tr><td>Chân AGILE</td><td>Trùng từng bit với bản tham chiếu; đứng vững 500 tick, thân 0,73–0,75 m, nghiêng tối đa ~10°</td></tr>
@@ -184,7 +184,7 @@
       </tbody>
     </table></div>
     <div class="grid two">
-      <div class="sub"><div class="sl">NHẬN ĐỊNH 1</div><div class="st">Thị giác quyết định kết quả</div><p>Cùng checkpoint, câu lệnh, pipeline: 92 % → 56 % → 0 % chỉ do đổi khung cảnh. Hai khoảng tin cậy 0–7 % và 42–69 % không chồng nhau.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 1</div><div class="st">Thị giác quyết định kết quả</div><p>Cùng checkpoint, câu lệnh: 92 % (client NVIDIA, Arena gốc) → 56 % → 0 % (pipeline của dự án) chỉ do đổi khung cảnh. Hai khoảng tin cậy 0–7 % và 42–69 % không chồng nhau.</p></div>
       <div class="sub"><div class="sl">NHẬN ĐỊNH 2</div><div class="st">Thất bại nằm ở pha nhìn và tiếp cận</div><p>Ở khung cảnh tự dựng model hầu như không nhấc được táo (22 %). Ở Galileo, khi đã nhấc thì 78 % đặt trúng đĩa — kỹ năng thao tác vẫn còn.</p></div>
       <div class="sub"><div class="sl">NHẬN ĐỊNH 3</div><div class="st">Pipeline tự viết hoạt động đúng</div><p>28 lần thành công với khoảng cách cuối 1–6 cm, cùng các kiểm chứng open-loop và phát lại, loại trừ lỗi dịch dữ liệu.</p></div>
       <div class="sub"><div class="sl">NHẬN ĐỊNH 4</div><div class="st">Hệ quả cho triển khai</div><p>Model fine-tune trên một khung cảnh không tổng quát hoá; cần thu dữ liệu trong môi trường làm việc hoặc tăng đa dạng hình ảnh khi huấn luyện.</p></div>
@@ -203,11 +203,11 @@
 
   <div class="card">
     <div class="card-head"><span class="num">10</span><h3>Kết luận kịch bản</h3></div>
-    <div class="panel"><div class="pl">KẾT LUẬN</div><p>Model fine-tune trên một khung cảnh <b>rất nhạy với hình ảnh</b>: 56 % khi giống lúc ghi dữ liệu, 0 % khi khác. Triển khai thực tế phải thu dữ liệu ngay trong môi trường làm việc hoặc tăng đa dạng hình ảnh khi huấn luyện.</p></div>
+    <div class="panel"><div class="pl">KẾT LUẬN</div><p>Model fine-tune trên một khung cảnh <b>rất nhạy với hình ảnh</b>: 92 % ở môi trường gốc lúc ghi dữ liệu, 56 % khi chỉ lệch ánh sáng, 0 % khi khác hẳn. Triển khai thực tế phải thu dữ liệu ngay trong môi trường làm việc hoặc tăng đa dạng hình ảnh khi huấn luyện.</p></div>
     <ul>
       <li>Đã <b>làm chủ và tái hiện độc lập</b> pipeline; mã nguồn sẵn sàng thay backend robot thật.</li>
       <li>Phải dùng đúng câu lệnh lúc ghi dữ liệu; mỗi cấu hình cần ≥ 50 episode để kết luận.</li>
-      <li>Chưa thực hiện: đối chứng trong Docker Arena gốc; khung cảnh Galileo với xáo ±2 cm; giai đoạn khởi động sau reset.</li>
+      <li>Chưa thực hiện: chạy pipeline của dự án bên trong Docker Arena gốc để đối chứng trực tiếp với mốc 92 %; khung cảnh Galileo với xáo ±2 cm; giai đoạn khởi động sau reset.</li>
     </ul>
   </div>
 </section>

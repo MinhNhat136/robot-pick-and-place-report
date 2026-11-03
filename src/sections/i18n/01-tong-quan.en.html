@@ -82,7 +82,7 @@
       <div class="sub goal"><div class="goal-h"><span class="goal-n">3</span><span class="sl">SCENARIO 2</span></div><div class="st">Leverage real-robot data</div><p>Convert real G1 teleop data (joint angles and video only) into a simulation dataset via real2sim; fine-tune the model to pick the right fruit per the command.</p><div class="goal-tags"><span>III.02</span><span>Question 4</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">4</span><span class="sl">SCENARIO 3</span></div><div class="st">Teach a completely new task</div><p>The full "hammer → bin" cycle: build the environment, teleop with a VR headset, generate additional data, fine-tune, evaluate; record the number of demos and time required.</p><div class="goal-tags"><span>III.03</span><span>Question 2</span></div></div>
       <div class="sub goal"><div class="goal-h"><span class="goal-n">5</span><span class="sl">VISUAL GAP</span></div><div class="st">Test and analyze visual differences</div><p>Measure how the success rate changes when the images the model receives differ from those at data recording: between simulation scenes and between real and rendered images; identify the factors causing the drop and propose ways to narrow it, such as domain randomization.</p><div class="goal-tags"><span>Scenarios 1, 2</span><span>Questions 3, 4</span></div></div>
-      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">CROSS-CUTTING</span></div><div class="st">Quantitative, reproducible evaluation</div><p>Closed-loop scoring with clear success conditions, ≥ 50 episodes per configuration, Wilson 95 % confidence intervals, failure analysis by phase; each run changes only one factor.</p><div class="goal-tags"><span>V.01</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">CROSS-CUTTING</span></div><div class="st">Quantitative, reproducible evaluation</div><p>Closed-loop scoring with clear success conditions, ≥ 50 episodes per configuration, Wilson 95 % confidence intervals, failure analysis by phase; each run changes only one factor.</p><div class="goal-tags"><span>III.01–III.03</span></div></div>
     </div>
   </div>
 
@@ -117,7 +117,7 @@
         <div class="res-top"><div><div class="res-k">SCENARIO 3</div><div class="res-t">Hammer → bin</div></div>
           <div class="res-best"><span>73<small>%</small></span><em>73/100 · 95 %: 64–81 %</em></div></div>
         <ul class="res-steps"><li><span class="rl">Not fine-tuned</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li><span class="rl">Fine-tune 200 episodes</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li><li><span class="rl">Fine-tune 400 episodes</span><span class="rb"><i style="width:63%"></i></span><span class="rv">63<small>%</small></span></li><li class="top"><span class="rl">Relaxed at-rest threshold</span><span class="rb"><i style="width:73%"></i></span><span class="rv">73<small>%</small></span></li></ul>
-        <p class="res-take">A new task from 0 % to 73 % with only self-collected data and ~1 hour of training per run.</p>
+        <p class="res-take">A new task from 0 % to 73 % with only self-collected data and 1–2 hours of training per run (61 min with mix200, 2 h 15 min with mix400).</p>
         <a class="res-more" href="#hm3">See scenario details →</a>
       </div>
     </div>

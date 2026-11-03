@@ -1,16 +1,15 @@
-<section class="section" id="ban-giao" data-hue="blue" data-kicker="I.03 · SẢN PHẨM ĐẦU RA" data-title="Sản phẩm đầu ra của dự án">
+<section class="section" id="ban-giao" data-hue="blue" data-kicker="IV.01 · SẢN PHẨM ĐẦU RA" data-title="Sản phẩm đầu ra của dự án">
   <div class="hero">
-    <span class="pill">MỤC I.03 · SẢN PHẨM ĐẦU RA</span>
+    <span class="pill">MỤC IV.01 · SẢN PHẨM ĐẦU RA</span>
     <h2>Khách hàng nhận được gì, nằm ở đâu, dùng thế nào<span class="dot">.</span></h2>
     <p class="lead">Toàn bộ sản phẩm của giai đoạn này nằm trong <b>một thư mục gồm 6 phần</b>, đánh số theo thứ tự nên đọc: báo cáo → mã nguồn → dữ liệu → model → kết quả → tài liệu. Dữ liệu gốc và checkpoint có dung lượng lớn được <b>cung cấp riêng</b>.</p>
     <div class="meta">
       <div><span class="ml">THƯ MỤC</span><span class="mv">G1_GR00T_san_pham/</span></div>
       <div><span class="ml">GÓI CHÍNH</span><span class="mv">6 phần · ≈ 1,9 GB</span></div>
-      <div><span class="ml">CUNG CẤP RIÊNG</span><span class="mv">≈ 85 GB dữ liệu gốc + checkpoint</span></div>
+      <div><span class="ml">CUNG CẤP RIÊNG</span><span class="mv">≈ 96 GB dữ liệu gốc + checkpoint</span></div>
     </div>
   </div>
 
-  <p class="todo">[TODO: thư mục sản phẩm chưa được tạo. Cấu trúc dưới đây là đề xuất, dựng từ vị trí và dung lượng thực của các thành phần trong máy dự án. Xác nhận tên thư mục, hình thức chuyển giao (ổ cứng / cloud) và chốt danh sách trước khi phát hành.]</p>
 
   <!-- ================= 1 · overview tiles ================= -->
   <div class="card">
@@ -61,7 +60,6 @@
         <li><code>src/</code>, <code>build.py</code>, <code>README.md</code> — nội dung từng mục và cách chỉnh sửa báo cáo</li>
         <li><code>markdown/</code> — bản báo cáo dạng văn bản (10 file) để trích dẫn, chỉnh sửa</li>
       </ul>
-      <p class="internal"><b>Nguồn:</b> <code>report/</code>, <code>bao_cao_khach_hang/</code></p>
     </div></details>
 
     <details class="acc" id="f-ma-nguon"><summary><span class="n">02</span>02_ma_nguon/ — Mã nguồn<span class="sz">13 MB</span></summary><div class="acc-body">
@@ -76,7 +74,7 @@
             <li><code>tests/</code> — unit test và test trong mô phỏng</li>
             <li><code>README.md</code>, <code>Makefile</code> — cài đặt và các lệnh chạy</li>
           </ul></li>
-        <li><b><code>g1_real2sim/</code></b> — tái tạo khung cảnh từ dữ liệu G1 thật: FK từ URDF, vật nhiễu, khung cảnh Isaac Lab, đọc/ghi LeRobot, cấu hình GR00T <span class="todo">[script sinh dataset nằm trên máy Windows]</span></li>
+        <li><b><code>g1_real2sim/</code></b> — tái tạo khung cảnh từ dữ liệu G1 thật: FK từ URDF, vật nhiễu, khung cảnh Isaac Lab, đọc/ghi LeRobot, cấu hình GR00T</li>
         <li><b><code>arena_bua_thung/</code></b> — mở rộng Isaac Lab Arena cho kịch bản búa
           <ul class="ftree">
             <li><code>patches/</code> — 4 bản vá môi trường: bố trí búa–thùng, khối kê, điều kiện thành công chặt</li>
@@ -84,7 +82,6 @@
             <li><code>scripts/</code> — sinh demo tăng cường, kiểm tra dataset, kiểm chứng khung cảnh</li>
           </ul></li>
       </ul>
-      <p class="internal"><b>Nguồn:</b> <code>codes/standalone_g1_gr00t/</code> (bỏ <code>.venv</code>, <code>data/</code>), <code>codes/g1_real2sim/</code> (bỏ <code>output/</code>, <code>.venv</code>), <code>hammer_to_bin/{patches,teleop_kit/current,scripts}</code></p>
     </div></details>
 
     <details class="acc" id="f-du-lieu"><summary><span class="n">03</span>03_du_lieu/ — Dữ liệu huấn luyện<span class="sz">≈ 1 GB</span></summary><div class="acc-body">
@@ -94,11 +91,10 @@
         <tbody>
           <tr><td><code>bua_thung_mix200/</code></td><td>200 episode (100 teleop thật + 100 sinh thêm), 28.022 frame @ 50 Hz</td><td class="num">131 MB</td></tr>
           <tr><td><code>bua_thung_mix400/</code></td><td>400 episode</td><td class="num">261 MB</td></tr>
-          <tr><td><code>real2sim_4_loai_qua/</code></td><td>Dataset mô phỏng từ dữ liệu G1 thật: táo, nho, lê <span class="todo">[khế: chưa có bản local]</span></td><td class="num">≈ 584 MB</td></tr>
+          <tr><td><code>real2sim_4_loai_qua/</code></td><td>Dataset mô phỏng từ dữ liệu G1 thật: táo, nho, lê (bản này chưa có khế)</td><td class="num">≈ 584 MB</td></tr>
         </tbody>
       </table></div>
       <p>Mỗi dataset gồm <code>meta/</code> (mô tả, câu lệnh, thống kê), <code>data/</code> (góc khớp, action theo từng episode) và <code>videos/</code> (camera đầu robot).</p>
-      <p class="internal"><b>Nguồn:</b> <code>~/IsaacLab-Arena/teleop_data/static_hammer_train/*/lerobot</code>, <code>codes/g1_real2sim/output/</code></p>
     </div></details>
 
     <details class="acc" id="f-mo-hinh"><summary><span class="n">04</span>04_mo_hinh/ — Thông tin model<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
@@ -108,7 +104,7 @@
         <tbody>
           <tr><td>Búa → thùng, 200 episode</td><td>mix200 · 10.000 bước · 1× H100 · 61 phút</td><td>66 %</td></tr>
           <tr><td>Búa → thùng, 400 episode</td><td>mix400 · 10.000 bước</td><td>63 % (73 % khi nới ngưỡng đứng yên)</td></tr>
-          <tr><td>Real2sim 4 loại quả</td><td>790 episode mô phỏng <span class="todo">[số bước, vị trí]</span></td><td>66 %</td></tr>
+          <tr><td>Real2sim 4 loại quả</td><td>790 episode mô phỏng</td><td>66 %</td></tr>
           <tr><td>Táo → đĩa (của NVIDIA)</td><td>Không huấn luyện lại — tải từ Hugging Face</td><td>92 % trong Arena</td></tr>
         </tbody>
       </table></div>
@@ -118,10 +114,9 @@
       <ul class="ftree">
         <li><b><code>tao_dia/</code></b> — 50 episode khung cảnh tự dựng, 50 episode khung cảnh Galileo: log từng episode, video camera đầu</li>
         <li><b><code>4_loai_qua/</code></b> — 50 episode model fine-tune và 50 episode đối chứng: log, tổng kết, đồ thị, video</li>
-        <li><b><code>bua_thung/</code></b> — 100 video đánh giá trong Arena (camera ngoài + camera đầu); các đợt 66 % và 73 %: log, tổng kết, ảnh các lần thất bại, video</li>
+        <li><b><code>bua_thung/</code></b> — 100 video đánh giá trong Arena (mix200, 56/100; camera ngoài + camera đầu); các đợt chạy local 66 %, 63 % và 73 %: log, tổng kết, ảnh các lần thất bại, video</li>
       </ul>
       <p>File chung ở mỗi đợt: <code>episodes.jsonl</code> (một dòng mỗi lần thử), <code>summary.json</code> / <code>summary.md</code> (tỉ lệ thành công, khoảng tin cậy, phân loại thất bại), video <code>…_success.mp4</code> / <code>…_fail.mp4</code>.</p>
-      <p class="internal"><b>Nguồn:</b> <code>codes/standalone_g1_gr00t/data/</code>: <code>runs_*.jsonl</code>, <code>videos/</code>, <code>nb10_eval*</code>, <code>nb12_eval/</code>, <code>arena_eval_hammer_ckpt10000/</code></p>
     </div></details>
 
     <details class="acc" id="f-tai-lieu"><summary><span class="n">06</span>06_tai_lieu/ — Tài liệu hướng dẫn<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
@@ -135,7 +130,6 @@
           <tr><td>Báo cáo theo mốc (M0 → nb07), kế hoạch kiến trúc</td><td>Hiểu lý do các quyết định kỹ thuật</td></tr>
         </tbody>
       </table></div>
-      <p class="internal"><b>Nguồn:</b> <code>hammer_to_bin/*.md</code>, <code>codes/g1_real2sim/GROOT_FINETUNE.md</code>, <code>codes/standalone_g1_gr00t/report/</code></p>
     </div></details>
   </div>
 
@@ -146,8 +140,8 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>Thành phần</th><th>Dung lượng</th><th>Cần khi</th></tr></thead>
       <tbody>
-        <tr><td>Checkpoint búa → thùng (mỗi bản)</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12,6 GB</div></td><td>Chạy model búa <span class="todo">[xác nhận checkpoint của bản 400 episode]</span></td></tr>
-        <tr><td>Checkpoint real2sim 4 loại quả</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12,6 GB</div></td><td>Chạy model 4 loại quả <span class="todo">[vị trí]</span></td></tr>
+        <tr><td>Checkpoint búa → thùng (mỗi bản)</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12,6 GB</div></td><td>Chạy model búa</td></tr>
+        <tr><td>Checkpoint real2sim 4 loại quả</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12,6 GB</div></td><td>Chạy model 4 loại quả</td></tr>
         <tr><td>Dữ liệu teleop gốc bài búa (HDF5)</td><td><div class="bar-cell"><span class="b" style="width:45%"></span>19 GB</div></td><td>Chuyển đổi lại, sinh thêm demo</td></tr>
         <tr><td>Bộ huấn luyện mix200 dạng HDF5</td><td><div class="bar-cell"><span class="b" style="width:31%"></span>13 GB</div></td><td>Chuyển LeRobot với cấu hình khác</td></tr>
         <tr><td>Bộ huấn luyện mix400 dạng HDF5</td><td><div class="bar-cell"><span class="b" style="width:62%"></span>26 GB</div></td><td>như trên</td></tr>
@@ -165,7 +159,7 @@
         <ol><li>Mở <code>01_bao_cao/index.html</code></li><li>Đọc mục Tổng quan và ba kịch bản</li><li>Xem video trong <code>05_ket_qua_danh_gia</code></li></ol>
         <div class="jtime">Cần: trình duyệt · ~30 phút</div></div>
       <div class="journey"><div class="jk">LỘ TRÌNH 2</div><div class="jt">Chạy lại đánh giá</div>
-        <ol><li>Cài Isaac Sim 6.0.1, Isaac Lab 3.0-beta2 và môi trường của <code>standalone_g1_gr00t</code></li><li>Chạy GR00T server trên máy GPU với checkpoint ở card 4</li><li>Chạy notebook đánh giá nb10 (4 loại quả) hoặc nb12 (búa), không cần giao diện</li></ol>
+        <ol><li>Cài Isaac Sim 6.0.1, Isaac Lab 3.0.0-beta2 và môi trường của <code>standalone_g1_gr00t</code></li><li>Chạy GR00T server trên máy GPU với checkpoint ở card 4</li><li>Chạy notebook đánh giá nb10 (4 loại quả) hoặc nb12 (búa), không cần giao diện</li></ol>
         <div class="jtime">Cần: máy trạm GPU + máy chủ GPU (mục I.02)</div></div>
       <div class="journey"><div class="jk">LỘ TRÌNH 3</div><div class="jt">Dạy robot tác vụ mới</div>
         <ol><li>Dựng môi trường và thu demo bằng teleop (<code>arena_bua_thung</code>)</li><li>Sinh thêm demo, chuyển sang LeRobot</li><li>Fine-tune GR00T theo hướng dẫn trong <code>06_tai_lieu</code></li><li>Đánh giá bằng notebook như lộ trình 2</li></ol>
@@ -182,9 +176,8 @@
         <tr><td>Model gốc GR00T N1.7-3B và các checkpoint fine-tune từ nó</td><td>Theo NVIDIA Open Model Agreement</td></tr>
         <tr><td>Checkpoint táo → đĩa của NVIDIA (Arena)</td><td>Model card ghi "ready for non-commercial use only"</td></tr>
         <tr><td>Dataset NVIDIA (táo → đĩa, dữ liệu G1 thật)</td><td>CC-BY-4.0: dùng được, cần ghi nguồn</td></tr>
-        <tr><td>Dữ liệu teleop bài búa, dataset sinh thêm, dataset real2sim</td><td>Do dự án tạo ra <span class="todo">[xác nhận quyền sở hữu theo hợp đồng]</span></td></tr>
-        <tr><td>Bản vá Isaac Lab Arena</td><td><span class="todo">[TODO: kiểm tra giấy phép của Isaac Lab Arena]</span></td></tr>
-        <tr><td>Video minh hoạ mô hình VLA (mục II.01)</td><td>Của bên thứ ba <span class="todo">[xác nhận quyền sử dụng]</span></td></tr>
+        <tr><td>Dữ liệu teleop bài búa, dataset sinh thêm, dataset real2sim</td><td>Do dự án tạo ra</td></tr>
+        <tr><td>Video minh hoạ mô hình VLA (mục II.01)</td><td>Của bên thứ ba</td></tr>
       </tbody>
     </table></div>
   </div>

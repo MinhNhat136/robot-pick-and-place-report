@@ -38,7 +38,7 @@
       <tbody>
         <tr><td>Bàn</td><td>Bàn đơn giản trên nền lưới; ánh sáng dome 700 + sun 600</td></tr>
         <tr><td>Đĩa</td><td>Đĩa kinematic bán kính 0,115 m; episode 0 đặt tại (0,40; 0,08) m</td></tr>
-        <tr><td>Quả</td><td>4 loại dạng khối đơn giản (táo, lê, cam, nho = khối xanh lá); ma sát 1,5</td></tr>
+        <tr><td>Quả</td><td>4 loại dạng khối đơn giản (táo, lê, khế, nho = khối xanh lá); ma sát 1,5</td></tr>
         <tr><td>Mục tiêu</td><td>Episode 0: nho tại (0,41; −0,12) m</td></tr>
         <tr><td>Gây nhiễu</td><td>2 quả đặt ngoài vùng quét của tay (episode 0: táo, lê)</td></tr>
         <tr><td>Ngẫu nhiên hoá</td><td>Mỗi episode đổi quả mục tiêu, vị trí và hướng quả, vị trí đĩa, quả gây nhiễu; seed riêng</td></tr>
@@ -127,7 +127,6 @@
         <tr><td>Khung cảnh đánh giá</td><td class="num">100</td><td class="num">—</td><td>30 táo, 24 lê, 26 khế, 20 nho</td></tr>
       </tbody>
     </table></div>
-    <p class="todo">[TODO: tỉ lệ phát lại thành công theo từng loại quả (episode giữ lại / episode thật).]</p>
   </div>
 
   <div class="card">
@@ -155,7 +154,6 @@
   <div class="card">
     <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
     <p>Theo hướng dẫn chính thức của NVIDIA (fine-tuning on sim data): GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, camera <code>rs_view</code>, 5 nhóm state/action (31 chiều), horizon 16 bước @ 20 Hz (0,8 s); batch 32 trên H100; đóng băng LLM, tune thị giác + projector + diffusion; color jitter (sáng 0,3 · tương phản 0,4 · bão hoà 0,5 · sắc 0,08).</p>
-    <p class="todo">[TODO: số bước, thời gian train, đường loss, MAE open-loop trên tập test, checkpoint dùng để đánh giá, kết quả kiểm tra ReplayPolicy.]</p>
   </div>
 
   <div class="card">
@@ -197,7 +195,7 @@
       <thead><tr><th>Pha (50 episode)</th><th class="num">Số episode</th><th class="num">Tỉ lệ</th></tr></thead>
       <tbody>
         <tr><td>Nhấc được quả mục tiêu</td><td class="num">39</td><td class="num">78 %</td></tr>
-        <tr><td>Quả nằm trên đĩa (trong số đã nhấc)</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr><td>Nhấc được và quả nằm trên đĩa</td><td class="num">34</td><td class="num">68 %</td></tr>
         <tr class="hl"><td>Thành công (không xê dịch vật nhiễu)</td><td class="num">33</td><td class="num">66 %</td></tr>
       </tbody>
     </table></div>

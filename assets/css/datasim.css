@@ -68,11 +68,11 @@
 .gen-legend i.lg-ok{border-top:2px solid var(--accent)}
 .gen-legend i.lg-bad{border-top:2px dashed #9aa1aa}
 
-@media (max-width:1200px){
+@media screen and (max-width:1200px){
   .ds-lab{grid-template-columns:1fr}
   .r2s-grid,.gen-grid{grid-template-columns:1fr}
 }
-@media (max-width:760px){
+@media screen and (max-width:760px){
   .ds-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ds-thumbs{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -103,8 +103,8 @@
 .mo-groups button em{font:600 9.5px var(--mono);font-style:normal;letter-spacing:.08em;color:var(--accent-ink);background:var(--accent-soft);border-radius:6px;padding:3px 7px}
 .mg-n{font-size:20px;font-weight:800;color:var(--accent-strong);text-align:center}
 .mo-groups button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-softer)}
-@media (max-width:1200px){.mo-arm{grid-template-columns:1fr}}
-@media (max-width:760px){.mo-body{grid-template-columns:1fr}}
+@media screen and (max-width:1200px){.mo-arm{grid-template-columns:1fr}}
+@media screen and (max-width:760px){.mo-body{grid-template-columns:1fr}}
 @media print{.mo-side .ds-sliders,.mo-side .gen-btns{display:none}}
 
 /* ---------- II.01 model explainers (ui/model.js) ---------- */
@@ -149,6 +149,6 @@
 .card .ls p{margin:2px 0 0;font-size:13px;line-height:1.5}
 .ls.fix{border-top:1px dashed var(--accent-border);padding-top:8px;margin-top:auto}
 .ls.fix span{color:var(--accent)}
-@media (max-width:1200px){.vstack-wrap{grid-template-columns:1fr}}
-@media (max-width:760px){.ds-steps.three{grid-template-columns:1fr}.vl.l2,.vl.l3{margin:0}}
+@media screen and (max-width:1200px){.vstack-wrap{grid-template-columns:1fr}}
+@media screen and (max-width:760px){.ds-steps.three{grid-template-columns:1fr}.vl.l2,.vl.l3{margin:0}}
 
