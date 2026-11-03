@@ -1,0 +1,174 @@
+<section class="section" id="tong-quan" data-hue="blue" data-kicker="I.01 · TỔNG QUAN" data-title="Tổng quan &amp; kết quả">
+  <div class="hero">
+    <span class="pill">BÁO CÁO DỰ ÁN · <span data-cfg="date">06/11/2026</span></span>
+    <h1>Điều khiển robot hình người G1 gắp–đặt vật bằng NVIDIA GR00T<span class="dot">.</span></h1>
+    <p class="lead">Hơn hai tháng nghiên cứu và thực nghiệm (24/08 – 06/11/2026): đọc hiểu mô hình nền tảng GR00T, <b>tái hiện độc lập</b> pipeline của NVIDIA Isaac Lab Arena, tạo dữ liệu <b>real2sim</b> từ robot G1 thật, và hoàn thành trọn chu trình cho một <b>tác vụ mới</b>, từ teleop thu dữ liệu đến fine-tune và đánh giá.</p>
+    <div class="meta">
+      <div><span class="ml">KHÁCH HÀNG</span><span class="mv" data-cfg="client">Shimizu Corporation</span></div>
+      <div><span class="ml">THỰC HIỆN</span><span class="mv" data-cfg="author">FPT Software</span></div>
+      <div><span class="ml">THỜI GIAN</span><span class="mv" data-cfg="period">24/08/2026 – 06/11/2026</span></div>
+      <div><span class="ml">MÔI TRƯỜNG</span><span class="mv">Mô phỏng Isaac Sim / Isaac Lab</span></div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Bài toán nghiên cứu</h3></div>
+    <p>Robot hình người <b>Unitree G1</b> cần tự gắp một vật và đặt vào đúng chỗ chỉ từ <b>ảnh camera</b> và một <b>câu lệnh</b>, không lập trình sẵn từng chuyển động. Dự án nghiên cứu cách giao việc này cho mô hình nền tảng <b>NVIDIA GR00T</b>: model nhận ảnh, câu lệnh và trạng thái khớp, rồi sinh chuyển động cho thân trên. Toàn bộ thực hiện trong mô phỏng Isaac Sim / Isaac Lab.</p>
+    <div class="prob-flow">
+      <div class="pf-col"><div class="pf-h">ĐẦU VÀO · ROBOT NHÌN VÀ NGHE</div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>Ảnh camera đầu</b><span>640×480, mỗi lần ra quyết định</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></span><div><b>Câu lệnh tự nhiên</b><span>"put the hammer in the bin"</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="11" cy="9" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 16.3l3-5.6M12.9 8.3l4.2-1.6"/></svg></span><div><b>Góc các khớp</b><span>Trạng thái hiện tại của tay, bàn tay, eo (31 giá trị)</span></div></div>
+      </div>
+      <div class="pf-link" aria-hidden="true"></div>
+      <div class="pf-col model">
+        <div class="pf-model-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></div>
+        <div class="pf-h">MÔ HÌNH NỀN TẢNG</div>
+        <div class="t">NVIDIA GR00T N1.7</div>
+        <p>Mô hình Vision-Language-Action đã pre-train trên dữ liệu của nhiều loại robot; dùng checkpoint có sẵn (kịch bản 1) hoặc fine-tune cho từng tác vụ mới (kịch bản 2, 3).</p>
+        <div class="tags"><span>~3 tỷ tham số</span><span>GPU H100</span></div>
+      </div>
+      <div class="pf-link" aria-hidden="true"></div>
+      <div class="pf-col"><div class="pf-h">ĐẦU RA · ROBOT LÀM GÌ</div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V6a1.5 1.5 0 013 0v5M11 11V4.5a1.5 1.5 0 013 0V11M14 11V6a1.5 1.5 0 013 0v7a6 6 0 01-6 6h-1a5 5 0 01-4.2-2.3L4 13.5a1.5 1.5 0 012.4-1.8L8 13"/></svg></span><div><b>Chuyển động thân trên</b><span>Chuỗi góc khớp mục tiêu cho tay, bàn tay ba ngón và eo trong 0,8 s tới</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v7l-3 5v6M14 3v7l3 5v6M6 21h3M15 21h3"/></svg></span><div><b>Giữ thăng bằng</b><span>Chân do bộ điều khiển AGILE lo, không do GR00T sinh ra</span></div></div>
+      </div>
+    </div>
+
+    <p><b>Bốn câu hỏi nghiên cứu</b> mà ba kịch bản thực nghiệm cần trả lời:</p>
+    <div class="prob-qs">
+      <button type="button" class="prob-q" data-jump="ket-qua-dat-duoc"><span class="qn"><b>1</b>CÂU HỎI</span><span class="qt">GR00T có điều khiển được G1 gắp–đặt đồ vật không?</span><span class="qa">Có: 92 % · 66 % · 73 %<em>Ba kịch bản →</em></span></button>
+      <a class="prob-q" href="#hm3"><span class="qn"><b>2</b>CÂU HỎI</span><span class="qt">Dạy một tác vụ mới cần bao nhiêu dữ liệu và công sức?</span><span class="qa">200 demo, ~1 giờ fine-tune<em>Kịch bản 3 →</em></span></a>
+      <a class="prob-q" href="#hm1"><span class="qn"><b>3</b>CÂU HỎI</span><span class="qt">Kết quả thay đổi thế nào khi môi trường khác lúc ghi dữ liệu?</span><span class="qa">92 % → 56 % → 0 %<em>Kịch bản 1 →</em></span></a>
+      <a class="prob-q" href="#hm2"><span class="qn"><b>4</b>CÂU HỎI</span><span class="qt">Dữ liệu robot thật có đi vòng qua mô phỏng rồi quay lại robot thật được không (real2sim2real)?</span><span class="qa">Real2sim: 66 % · sim2real: giai đoạn 2<em>Kịch bản 2 →</em></span></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Kịch bản thực nghiệm</h3></div>
+    <p>Ba kịch bản tăng dần độ khó: từ <b>tái hiện</b> pipeline có sẵn của NVIDIA, tới <b>dữ liệu robot thật</b> chuyển vào mô phỏng, và cuối cùng là một <b>tác vụ hoàn toàn mới</b> do dự án tự xây dựng.</p>
+    <div class="tasks">
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_apple.mp4" poster="images/task_apple.jpg" aria-label="Táo → đĩa: video camera đầu robot trong khung cảnh Galileo" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">KỊCH BẢN 1</span><span class="task-t">Táo → đĩa</span>
+          <div class="task-cmd">"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</div>
+          <dl><dt>MỤC ĐÍCH</dt><dd>Tái hiện độc lập pipeline mẫu của NVIDIA</dd><dt>DỮ LIỆU</dt><dd>208 demo của NVIDIA, model có sẵn</dd><dt>THÀNH CÔNG</dt><dd>Táo nằm trên đĩa, cách tâm &lt; 8 cm, đứng yên</dd></dl>
+        </div>
+      </div>
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_fruits.mp4" poster="images/task_fruits.jpg" aria-label="4 loại quả: video camera đầu robot trong khung cảnh real2sim" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">KỊCH BẢN 2</span><span class="task-t">4 loại quả</span>
+          <div class="task-cmd">"Pick up the green grapes and place it on the plate"</div>
+          <dl><dt>MỤC ĐÍCH</dt><dd>Chọn đúng quả theo câu lệnh giữa các quả gây nhiễu</dd><dt>DỮ LIỆU</dt><dd>790 episode real2sim từ dữ liệu G1 thật</dd><dt>THÀNH CÔNG</dt><dd>Quả được nhấc, nằm trên đĩa, không xô lệch quả khác</dd></dl>
+        </div>
+      </div>
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_hammer.mp4" poster="images/task_hammer.jpg" aria-label="Búa → thùng: video camera đầu robot sau reset" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">KỊCH BẢN 3</span><span class="task-t">Búa → thùng</span>
+          <div class="task-cmd">"put the hammer in the bin"</div>
+          <dl><dt>MỤC ĐÍCH</dt><dd>Dạy một tác vụ hoàn toàn mới, từ đầu đến cuối</dd><dt>DỮ LIỆU</dt><dd>Tự thu bằng teleop Meta Quest: 200–400 episode</dd><dt>THÀNH CÔNG</dt><dd>Búa trong thùng, đứng yên, tay đã buông</dd></dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Mục tiêu nghiên cứu</h3></div>
+    <div class="panel"><div class="pl">MỤC TIÊU CHUNG</div><p>Đánh giá khả năng dùng <b>GR00T</b> điều khiển robot <b>G1</b> gắp–đặt vật (câu hỏi 1), và xác định cần bao nhiêu dữ liệu, công sức để đưa model vào một tác vụ mới. Mục tiêu chung được chia thành 6 mục tiêu cụ thể dưới đây.</p></div>
+    <div class="goals">
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">1</span><span class="sl">NỀN TẢNG</span></div><div class="st">Làm chủ GR00T và pipeline điều khiển</div><p>Hiểu kiến trúc và quy trình fine-tune từ GR00T N1 tới N1.7; tự xây lại luồng GR00T ↔ G1 (client, lớp an toàn, AGILE giữ thăng bằng, backend Isaac Lab), không phụ thuộc khung có sẵn của NVIDIA.</p><div class="goal-tags"><span>II.01–II.03</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">2</span><span class="sl">KỊCH BẢN 1</span></div><div class="st">Tái hiện kết quả của NVIDIA</div><p>Chạy checkpoint táo → đĩa trên pipeline tự xây, đối chiếu với môi trường gốc để kiểm chứng pipeline trước khi dùng cho tác vụ mới.</p><div class="goal-tags"><span>III.01</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">3</span><span class="sl">KỊCH BẢN 2</span></div><div class="st">Tận dụng dữ liệu robot thật</div><p>Chuyển dữ liệu teleop G1 thật (chỉ góc khớp và video) thành dataset mô phỏng bằng real2sim; fine-tune model chọn đúng quả theo câu lệnh.</p><div class="goal-tags"><span>III.02</span><span>Câu hỏi 4</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">4</span><span class="sl">KỊCH BẢN 3</span></div><div class="st">Dạy một tác vụ hoàn toàn mới</div><p>Trọn chu trình "búa → thùng": dựng môi trường, teleop bằng kính thực tế ảo, sinh thêm dữ liệu, fine-tune, đánh giá; ghi lại số demo và thời gian cần.</p><div class="goal-tags"><span>III.03</span><span>Câu hỏi 2</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">5</span><span class="sl">VISUAL GAP</span></div><div class="st">Thử nghiệm và phân tích khác biệt hình ảnh</div><p>Đo tỉ lệ thành công thay đổi ra sao khi ảnh model nhận khác lúc ghi dữ liệu: giữa các khung cảnh mô phỏng và giữa ảnh thật với ảnh render; tìm yếu tố gây sụt giảm, đề xuất cách thu hẹp như domain randomization.</p><div class="goal-tags"><span>Kịch bản 1, 2</span><span>Câu hỏi 3, 4</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">XUYÊN SUỐT</span></div><div class="st">Đánh giá định lượng, lặp lại được</div><p>Chấm vòng kín bằng điều kiện thành công rõ ràng, ≥ 50 episode mỗi cấu hình, khoảng tin cậy Wilson 95 %, phân tích thất bại theo pha; mỗi lần chạy chỉ đổi một yếu tố.</p><div class="goal-tags"><span>V.01</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Phạm vi nghiên cứu</h3></div>
+    <p>Toàn bộ thực nghiệm diễn ra trong mô phỏng; pipeline được thiết kế để thay backend robot thật ở giai đoạn sau.</p>
+    <div class="scope">
+      <div class="scope-col in"><div class="scope-h">TRONG PHẠM VI</div><ul><li>Mô phỏng Isaac Sim 6.0 / Isaac Lab 3.0, Isaac Lab Arena 0.2.1</li><li>G1 đứng tại chỗ, hai tay + bàn tay Dex3</li><li>GR00T N1.7-3B: checkpoint NVIDIA và tự fine-tune</li><li>Dữ liệu: demo NVIDIA, dataset G1 thật công khai (real2sim), teleop tự thu trong mô phỏng</li><li>Fine-tune trên 1 GPU H100</li></ul></div>
+      <div class="scope-col out"><div class="scope-h">NGOÀI PHẠM VI · GIAI ĐOẠN SAU</div><ul><li>Triển khai trên robot G1 thật</li><li>Di chuyển kết hợp thao tác</li><li>Huấn luyện mô hình từ đầu</li><li>Thu dữ liệu trên robot thật</li><li>Huấn luyện đa GPU quy mô lớn</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card" id="ket-qua-dat-duoc">
+    <div class="card-head"><span class="num">5</span><h3>Số liệu nghiên cứu</h3></div>
+    <p>Kết quả tốt nhất của từng kịch bản, kèm các lần chạy dẫn tới con số đó. Bấm vào từng kịch bản để xem chi tiết.</p>
+    <div class="res-tiles">
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">KỊCH BẢN 1</div><div class="res-t">Táo → đĩa</div></div>
+          <div class="res-best"><span>92<small>%</small></span><em>môi trường gốc NVIDIA</em></div></div>
+        <ul class="res-steps"><li class="top"><span class="rl">Client NVIDIA Arena</span><span class="rb"><i style="width:92%"></i></span><span class="rv">92<small>%</small></span></li><li><span class="rl">Chỉ lệch ánh sáng</span><span class="rb"><i style="width:56%"></i></span><span class="rv">56<small>%</small></span></li><li><span class="rl">Lệch toàn bộ môi trường</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li></ul>
+        <p class="res-take">Model rất nhạy với hình ảnh: cùng checkpoint, chỉ đổi môi trường là kết quả thay đổi từ 92 % xuống 0 %.</p>
+        <a class="res-more" href="#hm1">Xem chi tiết kịch bản →</a>
+      </div>
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">KỊCH BẢN 2</div><div class="res-t">4 loại quả</div></div>
+          <div class="res-best"><span>66<small>%</small></span><em>33/50 · 95 %: 52–78 %</em></div></div>
+        <ul class="res-steps"><li><span class="rl">Checkpoint táo, chưa tune</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li class="top"><span class="rl">Fine-tune real2sim</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li></ul>
+        <p class="res-take">Fine-tune trên dữ liệu real2sim là bắt buộc; model chọn đúng quả theo câu lệnh trong mọi lần thử.</p>
+        <a class="res-more" href="#hm2">Xem chi tiết kịch bản →</a>
+      </div>
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">KỊCH BẢN 3</div><div class="res-t">Búa → thùng</div></div>
+          <div class="res-best"><span>73<small>%</small></span><em>73/100 · 95 %: 64–81 %</em></div></div>
+        <ul class="res-steps"><li><span class="rl">Chưa fine-tune</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li><span class="rl">Fine-tune 200 episode</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li><li><span class="rl">Fine-tune 400 episode</span><span class="rb"><i style="width:63%"></i></span><span class="rv">63<small>%</small></span></li><li class="top"><span class="rl">Nới ngưỡng đứng yên</span><span class="rb"><i style="width:73%"></i></span><span class="rv">73<small>%</small></span></li></ul>
+        <p class="res-take">Tác vụ mới từ 0 % lên 73 % chỉ với dữ liệu tự thu thập và ~1 giờ huấn luyện mỗi lần.</p>
+        <a class="res-more" href="#hm3">Xem chi tiết kịch bản →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Quy trình thực hiện</h3></div>
+    <p>Dự án đi theo ba bước: xây <b>nền tảng chung</b>, chạy <b>ba kịch bản</b> trên nền tảng đó, rồi dùng kết quả đánh giá để <b>cải tiến</b>. Mỗi kịch bản đi qua cùng bốn chặng (nguồn dữ liệu → phần việc trọng tâm → model → đánh giá vòng kín) và khác nhau ở phần việc trọng tâm: kịch bản 1 dùng lại dữ liệu và model của NVIDIA, trọng tâm là <b>nghiên cứu và viết lại luồng</b> GR00T ↔ G1; kịch bản 2 tự tạo dữ liệu mô phỏng từ dữ liệu robot thật, trọng tâm là <b>real2sim</b>; kịch bản 3 tự làm một tác vụ mới từ đầu, trọng tâm là <b>tăng cường dữ liệu</b> từ demo teleop. Ô nền tối trong sơ đồ đánh dấu phần việc trọng tâm đó.</p>
+    <div class="dg-lanes">
+      <div class="dg-bar top"><span class="bk">NỀN TẢNG CHUNG</span><span>Nghiên cứu GR00T N1 → N1.7 · Isaac Lab Arena · pipeline độc lập GR00T ↔ G1 (client, lớp an toàn, AGILE, backend Isaac Lab)</span></div>
+
+      <div class="dg-head"><span></span><span>NGUỒN DỮ LIỆU</span><span>TRỌNG TÂM</span><span>MODEL GR00T N1.7</span><span>KẾT QUẢ VÒNG KÍN</span></div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">KỊCH BẢN 1</span><span class="lt">Nghiên cứu &amp; viết lại luồng · táo → đĩa</span></div>
+        <div class="dg-node"><div class="nk">NVIDIA</div><div class="nt">Dataset static apple</div><div class="nd">208 episode teleop XR trong mô phỏng</div></div>
+        <div class="dg-node focus"><div class="nk">VIẾT LẠI LUỒNG</div><div class="nt">12 notebook → pipeline độc lập</div><div class="nd">Kiểm chứng open-loop, phát lại demo</div></div>
+        <div class="dg-node soft"><div class="nk">CÓ SẴN</div><div class="nt">Checkpoint của NVIDIA</div><div class="nd">Fine-tune sẵn cho táo → đĩa</div></div>
+        <div class="dg-node"><div class="nk">MÔI TRƯỜNG GỐC ARENA</div><div class="dg-result">92<small>%</small></div><div class="nd">Galileo dựng lại 56 % · khung cảnh tự dựng 0 %</div></div>
+      </div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">KỊCH BẢN 2</span><span class="lt">Real2sim · 4 loại quả</span></div>
+        <div class="dg-node"><div class="nk">ROBOT G1 THẬT</div><div class="nt">1.095 quỹ đạo teleop</div><div class="nd">Chỉ có góc khớp + video</div></div>
+        <div class="dg-node focus"><div class="nk">REAL2SIM</div><div class="nt">790 episode mô phỏng</div><div class="nd">FK → khung cảnh, vật nhiễu, phát lại, lọc</div></div>
+        <div class="dg-node soft"><div class="nk">FINE-TUNE · H100</div><div class="nt">Model đa nhiệm 4 quả</div><div class="nd">20.000 bước · 2 giờ 34 phút</div></div>
+        <div class="dg-node"><div class="nk">50 EPISODE</div><div class="dg-result">66<small>%</small></div><div class="nd">Checkpoint táo 0 % · 0 lần gắp nhầm</div></div>
+      </div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">KỊCH BẢN 3</span><span class="lt">Tăng cường dữ liệu · búa → thùng</span></div>
+        <div class="dg-node"><div class="nk">TELEOP META QUEST</div><div class="nt">100 demo teleop</div><div class="nd">Thu trong Isaac Lab, môi trường tự xây dựng</div></div>
+        <div class="dg-node focus"><div class="nk">TĂNG CƯỜNG DỮ LIỆU</div><div class="nt">mix200 · mix400</div><div class="nd">100 teleop + 100 sinh thêm; mix400 thêm 200 teleop</div></div>
+        <div class="dg-node soft"><div class="nk">FINE-TUNE · H100</div><div class="nt">Model búa → thùng</div><div class="nd">mix200 ~1 giờ · mix400 ~2 giờ 15 phút</div></div>
+        <div class="dg-node"><div class="nk">100 EPISODE</div><div class="dg-result">73<small>%</small></div><div class="nd">Chưa tune 0 % → 66 % → 73 %</div></div>
+      </div>
+
+      <div class="dg-bar feedback"><span class="ico">↺</span><span class="bk">VÒNG CẢI TIẾN</span><span>Phân tích thất bại theo pha → sửa môi trường hoặc cách chấm, bổ sung dữ liệu → huấn luyện và đánh giá lại. Ví dụ: dựng lại khung cảnh Galileo (kịch bản 1), sửa lỗi camera không render mỗi bước (kịch bản 2), mix200 → mix400 và ngưỡng đứng yên 0,01 → 0,02 (kịch bản 3).</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Kế hoạch thực hiện</h3></div>
+    <p>Dự án chạy theo <b>ba kịch bản nối tiếp</b> trên cùng một nền tảng, mỗi kịch bản khoảng hai tuần. Biểu đồ dưới đây cho thấy thời gian thực hiện và các mốc có kết quả; chi tiết từng kịch bản nằm ở các mục III.</p>
+    <div class="gantt">
+      <div class="gantt-axis"><span></span><div class="ticks"><span style="left:0.00%">24/08</span><span style="left:22.22%">07/09</span><span style="left:44.44%">21/09</span><span style="left:66.67%">05/10</span><span style="left:88.89%">19/10</span></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">NỀN TẢNG</span><span class="t">Nghiên cứu GR00T &amp; Arena</span></div><div class="track"><div class="bar " style="left:0.00%;width:31.75%"><span>24/08 – 12/09</span></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">KỊCH BẢN 1</span><span class="t">Pipeline · táo → đĩa</span></div><div class="track"><div class="bar lbl-l" style="left:31.75%;width:19.05%"><span>13/09 – 24/09</span></div><div class="ms" style="left:46.83%"><b>0 %</b></div><div class="ms" style="left:50.00%"><b>56 %</b></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">KỊCH BẢN 2</span><span class="t">Real2sim · 4 loại quả</span></div><div class="track"><div class="bar lbl-l" style="left:53.97%;width:20.63%"><span>27/09 – 09/10</span></div><div class="ms" style="left:73.81%"><b>66 %</b></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">KỊCH BẢN 3</span><span class="t">Búa → thùng</span></div><div class="track"><div class="bar lbl-l" style="left:69.84%;width:9.52%"><span>07 – 12/10</span></div><div class="bar soft" style="left:88.89%;width:4.76%"></div><div class="ms" style="left:78.58%"><b>tune</b></div><div class="ms" style="left:92.85%"><b>73 %</b></div></div></div>
+      <div class="gantt-legend"><span><i class="sw-bar"></i>Thời gian thực hiện</span><span><i class="sw-ms"></i>Mốc có kết quả đánh giá</span><span>Vạch dọc: mỗi tuần, từ 24/08</span></div>
+    </div>
+  </div>
+</section>

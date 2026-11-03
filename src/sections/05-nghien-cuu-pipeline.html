@@ -1,0 +1,200 @@
+<section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · NGHIÊN CỨU PIPELINE" data-title="Nghiên cứu pipeline: tái hiện luồng GR00T ↔ G1">
+  <div class="hero">
+    <span class="pill">MỤC II.02 · NGHIÊN CỨU PIPELINE</span>
+    <h2>Tái hiện từng bước của luồng GR00T ↔ G1 qua 12 notebook<span class="dot">.</span></h2>
+    <p class="lead">Để không phụ thuộc vào khung có sẵn của NVIDIA, dự án <b>tự xây lại toàn bộ luồng</b> từ ảnh camera tới lệnh khớp. Mỗi bước được nghiên cứu trong một <b>notebook</b> riêng — viết tay, quan sát dữ liệu, đối chiếu với tham chiếu — rồi mới đóng gói thành mã nguồn có kiểm thử.</p>
+    <div class="meta">
+      <div><span class="ml">NOTEBOOK</span><span class="mv">12 notebook nghiên cứu</span></div>
+      <div><span class="ml">MÃ NGUỒN</span><span class="mv">Package g1gr00t · 84 unit test</span></div>
+      <div><span class="ml">TỪ KHÓA</span><span class="mv">notebook → package · kiểm chứng theo tầng</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-tong-the">
+    <div class="card-head"><span class="num">1</span><h3>Luồng tổng thể</h3></div>
+    <p>Trước khi chạy, client dựng môi trường mô phỏng và kết nối tới server một lần. Sau đó mỗi vòng điều khiển đi qua hai máy. <b>Client</b> trên máy trạm chạy mô phỏng và mọi bước xử lý dữ liệu: đọc cảm biến, đóng gói, giải mã, kiểm tra an toàn, đưa lệnh xuống khớp. <b>Policy server</b> trên GPU H100 chỉ chạy model. Client chạy mỗi 20 ms, nhưng chỉ gọi server khi cần chuỗi mới, tức khoảng 40 tick một lần. Nhãn card cho biết bước đó được trình bày ở card nào.</p>
+    <div class="cs-flow">
+      <div class="cs-head" style="grid-column:2"><b>CLIENT · MÁY TRẠM</b><small>vòng 50 Hz · mỗi tick 20 ms</small></div>
+      <div class="cs-head mid" style="grid-column:3"><b>ĐƯỜNG TRUYỀN</b><small>ZeroMQ · msgpack · SSH tunnel</small></div>
+      <div class="cs-head" style="grid-column:4"><b>POLICY SERVER · H100</b><small>mỗi chuỗi mới · ~40 tick</small></div>
+      <div class="cs-phase" style="grid-row:2"><span>KHỞI TẠO · CHẠY MỘT LẦN TRƯỚC VÒNG LẶP</span></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:2"><div class="nk">A · KHỞI TẠO MÔI TRƯỜNG</div><div class="nt">Dựng mô phỏng, nạp AGILE</div><div class="nd">Robot G1 43 khớp, khung cảnh táo–đĩa, camera đầu; chạy 10 bước cho robot đứng ổn định</div><div class="nb-tags"><span>card 2</span></div></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:4"><div class="nk">KHỞI ĐỘNG</div><div class="nt">Policy server sẵn sàng</div><div class="nd">Nạp checkpoint GR00T N1.7 lên H100, mở cổng ZeroMQ chờ client</div></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:2"><div class="nk">B · TẠO KẾT NỐI</div><div class="nt">Mở kết nối, đọc hợp đồng</div><div class="nd">ZeroMQ qua SSH tunnel, ping server, so hợp đồng với cấu hình của client</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-msg both" style="grid-row:4"><span class="mk">PING · lấy hợp đồng</span><span class="ml"></span><span class="mt">Server trả danh sách key, số chiều từng nhóm, độ dài chuỗi</span></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:4"><div class="nk">TRẢ HỢP ĐỒNG</div><div class="nt">Mô tả dữ liệu</div><div class="nd">5 nhóm trạng thái gửi đi, 7 nhóm action trả về, chuỗi 40 bước</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-phase loop" style="grid-row:5"><span>VÒNG ĐIỀU KHIỂN · LẶP ĐẾN KHI HẾT EPISODE</span></div>
+      <div class="cs-loop" style="grid-row:6 / 13"><span>lặp lại mỗi tick 20 ms</span></div>
+      <div class="cs-node " style="grid-row:6;grid-column:2"><div class="nk">1 · ĐỌC CẢM BIẾN</div><div class="nt">Robot G1 trong mô phỏng</div><div class="nd">Ảnh camera đầu 640×480, 43 góc khớp, IMU thân</div><div class="nb-tags"><span>card 4</span></div></div>
+      <div class="cs-node " style="grid-row:7;grid-column:2"><div class="nk">2 · ĐÓNG GÓI</div><div class="nt">Tạo quan sát</div><div class="nd">43 → 31 khớp thân trên theo tên khớp, thêm câu lệnh, kiểm tra số chiều</div><div class="nb-tags"><span>card 5</span></div></div>
+      <div class="cs-msg right" style="grid-row:7"><span class="mk">GỬI · get_action</span><span class="ml"></span><span class="mt">Ảnh 0,92 MB + 31 góc khớp + câu lệnh</span></div>
+      <div class="cs-node " style="grid-row:7;grid-column:4"><div class="nk">NHẬN</div><div class="nt">Kiểm tra hợp đồng</div><div class="nd">Đối chiếu tên và số chiều từng nhóm với cấu hình của checkpoint</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-node ghost" style="grid-row:8;grid-column:2"><div class="nk">3 · CHỜ</div><div class="nt">Chờ chuỗi mới</div><div class="nd">Mô phỏng dừng lại chờ; trên robot thật cần gọi trước để không khựng</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node focus" style="grid-row:8;grid-column:4"><div class="nk">SUY LUẬN</div><div class="nt">GR00T N1.7</div><div class="nd">Phần hiểu đọc ảnh + câu lệnh; DiT khử nhiễu 4 bước ra chuỗi chuyển động</div><div class="nb-tags"><span>~100 ms</span></div></div>
+      <div class="cs-node " style="grid-row:9;grid-column:2"><div class="nk">4 · GIẢI MÃ &amp; AN TOÀN</div><div class="nt">Kiểm tra chuỗi</div><div class="nd">Tách nhóm khớp, chặn NaN/Inf, kẹp theo giới hạn khớp, di chuyển, chiều cao</div><div class="nb-tags"><span>card 6</span><span>card 7</span></div></div>
+      <div class="cs-msg left" style="grid-row:9"><span class="mk">NHẬN · chuỗi action</span><span class="ml"></span><span class="mt">40 bước × 35 giá trị, 6,8 KB; cả vòng gọi ~1,05–1,3 s</span></div>
+      <div class="cs-node noarr" style="grid-row:9;grid-column:4"><div class="nk">TRẢ VỀ</div><div class="nt">Chuỗi 40 bước</div><div class="nd">31 khớp thân trên + 3 di chuyển + 1 chiều cao cho mỗi bước</div></div>
+      <div class="cs-node " style="grid-row:10;grid-column:2"><div class="nk">5 · LẬP LỊCH</div><div class="nt">Lấy một bước mỗi tick</div><div class="nd">40 bước = 0,8 s chuyển động; gọi trước chuỗi kế tiếp khi sắp hết</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node " style="grid-row:11;grid-column:2"><div class="nk">6 · GIỚI HẠN TỐC ĐỘ</div><div class="nt">Làm mượt lệnh</div><div class="nd">Mỗi tick tay đổi tối đa 0,2 rad, nhất là ở biên giữa hai chuỗi</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node noarr" style="grid-row:12;grid-column:2"><div class="nk">7 · CHẤP HÀNH</div><div class="nt">Đưa lệnh xuống khớp</div><div class="nd">31 khớp thân trên theo GR00T, 12 khớp chân theo AGILE, rồi 4 bước vật lý</div><div class="nb-tags"><span>card 8</span></div></div>
+      <div class="cs-note" style="grid-row:10 / 13;grid-column:4"><span class="bk">TRONG LÚC ROBOT CHẠY 40 BƯỚC</span><p>Server rảnh. Client chỉ gọi lại khi chuỗi sắp hết; với cách gọi trước (card 7), quan sát được gửi sớm để chuỗi mới về kịp, robot không phải dừng.</p><p>Mỗi lần gọi, phần lớn thời gian nằm ở đường truyền: model tính ~100 ms trong khi cả vòng gọi mất ~1,05–1,3 s.</p></div>
+    </div>
+    <div class="cs-foot">
+      <div><span class="bk">TRƯỚC ĐÓ · OFFLINE</span><p>Demo → dataset LeRobot → fine-tune trên H100 → checkpoint nạp vào policy server.</p></div>
+      <div><span class="bk">SAU MỖI EPISODE</span><p>Reset rồi chạy episode tiếp; gom kết quả N episode thành tỉ lệ thành công (card 9).</p></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-init">
+    <div class="card-head"><span class="num">2</span><h3>Khởi tạo môi trường</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st cur first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st next" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Robot G1 (USD, 43 khớp)</li><li>Khung cảnh, táo, đĩa</li><li>Policy AGILE (ONNX)</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb05</em><em>nb04</em></span><ul><li>Dựng mô phỏng: nền, ánh sáng → robot → camera đầu → vật thể → ma sát ngón tay</li><li>Ghi trạng thái ban đầu, chạy 10 bước cho ổn định</li><li>Nạp AGILE, reset trạng thái LSTM</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Robot đứng ở tư thế mặc định</li><li>Bước vật lý 5 ms, tick điều khiển 20 ms</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>ROBOT ỔN ĐỊNH</small><b>0,786<i>m</i></b><span>chiều cao hông sau 10 bước, rồi giữ yên</span></div>
+      <div><small>THỨ TỰ KHỚP</small><b>43<i>/ 43</i></b><span>khớp của mô phỏng trùng bảng thứ tự đã lập</span></div>
+      <div><small>DỰNG KHUNG CẢNH</small><b>~4<i>s</i></b><span>sau khi tải sẵn 1,3 GB asset (lần đầu > 15 phút)</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-connect">
+    <div class="card-head"><span class="num">3</span><h3>Tạo kết nối</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st cur" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Địa chỉ policy server (qua SSH tunnel)</li><li>Checkpoint đã nạp trên H100</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb01</em></span><ul><li>Mở kết nối ZeroMQ, ping server</li><li>Đọc hợp đồng dữ liệu từ server</li><li>So với cấu hình của client trước khi chạy</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Kết nối sẵn sàng</li><li>Danh sách key, số chiều từng nhóm, độ dài chuỗi</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>HỢP ĐỒNG ĐỌC TỪ SERVER</small><b>5 → 7<i>nhóm</i></b><span>5 nhóm trạng thái gửi đi, 7 nhóm action trả về</span></div>
+      <div><small>ĐỘ DÀI CHUỖI</small><b>40<i>bước</i></b><span>= 0,8 s chuyển động ở 50 Hz</span></div>
+      <div><small>CỔNG KHÔNG PHẢN HỒI</small><b>0,5<i>s</i></b><span>trả lỗi sạch, tạo lại kết nối</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-observe">
+    <div class="card-head"><span class="num">4</span><h3>Lấy quan sát</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st cur" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Trạng thái mô phỏng sau tick vừa chạy</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb05</em><em>nb02</em></span><ul><li>Render camera đầu</li><li>Đọc 43 góc và vận tốc khớp, IMU thân</li><li>Sắp lại khớp theo tên giữa 4 hệ thứ tự</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Ảnh 640×480</li><li>43 góc khớp + IMU (cho AGILE)</li><li>31 góc khớp thân trên (cho GR00T)</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>HỆ THỨ TỰ KHỚP</small><b>4<i>hệ</i></b><span>mô phỏng, WBC, model, dataset</span></div>
+      <div><small>CHUYỂN ĐỔI QUA LẠI</small><b>0<i>sai lệch</i></b><span>mô phỏng → WBC → mô phỏng không mất giá trị</span></div>
+      <div><small>ẢNH MỚI</small><b>1<i>mỗi tick</i></b><span>render ở bước vật lý cuối; thiếu bước này model thấy ảnh đứng yên</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-send">
+    <div class="card-head"><span class="num">5</span><h3>Gửi quan sát</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st cur" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Ảnh 480×640</li><li>31 góc khớp thân trên</li><li>Câu lệnh</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb02</em><em>nb01</em></span><ul><li>Đóng gói theo hợp đồng, kiểm tra số chiều</li><li>Gửi get_action qua ZeroMQ (msgpack)</li><li>Server chạy GR00T N1.7</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Yêu cầu 0,92 MB lên server</li><li>Server sinh chuỗi 40 bước</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>ĐỘ TRỄ MỖI LẦN GỌI</small><b>~1,05<i>s</i></b><span>1 robot · p95 1,39 s</span></div>
+      <div><small>MODEL TÍNH</small><b>~100<i>ms</i></b><span>thời gian tính trên server; phần lớn còn lại nằm ở đường truyền</span></div>
+      <div><small>4 ROBOT CÙNG LÚC</small><b>~3,6<i>s</i></b><span>gửi chung một lô · p95 4,2 s</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Câu lệnh gửi đi ảnh hưởng tới chuỗi trả về</b><span>sai số tay trái, rad</span></div>
+      <div class="cb"><span class="l">Câu của dataset</span><span class="t"><i class="" style="width:52%"></i></span><span class="v">0,025</span></div>
+      <div class="cb"><span class="l">Câu vô nghĩa</span><span class="t"><i class="soft" style="width:83%"></i></span><span class="v">0,039</span></div>
+      <div class="cb"><span class="l">Câu mặc định của Arena</span><span class="t"><i class="soft" style="width:100%"></i></span><span class="v">0,047</span></div>
+      <p class="cb-note">Câu mặc định của Arena cho sai số lớn hơn cả câu vô nghĩa, nên client gửi nguyên văn câu lệnh của dataset.</p>
+    </div>
+  </div>
+
+  <div class="card" id="pp-receive">
+    <div class="card-head"><span class="num">6</span><h3>Nhận chuỗi action</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st cur" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Trả lời của server: 7 key, 6,8 KB</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb01</em><em>nb02</em></span><ul><li>Giải mã msgpack</li><li>Tách 31 góc khớp (40×31), di chuyển (40×3), chiều cao (40×1)</li><li>Xếp về thứ tự khớp của client theo tên</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Chuỗi 40 bước × 35 giá trị trong client</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>MỖI LẦN NHẬN</small><b>40 × 35<i>giá trị</i></b><span>40 bước, mỗi bước 35 giá trị</span></div>
+      <div><small>KÍCH THƯỚC</small><b>6,8<i>KB</i></b><span>nhỏ hơn yêu cầu gửi đi ~135 lần</span></div>
+      <div><small>NHÓM TRẢ VỀ</small><b>7<i>key</i></b><span>2 tay, 2 bàn tay, eo, di chuyển, chiều cao</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-process">
+    <div class="card-head"><span class="num">7</span><h3>Xử lý chuỗi action</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st cur" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Chuỗi 40 × 35 vừa nhận</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb08</em><em>nb02</em></span><ul><li>Chặn NaN/Inf, kẹp theo giới hạn khớp, di chuyển, chiều cao</li><li>Lập lịch: mỗi tick lấy một bước, gọi trước khi sắp hết</li><li>Giới hạn thay đổi mỗi tick</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Lệnh an toàn cho tick hiện tại: 31 góc khớp + 4 lệnh cho chân</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>NGOÀI GIỚI HẠN</small><b>0<i>/ 1.240</i></b><span>giá trị model trả về vượt giới hạn khớp, trong một chuỗi thử</span></div>
+      <div><small>PHÉP THỬ CỐ Ý</small><b>81<i>giá trị bị kẹp</i></b><span>1 góc khớp, 40 lệnh di chuyển, 40 lệnh chiều cao</span></div>
+      <div><small>THỜI GIAN CHỜ</small><b>0,28<i>s</i></b><span>khi gọi trước, so với 0,84 s gọi tuần tự</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-run">
+    <div class="card-head"><span class="num">8</span><h3>Chạy robot</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st cur" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>31 góc khớp mục tiêu</li><li>Lệnh di chuyển + chiều cao</li><li>Quan sát hiện tại (cho AGILE)</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb04</em><em>nb05</em></span><ul><li>AGILE tính 12 góc khớp chân từ vector 80 số</li><li>Ghi 43 góc mục tiêu xuống mô phỏng</li><li>Chạy 4 bước vật lý 5 ms</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Robot chuyển động một tick (20 ms)</li><li>Trạng thái mới cho tick sau</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="perf">
+      <div><small>AGILE SO VỚI THAM CHIẾU</small><b>50<i>tick</i></b><span>trùng từng bit, cùng trạng thái LSTM</span></div>
+      <div><small>ĐỨNG VỮNG</small><b>10<i>s</i></b><span>500 tick, nghiêng tối đa 9,8°</span></div>
+      <div><small>PHÁT LẠI DEMO</small><b>121<i>tick</i></b><span>không dùng model: thành công, táo cách tâm đĩa 2,9 cm</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-loop">
+    <div class="card-head"><span class="num">9</span><h3>Chạy vòng kín</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">CHUẨN BỊ</span><span class="pp-tgk loop" style="grid-column:3/8">MỖI VÒNG ĐIỀU KHIỂN</span><span class="pp-tgk" style="grid-column:8/9">LẶP LẠI</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Khởi tạo</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Kết nối</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Quan sát</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Gửi</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Nhận</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>Xử lý</em></span><span class="pp-st done" style="grid-column:7"><i>8</i><em>Chạy</em></span><span class="pp-st cur last" style="grid-column:8"><i>9</i><em>Vòng kín</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">ĐẦU VÀO</span><ul><li>Checkpoint, khung cảnh, câu lệnh</li><li>Các bước ở card 4–8</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">XỬ LÝ<em>nb06</em><em>nb07</em><em>nb08</em></span><ul><li>Mỗi tick: lấy quan sát → xử lý → chạy robot</li><li>~40 tick một lần: gửi quan sát, nhận chuỗi mới</li><li>Kết thúc khi thành công, ngã hoặc hết giờ; reset rồi chạy episode tiếp</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">ĐẦU RA</span><ul><li>Kết quả từng episode</li><li>Log, video, thống kê</li></ul></div>
+    </div>
+    <div class="pp-res-h">KẾT QUẢ ĐẠT ĐƯỢC</div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Tỉ lệ thành công: cùng model, chỉ đổi khung cảnh</b><span>50 episode</span></div>
+      <div class="cb"><span class="l">Khung cảnh tự dựng</span><span class="t"><i class="soft" style="width:1%"></i></span><span class="v">0 / 50</span></div>
+      <div class="cb"><span class="l">Khung cảnh Galileo (như lúc ghi dữ liệu)</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
+      <p class="cb-note">120 tick gọi server đúng 3 lần. Ở khung cảnh tự dựng robot vẫn nhấc được táo 11/50 lần nhưng không đặt lên đĩa; khoảng cách táo–đĩa nhỏ nhất (trung vị) giảm từ 20,6 cm xuống 3,8 cm khi dựng lại khung cảnh Galileo.</p>
+    </div>
+  </div>
+
+</section>

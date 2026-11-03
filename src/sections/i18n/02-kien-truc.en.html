@@ -1,0 +1,106 @@
+<section class="section" id="kien-truc" data-hue="blue" data-kicker="I.02 · INFRASTRUCTURE &amp; PERFORMANCE" data-title="System infrastructure &amp; performance">
+  <div class="hero">
+    <span class="pill">SECTION I.02 · INFRASTRUCTURE &amp; PERFORMANCE</span>
+    <h2>Two machines, one VR headset — and the numbers that limit the system<span class="dot">.</span></h2>
+    <p class="lead">Simulation, teleop and evaluation run on <b>one workstation</b>; training and model serving run on <b>one remote H100 GPU server</b>. This section describes the configuration used, the software to install on each machine, and the measured performance figures — especially <b>model latency</b>, the most important limit when moving to the real robot.</p>
+    <div class="meta">
+      <div><span class="ml">WORKSTATION</span><span class="mv">RTX 5090 · Ryzen 7 9800X3D · 64 GB</span></div>
+      <div><span class="ml">SERVER</span><span class="mv">1× H100 80 GB · 188 GB</span></div>
+      <div><span class="ml">SIMULATION</span><span class="mv">Isaac Sim 6.0.1 · Isaac Lab 3.0-beta2</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Devices &amp; connections</h3></div>
+    <p>The workstation is the hub: it receives operator input from the VR headset, runs the robot simulation, and sends observations to the GPU server to get back action sequences.</p>
+    <div class="topo">
+      <div class="topo-node "><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-4l-2-2h-2l-2 2H5a2 2 0 01-2-2z"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg></span><div><div class="tn-k">TELEOP</div><div class="tn-t">Meta Quest headset</div></div></div><div class="tn-role">The operator controls the robot in simulation to create demos.</div><dl class="tn-spec"><dt>DEVICE</dt><dd>Headset + 2 controllers</dd><dt>LINK</dt><dd>USB 3 cable</dd><dt>PROTOCOL</dt><dd>OpenXR · CloudXR</dd></dl></div>
+      <div class="topo-link"><span>USB 3<br>CloudXR</span></div>
+      <div class="topo-node main"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><div><div class="tn-k">WORKSTATION · HUB</div><div class="tn-t">Simulation &amp; control</div></div></div><div class="tn-role">Runs Isaac Sim, Arena, the control client, the balance controller, evaluation and data recording.</div><dl class="tn-spec"><dt>GPU</dt><dd>RTX 5090 · 32 GB</dd><dt>CPU</dt><dd>Ryzen 7 9800X3D · 8 cores</dd><dt>RAM / SSD</dt><dd>64 GB · NVMe 1 TB</dd><dt>OS</dt><dd>Ubuntu 24.04 LTS</dd></dl></div>
+      <div class="topo-link"><span>SSH tunnel<br>ZeroMQ</span></div>
+      <div class="topo-node dark"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/></svg></span><div><div class="tn-k">GPU SERVER · REMOTE</div><div class="tn-t">Training &amp; model serving</div></div></div><div class="tn-role">Fine-tunes GR00T and runs the policy server that returns action sequences to the workstation.</div><dl class="tn-spec"><dt>GPU</dt><dd>1× H100 · 80 GB</dd><dt>RAM</dt><dd>188 GB</dd><dt>DRIVER</dt><dd>575.57</dd><dt>USAGE</dt><dd>Shared across several projects</dd></dl></div>
+    </div>
+    <div class="topo-below"><span class="vlink"></span></div>
+    <div class="topo-below"><div class="topo-node plan"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="7" rx="2"/><path d="M12 10v3M8 13h8v5H8zM9 18v3M15 18v3"/></svg></span><div><div class="tn-k">NEXT PHASE</div><div class="tn-t">Real Unitree G1 robot</div></div></div><div class="tn-role">Receives joint commands from the client via Unitree SDK2; for now the robot runs only in simulation.</div><dl class="tn-spec"><dt>JOINTS</dt><dd>43 · Dex3 hands</dd><dt>CAMERA</dt><dd>Robot head, 640×480</dd></dl></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Software &amp; versions</h3></div>
+    <p>Each column shows the software layers of one machine, from the platform (bottom) up to the project's applications (top, highlighted).</p>
+    <div class="stacks">
+      <div class="stack "><div class="stack-h"><b>Workstation</b><span>SIMULATION</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>Operating system</small></div><em>LTS</em></li><li class="base"><div><b>NVIDIA driver + CUDA</b><small>Isaac Sim 6.1 requires driver ≥ 595</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12, local install</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Official pairing with Isaac Sim 6.0</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Runs in Docker 29; separate branch for the hammer task</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>g1gr00t client + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">Also: Jupyter, pytest, pandas, matplotlib for notebooks and testing.</p></div>
+      <div class="stack "><div class="stack-h"><b>GPU server</b><span>MODEL</span></div><ol><li class="base"><div><b>Linux + NVIDIA driver</b><small></small></div><em>575.57</em></li><li class=""><div><b>Isaac-GR00T</b><small>Python environment via uv; the exact commit tested with Arena</small></div><em>4b1dca9</em></li><li class=""><div><b>Cosmos-Reason2-2B</b><small>Vision–language backbone, downloaded from Hugging Face</small></div><em>2B</em></li><li class="sw-app"><div><b>GR00T N1.7-3B + checkpoint</b><small>ZeroMQ policy server; 12.6 GB per checkpoint</small></div><em>3B</em></li></ol><p class="stack-note">NVIDIA's model license must be accepted on Hugging Face.</p></div>
+      <div class="stack plan"><div class="stack-h"><b>Real robot</b><span>NEXT PHASE</span></div><ol><li class="base"><div><b>On-robot computer</b><small>Or a computer placed next to the robot</small></div></li><li class=""><div><b>Unitree SDK2</b><small>unitree_sdk2py package, already declared in the configuration</small></div><em>—</em></li><li class="sw-app"><div><b>g1gr00t client</b><small>Reused as-is; only a real-robot backend is added</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">Not deployed in this phase.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Inference performance</h3></div>
+    <p>How many times per second the robot receives commands, how many actions each model call yields, and how long the model takes to respond.</p>
+    <div class="perf four">
+      <div><small>CONTROL FREQUENCY</small><b>50<i>Hz</i></b><span>Physics 200 Hz, 4 steps per tick · real2sim 20 Hz</span></div>
+      <div><small>PER MODEL CALL</small><b>40<i>steps</i></b><span>= 0.8 s of motion · real2sim 16 steps, 8 executed</span></div>
+      <div><small>SERVER INFERENCE</small><b>~100<i>ms</i></b><span>Model computes one 40-step sequence on the H100</span></div>
+      <div><small>MODEL LATENCY</small><b>~1.3<i>s</i></b><span>Average during evaluation, via SSH tunnel to the H100</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Time budget: motion vs. model latency</b><span>seconds · scale 0–4 s</span></div>
+      <div class="cb ref"><span class="l">One action sequence (motion the robot has available)</span><span class="t"><i class="" style="width:20%"></i></span><span class="v">0.8 s</span></div>
+      <div class="cb"><span class="l">Inference time on the server</span><span class="t"><i class="" style="width:2.5%"></i></span><span class="v">~0.1 s</span></div>
+      <div class="cb"><span class="l">Average latency during evaluation</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1.3–1.6 s</span></div>
+      <div class="cb"><span class="l">First call (warm-up)</span><span class="t"><i class="range" style="width:85%"></i></span><span class="v">1.7–3.4 s</span></div>
+      <div class="cb"><span class="l">4 robots calling at once</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">3.5–3.9 s</span></div>
+      <p class="cb-note">The model responds <b>more slowly</b> than the time the robot needs to finish one sequence. In simulation this is fine because the simulation pauses and waits; on the real robot, the robot will stall between sequences unless the next call is made in advance and the GPU is placed close to the robot. The model itself takes only ~100 ms; most of the remaining latency lies in the SSH tunnel link and data serialization.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Data collection performance</h3></div>
+    <p>Measured while recording hammer-task demos with the Meta Quest headset over CloudXR.</p>
+    <div class="perf">
+      <div><small>HEADSET RENDERING</small><b>42<i>%</i></b><span>The largest share of a loop, including waiting on CloudXR</span></div>
+      <div><small>PHYSICS SIMULATION</small><b>11<i>%</i></b><span>Robot head camera 10 %, inverse kinematics 7 %</span></div>
+      <div><small>RAM</small><b>~12<i>GB</i></b><span>Grows ~15 MB/s while recording, freed when the demo is saved</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Where a teleop loop spends its time</b><span>measured while recording hammer-task demos</span></div>
+      <div class="split"><i style="width:42%;background:var(--accent)">42 %</i><i style="width:11%;background:oklch(0.62 0.12 var(--h))">11 %</i><i style="width:10%;background:oklch(0.7 0.1 var(--h))">10 %</i><i style="width:7%;background:oklch(0.78 0.08 var(--h))">7 %</i><i style="width:30%;background:#c9cdbf">30 %</i></div>
+      <div class="split-legend"><span><b style="background:var(--accent)"></b>Headset rendering, waiting on CloudXR</span><span><b style="background:oklch(0.62 0.12 var(--h))"></b>Physics simulation</span><span><b style="background:oklch(0.7 0.1 var(--h))"></b>Robot head camera</span><span><b style="background:oklch(0.78 0.08 var(--h))"></b>Inverse kinematics for the arms</span><span><b style="background:#c9cdbf"></b>Everything else</span></div>
+      <p class="cb-note">The teleop bottleneck is the video stream to the headset, not the simulation. The process uses ~12 GB of RAM and grows ~15 MB/s while recording (camera image buffer, freed when the demo is saved).</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Training performance</h3></div>
+    <p>Fine-tuning GR00T N1.7 on one H100 GPU and preparing the training data.</p>
+    <div class="perf">
+      <div><small>FINE-TUNE TIME</small><b>61<i>min</i></b><span>10,000 steps · 0.36 s/step · batch 32</span></div>
+      <div><small>GPU MEMORY</small><b>≈ 53<i>GB</i></b><span>LLM frozen; vision, projector, diffusion tuned</span></div>
+      <div><small>CHECKPOINT</small><b>12.6<i>GB</i></b><span>Weights only; ≈ 27 GB with optimizer</span></div>
+    </div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Training speed</td><td class="num">0.36 s / step</td><td>Batch 32, 1× H100 (2.9 s/step when the GPU is occupied by other jobs)</td></tr>
+            <tr><td>GPU memory during training</td><td class="num">≈ 53 GB</td><td>LLM frozen; vision, projector, diffusion tuned</td></tr>
+            <tr><td>10,000 training steps</td><td class="num">61 min</td><td>Loss 1.27 → 0.020</td></tr>
+            <tr><td>Checkpoint size</td><td class="num">12.6 GB</td><td>Weights only; ≈ 27 GB with optimizer state</td></tr>
+            <tr><td>Augmented data generation</td><td class="num">100 demos / 17 min</td><td>133 runs, 100 successful runs kept</td></tr>
+            <tr><td>Data size</td><td class="num">131 MB / 13 GB</td><td>200 hammer episodes in LeRobot format / original HDF5 with images</td></tr>
+            <tr><td>Automated testing</td><td class="num">84 unit tests</td><td>In-simulation tests: ~3.5 min</td></tr>
+          </tbody>
+        </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Performance analysis</h3></div>
+    <p>Reading the three cards above together: at each stage, where time and resources are actually spent, and what that means for the next phase.</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">INFERENCE</div><div class="st">The bottleneck is the link, not the model</div><p>The model computes in only ~100 ms, yet each call takes ~1.3 s, longer than one action sequence (0.8 s). The gap lies mostly in the SSH tunnel and data serialization. When 4 robots call at once, latency rises to 3.5–3.9 s because the server processes requests one after another.</p></div>
+      <div class="sub"><div class="sl">DATA COLLECTION</div><div class="st">The bottleneck is the video to the headset</div><p>Rendering and waiting on CloudXR take 42 % of each loop, nearly 4 times the physics simulation (11 %). RAM grows ~15 MB/s while recording, so each demo should be saved regularly rather than recording one long continuous session.</p></div>
+      <div class="sub"><div class="sl">TRAINING</div><div class="st">One H100 is enough, if it is not shared</div><p>10,000 fine-tune steps take 61 min and use ≈ 53 GB of GPU memory, which fits one H100. When the GPU is occupied by other jobs, speed drops nearly 8 times (2.9 s/step vs. 0.36 s/step).</p></div>
+    </div>
+    <div class="callout"><b>Improvement directions:</b> place the GPU server near the robot or on the same local network, and request the next sequence in advance so the robot does not stall; use a wired connection for the headset during data collection; dedicate a GPU to fine-tuning runs.</div>
+  </div>
+
+</section>

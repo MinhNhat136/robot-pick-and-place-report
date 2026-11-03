@@ -1,0 +1,158 @@
+<section class="section" id="du-lieu" data-hue="blue" data-kicker="II.04 · データ研究" data-title="学習データ拡充の戦略">
+  <div class="hero">
+    <span class="pill">II.04 節 · データ研究</span>
+    <h2>少ない実デモから、多くの学習データを<span class="dot">。</span></h2>
+    <p class="lead">GR00T のファインチューニングにはタスクごとに数百件のデモが必要ですが、テレオペデモはコストが高く、モデルは画像の変化に非常に敏感です。本節では、テレオペを増やさずにデータを増やすために本プロジェクトが用いる 3 つの手法、<b>domain randomization</b>、<b>real2sim</b>、<b>デモ追加生成</b>を説明します。各手法には動作を確認できるインタラクティブな図解があります。</p>
+    <div class="meta">
+      <div><span class="ml">手法</span><span class="mv">Domain randomization · real2sim · デモ追加生成</span></div>
+      <div><span class="ml">適用先</span><span class="mv">Apple &amp; Plate · Multi Fruit · Hammer &amp; Bin</span></div>
+      <div><span class="ml">キーワード</span><span class="mv">Visual gap · digital twin · MimicGen</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>課題 1: Visual Gap</h3></div>
+    <p>すべてのデモを同じシーンで記録すると、モデルはその画像を丸暗記してしまいます。リンゴのタスクがこれをはっきり示しています。</p>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>同じリンゴ → 皿のチェックポイントで、シーンだけを変更</b><span>成功率 · 実測値、III.01 節</span></div>
+      <div class="cb ref"><span class="l">元の Arena 環境（データ記録時と同じ）</span><span class="t"><i style="width:92%"></i></span><span class="v">92 %</span></div>
+      <div class="cb"><span class="l">再構築した Galileo シーン（照明・レンダリングが異なる）</span><span class="t"><i class="soft" style="width:56%"></i></span><span class="v">56 %</span></div>
+      <div class="cb"><span class="l">独自構築のシーン（まったく異なる）</span><span class="t"><i class="soft" style="width:0%"></i></span><span class="v">0 %</span></div>
+      <p class="cb-note">チェックポイント、指示文、パイプラインはすべて同じです。モデルは学習時に 1 つのシーンしか見ていないため、リンゴではなくその画像に結びついてしまいます。対処法は domain randomization（カード 2）です。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>解決策 1: Domain Randomization</h3></div>
+    <div class="callout"><b>一言でいうと：</b>タスクに<b>関係のない</b>もの（照明、色、背景、カメラ角度）をすべてランダムに変え、モデルが頼れるのを変わらないもの、つまり<b>物体と手</b>だけにします。新しいシーンに出会っても、実画像であっても、モデルはそれを変化のひとつとして扱います（Tobin ら、2017）。</div>
+    <h4>試してみる：画像を多様化する 2 つの方法</h4>
+    <div class="ds-lab" data-ds="dr">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">方法 1 · 2D 画像拡張</span><span class="ds-tag">実画像 · 頭部カメラ</span></div>
+        <div class="ds-photo"><img src="images/task_apple.jpg" alt="ロボット頭部カメラの画像、リンゴのタスク" data-dr-photo></div>
+        <div class="ds-sliders">
+          <label><span>明るさ</span><input type="range" min="60" max="140" value="100" data-dr-f="brightness"></label>
+          <label><span>コントラスト</span><input type="range" min="60" max="140" value="100" data-dr-f="contrast"></label>
+          <label><span>彩度</span><input type="range" min="50" max="150" value="100" data-dr-f="saturate"></label>
+          <label><span>色相</span><input type="range" min="-30" max="30" value="0" data-dr-f="hue-rotate"></label>
+        </div>
+        <p class="ds-note">Color jitter：低コストで学習時に画像へ適用できますが、<b>影、反射、新しい視点は作れません</b>。本プロジェクトでは Multi Fruit のファインチューニング時にこの方法を使用しました。</p>
+      </div>
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">方法 2 · DOMAIN RANDOMIZATION</span><span class="ds-tag">図解 · 実測データではない</span></div>
+        <div class="ds-scene"><svg viewBox="0 0 320 240" role="img" aria-label="ランダム化されたシミュレーションシーン" data-dr-main></svg></div>
+        <div class="ds-ctrl">
+          <span class="ds-ctrl-l">ランダム化：</span>
+          <button type="button" class="chip" aria-pressed="true" data-dr-opt="light">照明</button>
+          <button type="button" class="chip" aria-pressed="true" data-dr-opt="material">材質</button>
+          <button type="button" class="chip" aria-pressed="true" data-dr-opt="bg">背景</button>
+          <button type="button" class="chip" aria-pressed="true" data-dr-opt="camera">カメラ</button>
+          <button type="button" class="chip" aria-pressed="false" data-dr-opt="pose">物体の位置</button>
+          <button type="button" class="btn solid" data-dr-roll>↻ 新しいバリエーションを生成</button>
+        </div>
+        <div class="ds-thumbs" data-dr-thumbs></div>
+        <p class="ds-note">シーンそのものを変えて<b>再レンダリング</b>します。リンゴと手（破線の枠）は変わりません。これがモデルが学ぶべきものです。</p>
+      </div>
+    </div>
+
+    <h4>ランダム化できる要素</h4>
+    <p>易しいものから難しいものまで、3 つの要素グループ：</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">外観</div><div class="st">モデルが見るもの</div><p>照明、材質、テクスチャ、背景、操作領域外の装飾物。</p></div>
+      <div class="sub"><div class="sl">幾何</div><div class="st">配置と視点</div><p>物体の位置・向き、カメラの位置・俯角・焦点距離。</p></div>
+      <div class="sub"><div class="sl">動力学</div><div class="st">物理</div><p>質量、摩擦、関節剛性、遅延（Peng ら、2018）。実ロボットに移行する際に必要です。</p></div>
+    </div>
+    <div class="callout warn"><b>トレードオフ：</b>ランダム化の範囲が広いほどモデルは頑健になりますが、必要なデータと学習ステップも増えます。まず実際に性能低下を引き起こした要素（ここでは照明とレンダリング）を優先し、その後範囲を広げるべきです。</div>
+    <h4>本プロジェクトでの適用</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>適用先</th><th>実施済み</th><th>未実施</th></tr></thead>
+      <tbody>
+        <tr><td>Apple &amp; Plate</td><td>Visual gap を測定 92 → 56 → 0 %</td><td>シーンをランダム化して 208 件のデモを再生（III.01 節で提案）</td></tr>
+        <tr><td>Multi Fruit</td><td>エピソードごとに果物、位置、向き、皿、妨害用の果物を変更。ファインチューニング時に color jitter</td><td>照明と材質は未変更</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>課題 2: Sim Data Scarcity</h3></div>
+    <p>Multi Fruit シナリオには G1 + Dex3 向けの適切なシミュレーションデータセットがありません。最も近いのは <b>PhysicalAI-Robotics-GR00T-Teleop-G1</b>（テレオペ軌道 1,095 件）ですが、実ロボットで記録されたものであり、シミュレーションでそのまま使うことはできません。</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">不足 1</div><div class="st">物体の位置がない</div><p>データには関節角度と動画しかなく、シーンを構築するための果物と皿の位置がわかりません。</p></div>
+      <div class="sub"><div class="sl">不足 2</div><div class="st">実画像 ≠ レンダリング画像</div><p>実際の RealSense 動画は、実行時にモデルが見るシミュレーション画像と一致しません。</p></div>
+      <div class="sub"><div class="sl">不足 3</div><div class="st">Action の意味が異なる</div><p>実ロボットとシミュレーションの action は名前が同じでも意味が異なります。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>解決策 2: Real2sim</h3></div>
+    <div class="callout"><b>一言でいうと：</b>実際のシーンの<b>デジタルコピー</b>（digital twin）をシミュレーション内に再構築し、その中で実際の動きを再生してシミュレーションデータを得ます。データセットには物体の位置がないため、本プロジェクトでは<b>手の動きからシーンを推定</b>します。手が閉じた場所に果物があり、手が開いた場所に皿があります。</div>
+
+    <h4>試してみる：1 本の軌道からシーンを再構築</h4>
+    <div class="ds-lab single" data-ds="r2s">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">テーブルを真上から見た図</span><span class="ds-tag">図解 · 実測データではない</span></div>
+        <div class="ds-steps">
+          <button type="button" data-r2s-step="1" aria-pressed="true"><b>1</b>順運動学</button>
+          <button type="button" data-r2s-step="2" aria-pressed="false"><b>2</b>把持 / 解放の検出</button>
+          <button type="button" data-r2s-step="3" aria-pressed="false"><b>3</b>妨害物の配置</button>
+          <button type="button" data-r2s-step="4" aria-pressed="false"><b>4</b>再生とフィルタ</button>
+          <button type="button" data-r2s-step="5" aria-pressed="false"><b>5</b>データセット記録</button>
+        </div>
+        <div class="r2s-grid">
+          <div class="r2s-vis"><svg viewBox="0 0 520 250" role="img" aria-label="真上から見た手の軌道" data-r2s-top></svg>
+            <svg viewBox="0 0 520 110" role="img" aria-label="指の閉じ具合の時間変化" data-r2s-grip></svg>
+            <div class="ds-play"><button type="button" class="btn solid" data-r2s-play>▶ 再生</button><input type="range" min="0" max="1000" value="1000" data-r2s-t aria-label="時間"><span data-r2s-clock>100 %</span></div>
+          </div>
+          <div class="r2s-explain" data-r2s-explain></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>課題 3: Teleop Bottleneck</h3></div>
+    <p>Hammer &amp; Bin シナリオはまったく新しいもので、既存のデータセットやチェックポイントはありません。すべてのデモを Isaac Lab 上で Meta Quest ヘッドセットによるテレオペで自ら収集する必要があります。</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">遅い</div><div class="st">1 セッションあたり ~10 件</div><p>最初の実デモ 100 件に 10 回のテレオペセッションを要しました。</p></div>
+      <div class="sub"><div class="sl">不安定</div><div class="st">やり直しが多い</div><p>コントローラーの信号が途切れるとロボットの手が停止し、2 回目以降はカクつきが発生します。</p></div>
+      <div class="sub"><div class="sl">品質のばらつき</div><div class="st">失敗デモがデータに混入</div><p>ハンマーが箱の縁に引っかかったまま、または手が離れていないのに成功と判定されたデモがありました。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>解決策 3: Demo Generation</h3></div>
+    <div class="callout"><b>一言でいうと：</b>テレオペデモを 1 つ<b>テンプレート</b>とし、重要な点（開始、把持、解放）と速度を少しずらして新しいデモを作り、<b>シミュレーションで再実行</b>して、成功したデモだけを残します。これは MimicGen（Mandlekar ら、2023）の手法で、NVIDIA は大規模に用いて GR00T N1 向けに 780,000 本の軌道を生成しました。</div>
+
+    <h4>試してみる：ハンマー → 箱のデモを生成</h4>
+    <div class="ds-lab single" data-ds="gen">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">側面図 · 棚 → 箱</span><span class="ds-tag">図解 · 見やすさのためずれを誇張</span></div>
+        <div class="gen-grid">
+          <svg viewBox="0 0 520 250" role="img" aria-label="テンプレートデモと生成デモ" data-gen-svg></svg>
+          <div class="gen-side">
+            <div class="gen-count"><div><b data-gen-kept>0</b><span>採用</span></div><div><b data-gen-drop>0</b><span>除外</span></div></div>
+            <div class="gen-btns"><button type="button" class="btn solid" data-gen-one>+ デモを 1 件生成</button><button type="button" class="btn" data-gen-many>+ デモを 20 件生成</button><button type="button" class="btn" data-gen-clear>クリア</button></div>
+            <div class="gen-last" data-gen-last><span class="ds-k">直近の生成デモ</span><p>「デモを 1 件生成」を押すと各変換を確認できます。</p></div>
+            <p class="ds-note">本プロジェクトでの実績：<b>100 / 133</b> 回を採用、テンプレートデモ 60 件、デモ 100 件に ~17 分。</p>
+          </div>
+        </div>
+        <div class="gen-legend"><span><i class="lg-tpl"></i>テンプレートデモ（テレオペ）</span><span><i class="lg-ok"></i>生成デモ、合格</span><span><i class="lg-bad"></i>生成デモ、除外（ハンマーが箱の中央に入らない）</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>組み合わせと結論</h3></div>
+    <p>3 つの手法は互いを置き換えるものではなく、1 つのパイプラインとしてつながります。モデルを実ロボットへ移行する段階での組み合わせ方針：</p>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01</div><div class="sv">実機テレオペ</div><div class="sd">作業環境で少数のデモ</div></div>
+      <div class="step"><div class="sk">02</div><div class="sv">Real2sim</div><div class="sd">シーンを構築し、シミュレーションで再生</div></div>
+      <div class="step"><div class="sk">03</div><div class="sv">デモ追加生成</div><div class="sd">件数を増やし、シミュレーションでフィルタ</div></div>
+      <div class="step"><div class="sk">04</div><div class="sv">Domain randomization</div><div class="sd">外観と物理を多様化</div></div>
+      <div class="step"><div class="sk">05</div><div class="sv">Fine-tune &amp; sim2real</div><div class="sd">シミュレーションで評価し、その後実ロボットで評価</div></div>
+    </div>
+    <div class="panel"><div class="pl">結論</div><p>本プロジェクトは 3 つの手法のうち 2 つを検証済みです。<b>real2sim</b> は実ロボットのデータを 790 件のシミュレーションエピソードに変換し（66 %）、<b>デモ追加生成</b>は ~17 分でテレオペデータを倍増させました（mix200 で 66 %）。<b>Domain randomization</b> は visual gap の測定と手法の提案にとどまっており、実ロボットへ移行する前に取り組むべき次のステップです。</p></div>
+  </div>
+</section>

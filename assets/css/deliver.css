@@ -1,0 +1,49 @@
+/* Deliverables section: what the customer receives (tiles), where to start (paths by goal),
+   and the large items supplied separately (size bars). Simple first, decoration second. */
+
+/* ---------- what you get: one tile per folder ---------- */
+.dl-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dl-tile{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;border:1px solid var(--accent-border);border-radius:14px;background:#fff;padding:14px}
+.dl-ico{width:40px;height:40px;border-radius:11px;display:grid;place-content:center;background:var(--accent-soft);color:var(--accent-ink)}
+.dl-ico svg{width:21px;height:21px}
+.dl-tile .n{font:600 10px var(--mono);letter-spacing:.06em;color:var(--accent)}
+.dl-tile .t{font-size:15px;font-weight:800;color:var(--ink);margin-top:2px;line-height:1.25}
+.dl-tile p{margin:5px 0 0;font-size:12.8px;line-height:1.5;color:var(--ink-3)}
+.dl-tile .sz{display:inline-block;margin-top:8px;font:600 10.5px var(--mono);color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+
+/* ---------- where to start: three paths by goal ---------- */
+.dl-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dl-path{border:1px solid rgba(34,38,30,.12);border-radius:14px;background:var(--surface-2);padding:14px 16px}
+.dl-path .goal{font:600 9.5px var(--mono);letter-spacing:.12em;color:var(--accent)}
+.dl-path .gt{font-size:15px;font-weight:800;color:var(--ink);margin-top:4px}
+.dl-path .need{font-size:12px;color:var(--muted);margin-top:3px}
+.dl-path ol{margin:10px 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:7px}
+.dl-path li{counter-increment:s;display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:start;font-size:13px;line-height:1.45;color:var(--ink-2)}
+.dl-path li::before{content:counter(s);width:22px;height:22px;border-radius:7px;display:grid;place-content:center;background:var(--accent);color:#fff;font:800 11px var(--mono)}
+.dl-path.easy{background:#fff;border-color:var(--accent)}
+
+/* ---------- supplied separately: size bars ---------- */
+.dl-big{display:flex;flex-direction:column;gap:8px}
+.dl-big .row{display:grid;grid-template-columns:minmax(180px,280px) minmax(0,1fr) 80px;gap:12px;align-items:center}
+.dl-big .l b{display:block;font-size:13px;color:var(--ink)}
+.dl-big .l span{display:block;font-size:11.8px;color:var(--muted);margin-top:1px}
+.dl-big .bar{height:12px;border-radius:0 5px 5px 0;background:oklch(0.95 0.015 var(--h));position:relative}
+.dl-big .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:0 5px 5px 0;background:var(--accent)}
+.dl-big .row.base .bar i{background:oklch(0.55 0.15 150)}
+.dl-big .v{font:700 12.5px var(--mono);text-align:right;color:var(--ink)}
+
+/* ---------- license notes ---------- */
+.dl-lic{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dl-lic div{border-radius:12px;padding:12px 14px;border:1px solid rgba(34,38,30,.12);background:#fff}
+.dl-lic b{display:block;font-size:13.5px;color:var(--ink)}
+.dl-lic p{margin:5px 0 0;font-size:12.6px;line-height:1.5;color:var(--ink-3)}
+.dl-lic .ok{border-left:3px solid oklch(0.55 0.15 150)}
+.dl-lic .wn{border-left:3px solid var(--warn)}
+.dl-lic .in{border-left:3px solid var(--accent)}
+
+@media (max-width:1200px){.dl-tiles,.dl-paths,.dl-lic{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:960px){
+  .dl-tiles,.dl-paths,.dl-lic{grid-template-columns:1fr}
+  .dl-big .row{grid-template-columns:1fr 70px}
+  .dl-big .bar{grid-column:1 / -1;grid-row:2}
+}

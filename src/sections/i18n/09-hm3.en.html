@@ -1,0 +1,217 @@
+<section class="section" id="hm3" data-hue="blue" data-kicker="III.03 · SCENARIO 3" data-title="Scenario Hammer &amp; Bin">
+  <div class="hero">
+    <span class="pill">SCENARIO 3 · HAMMER &amp; BIN</span>
+    <h2>G1 picks a hammer from the shelf and drops it into a bin<span class="dot">.</span></h2>
+    <p class="lead">A completely new task designed by the project: the left hand grasps the hammer handle, lifts it over the bin wall, drops it in the middle of the bin and pulls the hand away. It is harder than the apple because the hammer is <b>long, thin and lies close to the shelf surface</b>, and easily ends up resting on the bin rim. The project built the environment, collected <b>100 teleop demos</b> with a Meta Quest headset, generated additional demos and fine-tuned GR00T (~1 hour on 1 H100) — the full cycle took about 6 days. Results: untuned <b>0 %</b> → 200 episodes <b>66 %</b> → 400 episodes <b>63 %</b> → relaxed at-rest threshold <b>73 %</b>.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">200 · 400<small>episodes</small></div><ul class="fact-list"><li><span>Source</span><b>Teleop + generated</b></li><li><span>Frames</span><b>28,022 · 54,541</b></li><li><span>Rate</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">10k · 20k<small>steps</small></div><ul class="fact-list"><li><span>Time</span><b>61 min · 2 h 15</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>Final loss</span><b>0.020 · 0.019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>mix200</span><b><code>hammer_mix200_n17</code></b></li><li><span>mix400</span><b><code>hammer_mix400_n17</code></b></li><li><span>Action chunk</span><b>40 steps · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">73<small>% success</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>BASE</em></span><i>→</i><span class=""><b>66 %</b><em>200 EP</em></span><i>→</i><span class=""><b>63 %</b><em>400 EP</em></span><i>→</i><span class="best"><b>73 %</b><em>THRESHOLD</em></span></div><div class="fact-note">At-rest threshold relaxed 0.01 → 0.02</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 89 · SUCCESS</span>
+        <video src="assets/videos/kich-ban-3-bua-thung.mp4" poster="assets/videos/kich-ban-3-bua-thung-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">The robot grasps the hammer handle, lifts it over the bin wall, drops it in the middle of the bin and lets go</div>
+        <div class="cv-cmd"><small>INSTRUCTION SENT TO THE MODEL</small>"put the hammer in the bin"</div>
+        <div class="cv-stats"><div><b>3.0<small>s</small></b><span>Time to success</span></div><div><b>12.8<small>cm</small></b><span>Maximum hammer lift</span></div><div><b>0.7<small>cm</small></b><span>Hammer centre to bin centre</span></div><div><b>0<small>N</small></b><span>Hand force on hammer: released</span></div></div>
+        <div class="cv-note">Taken from the 100-episode run with the best configuration (73/100).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Scenario setting</h3></div>
+    <p>The G1 robot stands in front of a shelf in the Galileo lab; the hammer lies on the left with its head propped on a small block, and a red plastic bin sits on the right. The image below is the <b>first frame</b> of the episode shown in the Video Showcase.</p>
+    <figure class="fig"><img src="images/kich-ban-3-bua-thung-frame0.jpg" alt="First frame of the Hammer &amp; Bin scenario" loading="lazy"><figcaption><b>Frame 0</b> · left: robot head camera, the image the model receives · right: external camera, used only for recording video.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scene &amp; objects</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Background</td><td>Galileo lab; the boxes shield_controller_box_02, jetson_orin_05 and jetson_orin_07 are hidden so the hand does not collide (clearance ≥ 2 cm)</td></tr>
+        <tr><td>Hammer</td><td><code>hammer_2_handal_robolab</code> 33 × 13 × 3 cm at (0.63, 0.25) m, yaw 0; the hammer head rests on a 5 cm block (tilted ~10°) so the handle is easy to grasp</td></tr>
+        <tr><td>Bin</td><td><code>red_container</code> scaled 0.65 → 40 × 27 × 5.9 cm at (0.68, 0.00) m</td></tr>
+        <tr><td>Distance</td><td>Hammer is 5.1 cm from the bin edge</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Robot, cameras &amp; control</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Robot</td><td>Unitree G1 + Dex3 at (0.25, 0.08) m; the left hand grasps the handle, lifts it over the 5.9 cm bin wall, moves ~25 cm to the right and releases</td></tr>
+        <tr><td>Cameras</td><td>Robot head camera (model input) + 1 external camera for recording</td></tr>
+        <tr><td>Rate</td><td>50 Hz control; each model call returns a chunk of 40 steps</td></tr>
+        <tr><td>Episode</td><td>At most 300 steps = 6 s</td></tr>
+        <tr><td>Instruction</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>Success</td><td>Hammer centre ≤ 10 cm from the bin centre and below the wall; hammer at rest (&lt; 0.01 m/s, &lt; 0.1 rad/s — later relaxed to 0.02 m/s); hand released (22 hand links ≤ 0.01 N); held for 10 consecutive steps</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Scenario goals</h3></div>
+    <p>This scenario tests the ability to <b>teach the robot a new task from scratch</b> with tools and data built by the project.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">GOAL 1</div><div class="st">A completely new task</div><p>Define a task with no existing data or model: pick the hammer from the shelf and drop it into the bin.</p></div>
+      <div class="sub"><div class="sl">GOAL 2</div><div class="st">The full cycle</div><p>Go through every stage: building the environment, collecting teleop demos, data augmentation, fine-tuning, evaluation.</p></div>
+      <div class="sub"><div class="sl">GOAL 3</div><div class="st">Measure cost and benefit</div><p>Know how much data and training time is needed, and how much each improvement adds to the success rate.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Scenario data</h3></div>
+    <p>As a new scenario, there was no existing dataset: the project collected its own demos with <b>Meta Quest headset teleop</b> in Isaac Lab at 50 Hz, then added generated demos (card 6). Every demo was replayed against the strict success condition before being used for training.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Dataset hammer_to_bin</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Source</td><td>Meta Quest headset teleop in Isaac Lab, 50 Hz; the first 100 real demos were collected over 10 sessions</td></tr>
+        <tr><td>Real demos</td><td>~13,700 steps; hammer lifted 10.6 cm on average; final hammer centre 3.7 cm from the bin centre (max 8.4 cm)</td></tr>
+        <tr><td>mix200 set</td><td>200 episodes (100 real + 100 augmented), 28,022 frames (~9.3 min), LeRobot v2.1, 131 MB</td></tr>
+        <tr><td>mix400 set</td><td>400 episodes (mix200 + 200 new teleop demos), 54,541 frames (~18 min)</td></tr>
+        <tr><td>Instruction</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>Check</td><td>All demos successful; for mix200: minimum hammer lift 6.4 cm, mean final distance 3.8 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Problems encountered</h3></div>
+    <p>The hammer → bin task is completely new: no data, no model, no ready-made scene. The biggest difficulty is getting enough good data for fine-tuning.</p>
+    <div class="callout warn"><b>Nothing to start from.</b> All data had to be collected by teleop, which is the most labour-intensive stage: 100 real demos took 10 sessions.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">PROBLEM 1</div><div class="st">No existing data</div><p>There is no dataset or checkpoint for picking a hammer and placing it in a bin on the G1; the base model without fine-tuning cannot do the task.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 2</div><div class="st">Teleop is slow and laborious</div><p>The operator wears a Meta Quest headset and performs each demo by hand; one session yields only about 10 demos, so many sessions are needed.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 3</div><div class="st">Teleop is unstable</div><p>The robot hand freezes when the controller signal is lost, and it lags from the second attempt onwards; many attempts had to be discarded and redone.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 4</div><div class="st">Uneven demo quality</div><p>Some demos were scored as successful while the hammer still rested on the bin wall or the hand had not let go; bad demos mixed into the data teach the model the wrong behaviour.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Proposed approach</h3></div>
+    <p>Solved by <b>generating additional data</b>: from real teleop demos, new demos are created automatically in the style of MimicGen, replayed in simulation, and only those meeting the strict success condition are kept. This multiplies the data without extra teleop hours, and every demo used for training has been verified.</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">GENERATION</div><div class="st">Transforming template demos</div><p>Real demos serve as templates (60 different templates); time is scaled ×0.85–1.2; start (σ 1 cm), grasp (σ 4 mm) and release (±1–1.2 cm) points are shifted and joined with min-jerk trajectories; 0.2–0.6 mm hand jitter is added.</p></div>
+      <div class="sub"><div class="sl">FILTERING</div><div class="st">100/133 attempts kept</div><p>Each generated demo is replayed in simulation against the strict success condition; 100 of 133 attempts passed and went into the mix200 set.</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Metric</th><th class="num">Augmented</th><th class="num">Real</th></tr></thead>
+      <tbody>
+        <tr><td>Episode length (steps)</td><td class="num">145</td><td class="num">137</td></tr>
+        <tr><td>Hammer lift</td><td class="num">10.5 cm</td><td class="num">10.6 cm</td></tr>
+        <tr><td>Distance to bin centre, mean</td><td class="num">4.0 cm</td><td class="num">3.7 cm</td></tr>
+        <tr><td>Distance to bin centre, max</td><td class="num">8.0 cm</td><td class="num">8.4 cm</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_generated_demo.png" alt="Augmented demo" loading="lazy"><figcaption><b>One augmented demo</b>: first, middle and last frames. Poses at the key points differ by less than 1 cm from the real demo; 60 different template demos are used.</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Workflow</h3></div>
+    <p>A completely new scenario: no existing data or model. The project built the environment, <b>created its own data by teleop</b>, <b>ran augmentation</b> to multiply the data, <b>fine-tuned</b> GR00T, and only then ran the closed-loop evaluation.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">STEP 1 · 07/10</div><div class="sv">Environment design</div><div class="sd">Objects, layout, support block, success condition</div></div>
+      <div class="step"><div class="sk">STEP 2 · 08–10/10</div><div class="sv">Teleop demo collection</div><div class="sd">Meta Quest · 100 real demos</div></div>
+      <div class="step"><div class="sk">STEP 3 · 08–10/10</div><div class="sv">Data augmentation</div><div class="sd">MimicGen-style generation · 100/133 kept</div></div>
+      <div class="step"><div class="sk">STEP 4 · 12/10</div><div class="sv">Fine-tune</div><div class="sd">mix200 10k steps · mix400 20k steps</div></div>
+      <div class="step"><div class="sk">STEP 5 · 12–19/10</div><div class="sv">Run &amp; evaluate</div><div class="sd">Isaac Lab Arena · 50–100 episodes</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>Work</th><th>Notebook / tool</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Choose hammer and bin; prop the hammer on a 5 cm block; hide background boxes in the hand's way; write the strict success condition</td><td>Isaac Lab Arena, hammer_to_bin/scripts</td><td>Final layout, clearance ≥ 2 cm</td></tr>
+        <tr><td>2</td><td>Collect demos with the Meta Quest headset using presets and teleop diagnostics; replay each demo against the strict condition</td><td>teleop_kit, record_demos.sh</td><td>100 real demos (10 sessions), later 200 more</td></tr>
+        <tr><td>3</td><td>Transform template demos (timing, grasp/release points, hand jitter), replay and filter</td><td>gen_scripted_demos.py</td><td>100 augmented demos → mix200 set</td></tr>
+        <tr><td>4</td><td>Fine-tune GR00T N1.7-3B; LLM frozen, vision + projector + diffusion tuned</td><td>H100 server</td><td>mix200: 61 min · mix400: 2 h 15 min</td></tr>
+        <tr><td>5</td><td>Run N closed-loop episodes, classify failures, record videos</td><td>Arena eval, nb11_hammer_to_bin, nb12_eval_hammer_to_bin</td><td>0 % base → 66 % → 63 % → 73 %</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Training time</div><div class="kv">61<small>min</small></div><div class="kd">1× H100 · 0.36 s/step · ~53 GB VRAM</div></div>
+      <div class="kpi"><div class="kl">Steps · batch</div><div class="kv">10k<small>· 32</small></div><div class="kd">~11 epochs · checkpoint every 2k steps</div></div>
+      <div class="kpi"><div class="kl">Final loss</div><div class="kv">0.020</div><div class="kd">from 1.27 at step 10</div></div>
+    </div>
+    <div class="chart" data-chart="line" data-source="hammer-loss-en">
+      <div class="chart-head"><div><div class="ct">Training loss · log scale</div><div class="cs">GR00T N1.7-3B on mix200. LLM frozen; vision + projector + diffusion tuned. Hover to see each step.</div></div><button class="btn" type="button" data-table-toggle data-l-table="Show as table" data-l-chart="Show chart">Show as table</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Step</th><th class="num">10</th><th class="num">500</th><th class="num">1,000</th><th class="num">2,000</th><th class="num">4,000</th><th class="num">6,000</th><th class="num">8,000</th><th class="num">10,000</th></tr></thead><tbody><tr><td>Loss</td><td class="num">1.270</td><td class="num">0.222</td><td class="num">0.108</td><td class="num">0.064</td><td class="num">0.045</td><td class="num">0.031</td><td class="num">0.023</td><td class="num">0.020</td></tr></tbody></table></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Results achieved</h3></div>
+    <p>Figures measured across the teleop → augmentation → fine-tune → evaluation cycle, in local Isaac Sim (<code>inside</code> condition: hammer centre inside the bin, at rest, released).</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Best · local</div><div class="kv">73<small>%</small></div><div class="kd">mix400 · threshold 0.02 · 73/100</div></div>
+      <div class="kpi"><div class="kl">Local · mix200</div><div class="kv">66<small>%</small></div><div class="kd">66/100 · Wilson 56–75 %</div></div>
+      <div class="kpi"><div class="kl">Data</div><div class="kv">400<small>demos</small></div><div class="kd">54,541 frames · 300 teleop + 100 generated</div></div>
+      <div class="kpi"><div class="kl">Fine-tune loss</div><div class="kv">0.019</div><div class="kd">mix400 · 20k steps · 2 h 15</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm3-results-en">
+      <div class="chart-head"><div><div class="ct">Success rate with Wilson 95 % confidence interval</div><div class="cs">Local Isaac Sim · inside condition · 100 episodes per run.</div></div><button class="btn" type="button" data-table-toggle data-l-table="Show as table" data-l-chart="Show chart">Show as table</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>Measured figures</th></tr></thead>
+      <tbody>
+        <tr><td>Teleop</td><td>100 real demos (10 sessions, ~13,700 steps); later 200 more</td></tr>
+        <tr><td>Augmentation</td><td>133 generation attempts → 100 demos meeting the strict condition</td></tr>
+        <tr><td>Dataset</td><td>mix200: 200 episodes, 28,022 frames · mix400: 400 episodes, 54,541 frames</td></tr>
+        <tr><td>Fine-tune</td><td>mix200: 10k steps, 61 min, loss 0.020 · mix400: 20k steps, 2 h 15 min, loss 0.019</td></tr>
+        <tr><td>Local · mix200</td><td>66/100; lifted ≥ 3 cm 95/100; median final distance 6.1 cm</td></tr>
+        <tr><td>Local · mix400</td><td>63/100; lifted ≥ 3 cm 94/100; median final distance 4.4 cm</td></tr>
+        <tr class="hl"><td>Local · mix400, threshold 0.02</td><td>73/100; lifted ≥ 3 cm 91/100; mean time to success 2.5 s</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Result analysis</h3></div>
+    <p>Outcome breakdown of the three 100-episode runs in local Isaac Sim, to see what more data and a relaxed threshold change.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Outcome (100 episodes)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · threshold 0.02</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Success</td><td class="num">66</td><td class="num">63</td><td class="num">73</td></tr>
+        <tr><td>Hammer centre outside the bin</td><td class="num">19</td><td class="num">5</td><td class="num">6</td></tr>
+        <tr><td>Hammer not at rest at timeout</td><td class="num">6</td><td class="num">22</td><td class="num">8</td></tr>
+        <tr><td>Hammer resting on the bin rim</td><td class="num">3</td><td class="num">4</td><td class="num">4</td></tr>
+        <tr><td>Not lifted (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
+        <tr><td>Robot fell</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
+        <tr><td>Hand not released</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_place_positions.en.png" alt="Final hammer centre position: mix200, mix400 threshold 0.01 and mix400 threshold 0.02" loading="lazy"><figcaption><b>Hammer centre position at the end of each episode</b>, top-down view, origin at the bin centre · left: mix200 · middle: mix400 · right: mix400 with at-rest threshold 0.02 m/s. With mix200, the hammer was often dropped off to the left-hand side, just outside the bin wall (grey cluster); with mix400 the points gather more around the bin centre. With mix400 at threshold 0.01, most failures are hammers already in the middle of the bin but not at rest at timeout (22 light-blue points); in the run with threshold 0.02 this group shrinks to 8. Red points (not lifted) and purple points (robot fell) are cases where the hammer never reached the bin.</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">FINDING 1</div><div class="st">Grasping and lifting work</div><p>The hammer was lifted ≥ 3 cm in 91–95/100 episodes in all three runs; only 3–4 failed to lift it. Losses are mainly in the release phase.</p></div>
+      <div class="sub"><div class="sl">FINDING 2</div><div class="st">More data places the hammer more precisely</div><p>mix400 reduces hammers landing outside the bin from 19 to 5, and the median final distance from 6.1 to 4.4 cm.</p></div>
+      <div class="sub"><div class="sl">FINDING 3</div><div class="st">The at-rest threshold is the remaining bottleneck</div><p>The middle plot shows that with mix400 (threshold 0.01 m/s), all 22 "not at rest" failures lie inside the bin with the hand released. These points are even closer to the bin centre than the successes (median 2.9 cm vs 4.3 cm). The hammer only keeps moving slowly until the 6 s timeout (final velocity 0.005–0.023 m/s, rotation 0.04–0.32 rad/s), so it never meets the at-rest condition. These are failures of the scoring rule rather than of placement. In the run with threshold 0.02 m/s (right plot), this group drops to 8 and the rate rises to 73 %.</p></div>
+      <div class="sub"><div class="sl">FINDING 4</div><div class="st">Why a hammer lying still is scored as "not at rest"</div><p>The at-rest condition (kept unchanged from Arena) only looks at the hammer's <b>instantaneous velocity</b> at each simulation step: it must be below 0.01 m/s and 0.1 rad/s at the same time. All 22 hammers lie inside the bin with the hand released, and the videos we reviewed show no drifting. If the hammer really moved at the measured speed (0.5–2.3 cm/s) for the ~3.5 s from reaching the bin centre to timeout, it would drift several centimetres; in fact the final distance to the bin centre differs from the closest approach by only 1.2 cm (median). So the hammer is mostly <b>vibrating in place</b>: the physics simulation does not bring the velocity exactly to 0 when the hammer lies on the bin's mesh floor (12/22 hammers lie flat on the floor, versus 8/63 successes), and the bin itself is a dynamic body standing on the shelf. This small vibration exceeds 0.01 m/s, so an instantaneous threshold is too strict for the simulation noise; a more reasonable rule is to check whether the hammer moves over a time window (e.g. 0.5 s).</p></div>
+    </div>
+    <div class="sub"><div class="sl">FINDING 5</div><div class="st">More falls are not caused by the model or the threshold</div><p>The 73 % run had 6 robot falls, versus 2 in each of the other two runs. All 6 happened right at the start of the episode, within 0.02–0.78 s (at most 39/300 steps), before the hand reached the hammer: the hammer was still on the shelf, 25.6 cm from the bin centre. At that point the model had barely started controlling the robot, and the at-rest threshold is only used to score the end of the episode, so it cannot cause a fall. This matches the reset issue recorded in nb12: when the previous episode ends with the arm and torso far from the default pose, the reset does not fully clear the old state (hips still bent, joints still moving), and the robot steps or falls on the first tick. Even with a double reset, replaying 20 demos still gave 2/20 bad starts. The difference of 6 vs 2 is not statistically significant (Fisher p = 0.28); across the three runs it is 10/300 episodes (≈ 3 %). Excluding these falls, the 73 % run reaches 73/94 ≈ 78 %. The reset step needs fixing (e.g. checking pose and joint velocities before starting an episode) to remove this noise from the evaluation.</p></div>
+    <div class="callout warn"><b>Note:</b> the run with threshold 0.02 is a new 100-episode run, not a re-scoring of the earlier run, so it is still subject to random variation.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>Scenario conclusion</h3></div>
+    <div class="panel"><div class="pl">CONCLUSION</div><p>The project <b>taught the G1 a completely new task on its own</b>: from 0 % untuned to <b>66 %</b> with only 200 episodes (100 teleop + 100 generated) and ~1 hour of fine-tuning on one H100, with the full cycle taking about 6 days. Grasping and lifting work; the remaining losses are in dropping the hammer into the bin and in how runs are scored.</p></div>
+    <ul>
+      <li>Completed the full cycle with in-house tools: environment building, teleop demo collection, <b>data generation</b>, fine-tuning, evaluation.</li>
+      <li>Generating demos multiplies the data without extra teleop hours (133 generation attempts → 100 demos meeting the strict condition).</li>
+      <li>Doubling the data (mix400) places the hammer more precisely (outside the bin 19 → 5 times) but the overall rate did not rise (63 %); with an at-rest threshold of 0.02 it reaches <b>73 %</b>.</li>
+      <li>Not yet addressed: change the "at rest" scoring to check hammer displacement over a time window instead of instantaneous velocity; fix the reset step that makes the robot fall at the start of an episode (≈ 3 % of episodes).</li>
+    </ul>
+  </div>
+
+</section>

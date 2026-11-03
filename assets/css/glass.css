@@ -1,0 +1,329 @@
+/* "Liquid glass" for content surfaces (hero, card, KPI, fact, result tile), matching the TOC rail.
+   Translucent white over the page grid, backdrop blur + saturation, a light-catching gradient rim
+   (::before, masked to a 1px ring), inner top highlight and layered tinted shadow.
+   Loaded after the component stylesheets so it only overrides surface styling. */
+:root{
+  --glass-bg:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.5));
+  --glass-blur:blur(20px) saturate(170%);
+  --glass-rim:linear-gradient(var(--rim,135deg),rgba(255,255,255,.95),rgba(255,255,255,.2) 35%,oklch(0.82 0.06 var(--h)/.45) 70%,rgba(255,255,255,.85));
+  --glass-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(255,255,255,.35),
+    0 1px 2px rgba(34,38,30,.05),
+    0 18px 40px -22px oklch(0.45 0.08 var(--h)/.3),
+    0 36px 70px -44px rgba(34,38,30,.3);
+}
+
+.hero,.card,.kpi,.fact,.res-tile{
+  position:relative;isolation:isolate;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:var(--glass-shadow);
+}
+/* Irregular tint: every surface gets its own blobs. Positions, sizes and strengths come from
+   ui/glass.js (seeded per element, so a surface looks the same on every load); the values below
+   are only the fallback when the script has not run. */
+.hero,.card,.kpi,.fact,.res-tile,.toc{
+  background:
+    radial-gradient(var(--b1s,70%) var(--b1t,60%) at var(--b1x,85%) var(--b1y,10%),oklch(0.88 0.08 var(--h)/var(--b1a,.5)) 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(var(--b2s,55%) var(--b2t,50%) at var(--b2x,15%) var(--b2y,90%),oklch(0.9 0.06 calc(var(--h) + var(--b2h,0))/var(--b2a,.35)) 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(var(--b3s,40%) var(--b3t,35%) at var(--b3x,50%) var(--b3y,50%),oklch(0.93 0.05 var(--h)/var(--b3a,0)) 0%,rgba(255,255,255,0) 70%),
+    var(--glass-bg)}
+
+/* rim light */
+.hero::after,.card::after,.kpi::after,.fact::after,.res-tile::after{
+  content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;pointer-events:none;
+  background:var(--glass-rim);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+/* card header: frosted tint instead of an opaque band */
+.card-head{background:linear-gradient(180deg,oklch(0.95 0.045 var(--h)/.55),rgba(255,255,255,.15));border-bottom-color:rgba(255,255,255,.6);
+  box-shadow:inset 0 -1px 0 oklch(0.88 0.05 var(--h)/.5)}
+
+/* nested surfaces inside cards: lighter glass so they still read as panels */
+.sub,.tbl-wrap,figure.fig,.chart,.cmpbars,.stack,.topo-node:not(.dark),.journey,.pkg-tile,details.acc,.cv-stats div,.gantt,.phase,.dg-lane,.task{
+  background-color:rgba(255,255,255,.55)}
+
+@media print{
+  .hero,.card,.kpi,.fact,.res-tile{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border:1px solid #ddd}
+  .hero::after,.card::after,.kpi::after,.fact::after,.res-tile::after{display:none}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .hero,.card,.kpi,.fact,.res-tile{background:rgba(255,255,255,.94)}
+}
+
+/* ---------- left sidebar as a floating glass panel ----------
+   The page grid now sits on the whole app so the sidebar has something to blur. */
+.app{background-color:var(--bg);background-image:linear-gradient(rgba(34,38,30,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(34,38,30,.055) 1px,transparent 1px);background-size:54px 54px}
+.main{background:transparent}
+.sidebar{
+  position:relative;isolation:isolate;margin:12px 0 12px 12px;height:calc(100vh - 24px);width:290px;border-radius:24px;
+  background:
+    radial-gradient(var(--b1s,80%) var(--b1t,40%) at var(--b1x,0%) var(--b1y,0%),oklch(0.88 0.08 var(--h)/var(--b1a,.55)) 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(var(--b2s,90%) var(--b2t,35%) at var(--b2x,100%) var(--b2y,100%),oklch(0.9 0.06 calc(var(--h) + var(--b2h,0))/var(--b2a,.4)) 0%,rgba(255,255,255,0) 70%),
+    radial-gradient(var(--b3s,60%) var(--b3t,25%) at var(--b3x,50%) var(--b3y,50%),oklch(0.93 0.05 var(--h)/var(--b3a,0)) 0%,rgba(255,255,255,0) 70%),
+    var(--glass-bg);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,.55);border-right:1px solid rgba(255,255,255,.55);box-shadow:var(--glass-shadow)}
+.sidebar::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;pointer-events:none;background:var(--glass-rim);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.sidebar::before{content:"";position:absolute;left:10%;right:10%;top:0;height:50px;z-index:-1;pointer-events:none;border-radius:0 0 50% 50%/0 0 100% 100%;
+  background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0))}
+/* part groups: small glass plates inside the panel */
+.nav-group{background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.3));border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px oklch(0.88 0.05 var(--h)/.45),0 8px 20px -16px oklch(0.45 0.08 var(--h)/.45)}
+.nav-items a:hover{background:rgba(255,255,255,.65)}
+.nav-items a.active{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.65));box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px oklch(0.85 0.06 var(--h)/.6),0 6px 14px -10px oklch(0.45 0.1 var(--h)/.5)}
+.brand{border-color:rgba(255,255,255,.6) !important}
+@media (max-width:960px){
+  .sidebar{margin:0;height:100vh;border-radius:0 24px 24px 0}
+}
+@media print{.sidebar{display:none !important}}
+/* sidebar hugs its content, so all four corners show (like the right rail) */
+.sidebar{align-self:flex-start;height:auto;max-height:calc(100vh - 24px)}
+@media (max-width:960px){.sidebar{height:100vh;max-height:none}}
+
+/* ---------- full-width topbar, sidebar and right rail aligned below it ----------
+   body is a column: topbar on top (spans the whole window), app (sidebar + main) fills the rest. */
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden;
+  background-color:var(--bg);background-image:linear-gradient(rgba(34,38,30,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(34,38,30,.055) 1px,transparent 1px);background-size:54px 54px}
+.app{flex:1;min-height:0;height:auto;background:transparent}
+.topbar{position:relative;flex:none;z-index:20;padding:13px 24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.5));-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border-bottom:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px -24px oklch(0.45 0.08 var(--h)/.45)}
+/* sidebar top = right rail top: both start 28px below the topbar */
+.sidebar{margin:28px 0 12px 12px;max-height:calc(100% - 40px)}
+.toc{top:28px}
+.card,.section > .hero{scroll-margin-top:20px}
+.card h4{scroll-margin-top:28px}
+@media (max-width:960px){
+  body{display:block;height:auto;overflow:visible}
+  .topbar{position:sticky;top:0;padding:12px 16px}
+  .sidebar{margin:0;max-height:none;height:100vh}
+}
+@media print{body{display:block;height:auto;overflow:visible;background:#fff}}
+
+/* ---------- three-column rhythm: same outer margin (24px) and same gutters (28px) ----------
+   left sidebar | 28 | content | 28 | right rail, with 24px from the window edges;
+   the topbar text lines up with the sidebar's left edge. */
+.sidebar{margin-left:24px}
+.page{padding:0 24px 0 28px;gap:28px}
+.topbar{padding-left:24px;padding-right:24px}
+@media (max-width:1360px){.page{padding:0 24px 0 28px}}
+@media (max-width:960px){.sidebar{margin-left:0}.page{padding:0 16px}}
+/* slim scrollbar for the content area; right padding = 24px − scrollbar so the rail sits 24px from the window edge */
+.main{scrollbar-width:thin;scrollbar-color:oklch(0.8 0.04 var(--h)/.7) transparent}
+.main::-webkit-scrollbar{width:8px}
+.main::-webkit-scrollbar-track{background:transparent}
+.main::-webkit-scrollbar-thumb{background:oklch(0.8 0.04 var(--h)/.7);border-radius:8px}
+.page{padding-right:16px}
+@media (max-width:960px){.page{padding:0 16px}}
+/* sidebar: no visible scrollbar (it only scrolls on short windows) so the panel keeps its full width */
+.sidebar{scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+
+/* ---------- symmetric three-column layout: content exactly centred ----------
+   [24] sidebar 288 [32] content [32] rail 288 [24]. Both side panels have the same width and the
+   same outer margin, and the content area has no visible scrollbar (reading progress is shown in
+   the topbar), so the content column sits in the middle of the window. */
+:root{--side-w:288px;--edge:24px;--gutter:32px}
+.sidebar{width:var(--side-w);margin-left:var(--edge)}
+.main{scrollbar-width:none}
+.main::-webkit-scrollbar{display:none}
+.page{max-width:none;margin:0;grid-template-columns:minmax(0,1fr) var(--side-w);gap:var(--gutter);padding:0 var(--edge) 0 var(--gutter)}
+.topbar{padding-left:var(--edge);padding-right:var(--edge)}
+@media (max-width:1360px){.page{grid-template-columns:minmax(0,1fr);padding:0 var(--edge) 0 var(--gutter)}}
+@media (max-width:960px){.page{padding:0 16px}.sidebar{margin-left:0}}
+
+/* =====================================================================
+   Clear glass + coloured backdrop
+   Glass surfaces are now plain frosted glass (one flat translucent white, no tint, no gradient rim
+   or sheen); the colour lives in the page background behind them, which the blur picks up.
+   ===================================================================== */
+:root{--glass-flat:rgba(255,255,255,.5)}
+
+/* coloured page backdrop: large soft blue/indigo/cyan fields + the faint grid on top */
+body{
+  background-color:oklch(0.965 0.012 var(--h));
+  background-image:
+    linear-gradient(rgba(34,38,30,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,38,30,.045) 1px,transparent 1px),
+    radial-gradient(42% 38% at 8% 12%,oklch(0.78 0.11 245/.55) 0%,transparent 70%),
+    radial-gradient(38% 42% at 92% 20%,oklch(0.8 0.1 205/.5) 0%,transparent 70%),
+    radial-gradient(46% 40% at 55% 62%,oklch(0.82 0.09 275/.45) 0%,transparent 72%),
+    radial-gradient(40% 36% at 12% 92%,oklch(0.84 0.08 190/.45) 0%,transparent 70%),
+    radial-gradient(44% 40% at 88% 95%,oklch(0.78 0.1 255/.45) 0%,transparent 72%);
+  background-size:54px 54px,54px 54px,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%;
+  background-attachment:fixed}
+.app{background:transparent}
+
+/* glass surfaces: flat, clear */
+.hero,.card,.kpi,.fact,.res-tile,.toc,.sidebar,.res-tile{background:var(--glass-flat) !important;border:1px solid rgba(255,255,255,.7)}
+.topbar{background:rgba(255,255,255,.5)}
+/* drop the gradient rims and sheens */
+.hero::after,.card::after,.kpi::after,.fact::after,.res-tile::after,.sidebar::after,.sidebar::before,.toc::before,.toc::after{display:none}
+/* card header: flat glass band instead of a tinted gradient */
+.card-head{background:rgba(255,255,255,.35);box-shadow:inset 0 -1px 0 rgba(255,255,255,.7)}
+/* small glass plates inside: flat too */
+.nav-group{background:rgba(255,255,255,.4)}
+.nav-items a.active,.toc-item.active{background:rgba(255,255,255,.8)}
+
+@media print{body{background:#fff !important}}
+
+/* =====================================================================
+   Liquid-glass tuning: clearer, thinner, lit at the edges
+   - much lower white fill so the coloured backdrop shows through,
+   - lighter blur with stronger saturation/brightness (keeps colour, loses the "frosted plastic" look),
+   - light caught on the rim: bright top-left edge, softer bottom-right edge, and an inner edge glow,
+   - softer, more diffuse drop shadow.
+   ===================================================================== */
+:root{
+  --glass-flat:rgba(255,255,255,.18);
+  --glass-blur:blur(14px) saturate(165%) brightness(1.05);
+  --glass-edge:
+    inset 1.5px 1.5px 0 rgba(255,255,255,.95),
+    inset -1px -1px 0 rgba(255,255,255,.45),
+    inset 0 0 0 1px rgba(255,255,255,.25),
+    inset 0 0 22px rgba(255,255,255,.38),
+    inset 0 -12px 24px -18px oklch(0.55 0.1 var(--h)/.25);
+  --glass-drop:0 2px 6px rgba(30,40,70,.06),0 24px 48px -28px rgba(30,50,90,.32);
+}
+.hero,.card,.kpi,.fact,.res-tile,.toc,.sidebar{
+  background:var(--glass-flat) !important;
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:var(--glass-edge),var(--glass-drop)}
+.topbar{background:rgba(255,255,255,.22);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.5),0 10px 30px -24px rgba(30,50,90,.35)}
+.card-head{background:rgba(255,255,255,.14);box-shadow:inset 0 -1px 0 rgba(255,255,255,.55)}
+
+/* panels inside glass: a touch whiter for legibility, with their own lit edge */
+.sub,.tbl-wrap,figure.fig,.chart,.cmpbars,.stack,.topo-node:not(.dark),.journey,.pkg-tile,details.acc,.cv-stats div,.gantt,.phase,.dg-lane,.task,.cv-cmd,.nav-group{
+  background-color:rgba(255,255,255,.42);border-color:rgba(255,255,255,.6);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.85),inset 0 0 14px rgba(255,255,255,.25),0 8px 20px -18px rgba(30,50,90,.3)}
+.nav-items a.active,.toc-item.active{background:rgba(255,255,255,.6);box-shadow:inset 1px 1px 0 #fff,inset 0 0 12px rgba(255,255,255,.5),0 6px 14px -10px rgba(30,50,90,.35)}
+
+/* backdrop: a little more colour so the clear glass has something to bend */
+body{background-image:
+    linear-gradient(rgba(30,40,70,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,40,70,.035) 1px,transparent 1px),
+    radial-gradient(42% 38% at 8% 12%,oklch(0.74 0.13 245/.6) 0%,transparent 70%),
+    radial-gradient(38% 42% at 92% 20%,oklch(0.78 0.12 205/.55) 0%,transparent 70%),
+    radial-gradient(46% 40% at 55% 62%,oklch(0.78 0.11 280/.5) 0%,transparent 72%),
+    radial-gradient(40% 36% at 12% 92%,oklch(0.82 0.1 190/.5) 0%,transparent 70%),
+    radial-gradient(44% 40% at 88% 95%,oklch(0.74 0.12 255/.5) 0%,transparent 72%)}
+
+/* refraction mode (ui/refract.js, Chromium): the rim bends what is behind, so keep the blur light
+   and the fill a bit whiter for legibility; the grid is drawn a little stronger so the bending shows */
+:root{--glass-blur-refract:blur(1.5px) saturate(165%) brightness(1.05)}
+.refract .toc,.refract .sidebar{background:rgba(255,255,255,.3) !important}
+.refract body{background-image:
+    linear-gradient(rgba(30,40,70,.11) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,40,70,.11) 1px,transparent 1px),
+    radial-gradient(42% 38% at 8% 12%,oklch(0.74 0.13 245/.6) 0%,transparent 70%),
+    radial-gradient(38% 42% at 92% 20%,oklch(0.78 0.12 205/.55) 0%,transparent 70%),
+    radial-gradient(46% 40% at 55% 62%,oklch(0.78 0.11 280/.5) 0%,transparent 72%),
+    radial-gradient(40% 36% at 12% 92%,oklch(0.82 0.1 190/.5) 0%,transparent 70%),
+    radial-gradient(44% 40% at 88% 95%,oklch(0.74 0.12 255/.5) 0%,transparent 72%)}
+
+/* calmer backdrop: two very large, low-contrast blue fields in close hues instead of five bright
+   spots; a lighter grid. Applies in both the plain and the refraction mode. */
+body,.refract body{
+  background-color:oklch(0.975 0.008 var(--h));
+  background-image:
+    linear-gradient(rgba(30,40,70,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,40,70,.05) 1px,transparent 1px),
+    radial-gradient(75% 65% at 0% 0%,oklch(0.86 0.06 245/.55) 0%,transparent 75%),
+    radial-gradient(70% 70% at 100% 100%,oklch(0.88 0.05 225/.5) 0%,transparent 75%);
+  background-size:54px 54px,54px 54px,100% 100%,100% 100%}
+
+/* backdrop: same two-field layout, more colour */
+body,.refract body{
+  background-color:oklch(0.97 0.011 var(--h));
+  background-image:
+    linear-gradient(rgba(30,40,70,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,40,70,.05) 1px,transparent 1px),
+    radial-gradient(80% 70% at 0% 0%,oklch(0.83 0.08 248/.6) 0%,transparent 75%),
+    radial-gradient(75% 75% at 100% 100%,oklch(0.85 0.07 222/.55) 0%,transparent 75%);
+  background-size:54px 54px,54px 54px,100% 100%,100% 100%}
+
+/* ---------- liquid motion on scroll (ui/liquid.js) ----------
+   --lv: signed scroll speed (-1..1), --la: its size. While scrolling the cards stretch along the
+   motion and lag a few px behind; when scrolling stops they spring back with a slight overshoot. */
+.main{--lv:0;--la:0}
+.main .hero,.main .card,.main .fact{
+  transform:
+    translate3d(0,calc(var(--lv) * -7px),0)
+    scale(calc(1 - var(--la) * .012),calc(1 + var(--la) * .022));
+  transform-origin:50% calc(50% + var(--lv) * 50%);
+  transition:transform .65s cubic-bezier(.3,1.6,.5,1)}
+.main.is-scrolling .hero,.main.is-scrolling .card,.main.is-scrolling .fact{transition:transform .18s cubic-bezier(.2,.8,.3,1)}
+@media (prefers-reduced-motion:reduce){.main .hero,.main .card,.main .fact{transform:none;transition:none}}
+@media print{.main .hero,.main .card,.main .fact{transform:none !important}}
+
+/* =====================================================================
+   Tunable values (adjusted live by the effects panel, ui/tuner.js).
+   Everything below reads these variables; the defaults equal the current look.
+   ===================================================================== */
+:root{
+  --bg-a1:.6; --bg-a2:.55; --bg-c:.08; --bg-grid:.05;
+  --glass-fill:.18; --glass-blur-px:14; --glass-sat:165;
+  --side-fill:.3;
+  --liq-stretch:.022; --liq-squeeze:.012; --liq-lag:7px; --liq-dur:.65s; --liq-bounce:1.6;
+  --glass-flat:rgba(255,255,255,var(--glass-fill));
+  --glass-blur:blur(calc(var(--glass-blur-px) * 1px)) saturate(calc(var(--glass-sat) * 1%)) brightness(1.05);
+}
+body,.refract body{
+  background-image:
+    linear-gradient(rgba(30,40,70,var(--bg-grid)) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,40,70,var(--bg-grid)) 1px,transparent 1px),
+    radial-gradient(80% 70% at 0% 0%,oklch(0.83 var(--bg-c) 248/var(--bg-a1)) 0%,transparent 75%),
+    radial-gradient(75% 75% at 100% 100%,oklch(0.85 calc(var(--bg-c) * .875) 222/var(--bg-a2)) 0%,transparent 75%)}
+.refract .toc,.refract .sidebar{background:rgba(255,255,255,var(--side-fill)) !important}
+.main .hero,.main .card,.main .fact{
+  transform:
+    translate3d(0,calc(var(--lv) * var(--liq-lag) * -1),0)
+    scale(calc(1 - var(--la) * var(--liq-squeeze)),calc(1 + var(--la) * var(--liq-stretch)));
+  transition:transform var(--liq-dur) cubic-bezier(.3,var(--liq-bounce),.5,1)}
+html.no-liquid .main .hero,html.no-liquid .main .card,html.no-liquid .main .fact{transform:none;transition:none}
+
+/* sub-panels inside glass cards (goals, comparisons…): keep the light fill, make the edge visible —
+   a clear blue-grey border plus a thin bright inner rim, so they read as distinct panels */
+.card .sub{
+  border:1px solid oklch(0.78 0.06 var(--h)/.75);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.55),0 6px 16px -14px rgba(30,50,90,.35)}
+
+/* same visible edge for every other panel nested inside a glass card (tables, figures, charts,
+   accordions, flow steps, timelines, stats, tabs…), matching .card .sub */
+.card :is(.tbl-wrap,.cmp-wrap,figure.fig,.chart,.cmpbars,details.acc,.flow .step,.dg-node,.dg-lane,.phase,.gantt,
+  .stack,.topo-node:not(.dark),.journey,.pkg-tile,.task,.cv-stats div,.cv-cmd,.io-col:not(.model),.pf-col:not(.model),
+  .prob-q,.res-tile,.cv-player,.vchap-side,.vchap-list button,.case-tabs button,.arch-rule,.ftree){
+  border-color:oklch(0.78 0.06 var(--h)/.75)}
+.card :is(.tbl-wrap,.cmp-wrap,figure.fig,.chart,.cmpbars,details.acc,.flow .step,.dg-node:not(.dark),.dg-lane,.phase,.gantt,
+  .stack,.topo-node:not(.dark),.journey,.pkg-tile,.task,.cv-stats div,.cv-cmd,.io-col:not(.model),.pf-col:not(.model),
+  .prob-q,.vchap-side,.vchap-list button,.case-tabs button){
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.55),0 6px 16px -14px rgba(30,50,90,.35)}
+/* table rows: slightly stronger separators so tables read clearly on glass */
+.card .tbl td{border-bottom-color:oklch(0.85 0.04 var(--h)/.7)}
+.card .tbl th{border-bottom-color:oklch(0.8 0.05 var(--h)/.75)}
+
+/* List-like panels (goal tiles, stats, steps, tasks, accordions, figures…): no hard outline —
+   they float on a soft layered shadow with a light top sheen. Tables keep the visible border. */
+.card :is(.sub,figure.fig,.chart,.cmpbars,details.acc,.flow .step,.dg-node:not(.dark),.dg-lane,.phase,.gantt,
+  .stack,.topo-node:not(.dark),.journey,.pkg-tile,.task,.cv-stats div,.cv-cmd,.io-col:not(.model),.pf-col:not(.model),
+  .prob-q,.vchap-side,.vchap-list button,.case-tabs button,.arch-rule){
+  border-color:rgba(255,255,255,.55);
+  background-color:rgba(255,255,255,.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 1px 2px rgba(30,50,90,.06),
+    0 4px 10px -4px rgba(30,50,90,.12),
+    0 14px 28px -18px oklch(0.45 0.09 var(--h)/.35)}
+/* hover lift for the clickable ones */
+.card :is(.pkg-tile,.prob-q,.vchap-list button,.case-tabs button):hover{
+  box-shadow:inset 0 1px 0 #fff,0 2px 4px rgba(30,50,90,.08),0 10px 18px -8px rgba(30,50,90,.18),0 22px 40px -22px oklch(0.45 0.09 var(--h)/.45)}
+/* keep the selected states readable */
+.card .vchap-list button.active,.card .case-tabs button[aria-selected="true"]{border-color:var(--accent)}
+/* tables: keep the clear border (from the previous rule) */
+.card :is(.tbl-wrap,.cmp-wrap){border-color:oklch(0.78 0.06 var(--h)/.75)}

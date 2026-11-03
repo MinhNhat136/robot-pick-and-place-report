@@ -1,0 +1,230 @@
+<section class="section" id="hm2" data-hue="blue" data-kicker="III.02 · KỊCH BẢN 2" data-title="Kịch bản Multi Fruit">
+  <div class="hero">
+    <span class="pill">KỊCH BẢN 2 · MULTI FRUIT</span>
+    <h2>Robot G1 chọn đúng loại quả theo câu lệnh, đặt lên đĩa<span class="dot">.</span></h2>
+    <p class="lead">Trên bàn có 4 loại quả (táo, lê, khế, nho); câu lệnh quyết định quả cần gắp. Từ 1.095 quỹ đạo teleop trên robot G1 thật, dự án <b>tái tạo khung cảnh mô phỏng chỉ từ dữ liệu khớp</b> (real2sim), sinh 790 episode huấn luyện và fine-tune GR00T. Kết quả: checkpoint táo dùng lại đạt <b>0 %</b>; model fine-tune đạt <b>66 %</b> trên khung cảnh ngẫu nhiên có quả gây nhiễu và <b>không lần nào gắp nhầm</b>.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">790<small>episode</small></div><ul class="fact-list"><li><span>Nguồn</span><b>Real2sim · G1 thật</b></li><li><span>Frame</span><b>86.822</b></li><li><span>Tập test</span><b>89 episode · 20 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">20.000<small>bước</small></div><ul class="fact-list"><li><span>Thời gian</span><b>2 giờ 34 phút</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>Loss</span><b>1,50 → 0,019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>Checkpoint</span><b><code>g1_fruits_n17</code></b></li><li><span>Câu lệnh</span><b>4 loại quả</b></li><li><span>Chuỗi action</span><b>16 bước · 20 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">66<small>% thành công</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>CHƯA TUNE</em></span><i>→</i><span class="best"><b>66 %</b><em>FINE-TUNE</em></span></div><div class="fact-note">Không lần nào gắp nhầm quả</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 0 · THÀNH CÔNG</span>
+        <video src="assets/videos/kich-ban-2-4-loai-qua.mp4" poster="assets/videos/kich-ban-2-4-loai-qua-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">Robot chọn đúng chùm nho giữa các quả khác và đặt lên đĩa</div>
+        <div class="cv-cmd"><small>CÂU LỆNH GỬI MODEL</small>"Pick up the green grapes and place it on the plate"</div>
+        <div class="cv-stats"><div><b>1,4<small>cm</small></b><span>Tâm quả cách tâm đĩa</span></div><div><b>16,5<small>cm</small></b><span>Độ nâng cao nhất</span></div><div><b>2</b><span>Quả gây nhiễu, không bị xô lệch</span></div><div><b>10<small>s</small></b><span>Độ dài episode (200 bước × 50 ms)</span></div></div>
+        <div class="cv-note">Trích từ đợt 50 episode real2sim ngẫu nhiên (33/50 thành công). Nho là khối xanh lá.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Bối cảnh kịch bản</h3></div>
+    <p>Robot G1 đứng cố định trước một bàn; trên bàn có một đĩa và ba quả, trong đó một quả là mục tiêu và hai quả còn lại gây nhiễu. Ảnh dưới là <b>khung đầu tiên</b> của episode trong Video Showcase (episode 0: nho xanh).</p>
+    <figure class="fig"><img src="images/kich-ban-2-4-loai-qua-frame0.jpg" alt="Khung đầu kịch bản Multi Fruit" loading="lazy"><figcaption><b>Khung 0</b> · trái: camera đầu robot, ảnh model nhận vào · phải: camera ngoài, chỉ dùng để quay video. Mục tiêu là nho (khối xanh lá), gây nhiễu là táo và lê.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Khung cảnh &amp; vật thể</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>Bàn</td><td>Bàn đơn giản trên nền lưới; ánh sáng dome 700 + sun 600</td></tr>
+        <tr><td>Đĩa</td><td>Đĩa kinematic bán kính 0,115 m; episode 0 đặt tại (0,40; 0,08) m</td></tr>
+        <tr><td>Quả</td><td>4 loại dạng khối đơn giản (táo, lê, cam, nho = khối xanh lá); ma sát 1,5</td></tr>
+        <tr><td>Mục tiêu</td><td>Episode 0: nho tại (0,41; −0,12) m</td></tr>
+        <tr><td>Gây nhiễu</td><td>2 quả đặt ngoài vùng quét của tay (episode 0: táo, lê)</td></tr>
+        <tr><td>Ngẫu nhiên hoá</td><td>Mỗi episode đổi quả mục tiêu, vị trí và hướng quả, vị trí đĩa, quả gây nhiễu; seed riêng</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Robot, camera &amp; điều khiển</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>Robot</td><td>Unitree G1 29 bậc tự do + bàn tay Dex3, hông cố định tại (0; 0; ~0,74) m</td></tr>
+        <tr><td>Camera</td><td>RealSense D435 gắn đầu, 640×480 (fx 606) + 1 camera ngoài để quay</td></tr>
+        <tr><td>Tần số</td><td>Vật lý 200 Hz, 10 bước con → điều khiển 20 Hz</td></tr>
+        <tr><td>Episode</td><td>Tối đa 200 bước = 10 s; nhận chuỗi 16 bước, thực thi 8 rồi hỏi lại</td></tr>
+        <tr><td>Câu lệnh</td><td>Theo quả mục tiêu, vd. "Pick up the green grapes and place it on the plate"</td></tr>
+        <tr><td>Thành công</td><td>Quả được nhấc &gt; 3 cm, nằm trên đĩa (trong bán kính + 1 cm, điểm thấp nhất cao hơn mặt bàn), quả gây nhiễu xê dịch ≤ 1 cm</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Mục tiêu kịch bản</h3></div>
+    <p>Chuyển dữ liệu teleop của robot G1 thật vào mô phỏng (<b>real2sim</b>) để huấn luyện và đánh giá một model chọn đúng loại quả theo câu lệnh.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">MỤC TIÊU 1</div><div class="st">Đánh giá vòng kín</div><p>Có môi trường mô phỏng cho tác vụ vốn chỉ có dữ liệu robot thật.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 2</div><div class="st">Nhân dữ liệu</div><p>Thay vật nhiễu, vị trí, ánh sáng mà không cần teleop thêm.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 3</div><div class="st">Đo lặp lại được</div><p>So sánh checkpoint và cấu hình huấn luyện trên cùng một thước đo.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Dữ liệu kịch bản</h3></div>
+    <p>Dataset <b>PhysicalAI-Robotics-GR00T-Teleop-G1</b> (NVIDIA GEAR, CC-BY-4.0): teleop robot G1 thật, camera RealSense 640×480, 20 Hz. Robot chọn đúng quả theo câu lệnh và đặt lên đĩa. Dữ liệu <b>chỉ có góc khớp và video</b>, không có vị trí vật thể.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Loại quả</th><th class="num">Episode</th><th class="num">Frame</th></tr></thead>
+      <tbody>
+        <tr><td>Táo</td><td class="num">311</td><td class="num">29.864</td></tr>
+        <tr><td>Nho</td><td class="num">233</td><td class="num">26.970</td></tr>
+        <tr><td>Lê</td><td class="num">264</td><td class="num">32.319</td></tr>
+        <tr><td>Khế</td><td class="num">287</td><td class="num">34.640</td></tr>
+        <tr class="hl"><td>Tổng (card dataset ghi 1.000)</td><td class="num">1.095</td><td class="num">123.793</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Vấn đề gặp phải</h3></div>
+    <p>Mục tiêu là một model gắp đúng quả theo câu lệnh. Trước khi tự tạo dữ liệu, dự án thử fine-tune trên các dataset có sẵn.</p>
+    <div class="callout warn"><b>Không có dataset mô phỏng phù hợp.</b> Bộ duy nhất đúng robot G1 và đúng dạng bài toán gắp-đặt lại được ghi trên <b>robot thật</b>, nên không dùng thẳng trong Isaac Sim được.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">VẤN ĐỀ 1</div><div class="st">Checkpoint có sẵn không dùng lại được</div><p>Checkpoint táo của kịch bản 1 với câu lệnh 4 loại quả đạt <b>0 %</b>: model chỉ học một tác vụ trong một khung cảnh.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 2</div><div class="st">Thiếu dataset mô phỏng</div><p>Rà soát các dataset công khai để fine-tune thử: không có bộ mô phỏng nào cho G1 + Dex3 gắp-đặt nhiều loại quả theo câu lệnh.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 3</div><div class="st">Bộ phù hợp duy nhất là dữ liệu thật</div><p><b>PhysicalAI-Robotics-GR00T-Teleop-G1</b>: cùng robot G1, cùng gắp-đặt quả lên đĩa, nhưng ghi trên robot thật.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 4</div><div class="st">Dữ liệu thật thiếu thông tin cho mô phỏng</div><p>Chỉ có góc khớp và video, <b>không có vị trí vật thể</b>; ảnh thật không khớp với ảnh render; action trên robot thật và trong mô phỏng mang ý nghĩa khác nhau.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Phương pháp đề xuất</h3></div>
+    <p>Giải quyết bằng <b>real2sim</b>: dùng quỹ đạo khớp của dữ liệu thật để dựng lại khung cảnh mô phỏng tương ứng, phát lại trong Isaac Lab và ghi thành dataset mô phỏng — giữ chuyển động thật của người teleop, nhưng ảnh và vật lý nhất quán với môi trường đánh giá.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">BƯỚC 1</div><div class="sv">Động học thuận (FK)</div><div class="sd">URDF G1 29-DoF + Dex3 → tư thế thân, quỹ đạo bàn tay, thời điểm nắm/thả</div></div>
+      <div class="step"><div class="sk">BƯỚC 2</div><div class="sv">Suy ra vị trí vật</div><div class="sd">Quả = lòng bàn tay lúc nắm; đĩa = vị trí lúc thả</div></div>
+      <div class="step"><div class="sk">BƯỚC 3</div><div class="sv">Vật nhiễu an toàn</div><div class="sd">Đặt ngoài vùng tay quét qua, đường mang quả và đĩa</div></div>
+      <div class="step"><div class="sk">BƯỚC 4</div><div class="sv">Phát lại &amp; lọc</div><div class="sd">Isaac Lab; giữ episode thành công, không chạm vật nhiễu</div></div>
+      <div class="step"><div class="sk">BƯỚC 5</div><div class="sv">Dataset LeRobot</div><div class="sd">Đa nhiệm 4 quả; chia train/test theo episode gốc</div></div>
+    </div>
+    <ul>
+      <li><b>Tái tạo không dùng thị giác:</b> giả định hai bàn chân phẳng trên sàn để suy ra góc nghiêng thân; phát hiện nắm/thả từ độ khép ngón tay; bộ FK viết riêng chỉ dùng numpy.</li>
+      <li><b>Mô phỏng:</b> G1 + Dex3 pelvis cố định, camera D435 theo thông số RealSense, vật lý 200 Hz / điều khiển 20 Hz, PD cứng cho tay, ma sát quả 1,5, đĩa cố định.</li>
+      <li><b>Chấm điểm:</b> quả nhấc &gt; 3 cm; cuối cùng nằm trên đĩa; không vật nhiễu nào dịch &gt; 1 cm.</li>
+      <li><b>Chống rò rỉ dữ liệu:</b> khung cảnh test không bao giờ có trong train; giữ lại 100 khung cảnh đánh giá kể cả khung cảnh phát lại thất bại để không thiên về khung cảnh dễ.</li>
+    </ul>
+    <p><b>Ba cặp video thật ↔ mô phỏng.</b> Camera đầu robot, 20 Hz: trái là video teleop gốc, phải là episode real2sim được phát lại từ chính quỹ đạo khớp đó. Hai episode dài bằng nhau nên chạy khớp từng khung; ảnh chờ của mỗi video là khung tiêu biểu của một pha (bắt đầu, nắm, đặt).</p>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-apple.mp4" poster="assets/videos/real2sim-pair-apple-poster.jpg" aria-label="Cặp real2sim táo: trái video thật, phải mô phỏng" muted loop playsinline controls preload="metadata"></video><figcaption><b>Cặp 1 · Táo</b> · episode thật 0 ↔ sim 0 · 111 khung (5,6 s). Ngay khung đầu, vị trí táo và đĩa trong mô phỏng đã gần trùng ảnh thật dù không dùng thị giác: táo suy từ lòng bàn tay lúc nắm, đĩa từ vị trí lúc thả. Chùm nho ở góc ảnh thật không có trong dữ liệu khớp nên không được tái tạo; mô phỏng đặt 2 vật nhiễu mới (khế, nho) ở xa vùng tay quét. Trái: thật · phải: mô phỏng.</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-grapes.mp4" poster="assets/videos/real2sim-pair-grapes-poster.jpg" aria-label="Cặp real2sim nho: trái video thật, phải mô phỏng" muted loop playsinline controls preload="metadata"></video><figcaption><b>Cặp 2 · Nho</b> · episode thật 1 ↔ sim 0 · 102 khung (5,1 s). Tư thế cánh tay và bàn tay Dex3 lúc vươn, khép ngón, nhấc đều giống video thật vì cùng góc khớp. Chùm nho mềm được thay bằng khối xanh lá cứng; quả lê thật bên trái không được tái tạo, mô phỏng đặt lê và khế làm vật nhiễu ở vị trí khác. Trái: thật · phải: mô phỏng.</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-pear.mp4" poster="assets/videos/real2sim-pair-pear-poster.jpg" aria-label="Cặp real2sim lê: trái video thật, phải mô phỏng" muted loop playsinline controls preload="metadata"></video><figcaption><b>Cặp 3 · Lê</b> · episode thật 0 ↔ sim 0 · 131 khung (6,6 s). Quả được mang đến vùng đĩa cùng thời điểm với video thật. Đĩa thật màu hồng, đĩa mô phỏng luôn là đa giác xanh ngọc; mặt bàn gỗ thành mặt phẳng trơn; góc nhìn mô phỏng thấy cả mép bàn và nền phía sau. Trái: thật · phải: mô phỏng.</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">GIỐNG</div><div class="st">Chuyển động và bố cục tác vụ</div><p>Quỹ đạo cánh tay, độ khép ngón, thời điểm nắm/thả giữ nguyên từ teleop; vị trí quả mục tiêu và đĩa khớp với ảnh thật; tay trái nghỉ cùng tư thế; câu lệnh giữ nguyên văn.</p></div>
+      <div class="sub"><div class="sl warn">KHÁC</div><div class="st">Hình ảnh và vật nhiễu</div><p>Quả là khối hình học đơn giản; đĩa, mặt bàn, ánh sáng là của mô phỏng; vật nhiễu trong ảnh thật bị bỏ và thay bằng 2 vật nhiễu ngẫu nhiên đặt an toàn; góc camera lệch nhẹ. Vì vậy model chỉ học trên ảnh render, không dùng ảnh thật.</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Tập</th><th class="num">Episode</th><th class="num">Frame</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Train</td><td class="num">790</td><td class="num">86.822</td><td>4 loại quả, 20 Hz</td></tr>
+        <tr><td>Test</td><td class="num">89</td><td class="num">—</td><td>Khung cảnh không có trong train</td></tr>
+        <tr><td>Khung cảnh đánh giá</td><td class="num">100</td><td class="num">—</td><td>30 táo, 24 lê, 26 khế, 20 nho</td></tr>
+      </tbody>
+    </table></div>
+    <p class="todo">[TODO: tỉ lệ phát lại thành công theo từng loại quả (episode giữ lại / episode thật).]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Chu trình thực hiện</h3></div>
+    <p>Dataset gốc là teleop trên robot G1 thật nên không chạy thẳng trong mô phỏng được: phải <b>chuyển real2sim</b> để có khung cảnh và dữ liệu mô phỏng tương ứng, <b>fine-tune</b> GR00T trên dữ liệu đó, rồi mới chạy vòng kín trong Isaac Sim.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">BƯỚC 1</div><div class="sv">Dữ liệu thật</div><div class="sd">1.095 quỹ đạo teleop G1, chỉ góc khớp + video</div></div>
+      <div class="step"><div class="sk">BƯỚC 2</div><div class="sv">Chuyển real2sim</div><div class="sd">FK suy vị trí quả, đĩa; phát lại &amp; lọc trong Isaac Lab</div></div>
+      <div class="step"><div class="sk">BƯỚC 3</div><div class="sv">Dataset mô phỏng</div><div class="sd">LeRobot đa nhiệm · train 790 / test 89</div></div>
+      <div class="step"><div class="sk">BƯỚC 4</div><div class="sv">Fine-tune</div><div class="sd">GR00T N1.7 · 20.000 bước · 1× H100</div></div>
+      <div class="step"><div class="sk">BƯỚC 5</div><div class="sv">Chạy &amp; đánh giá</div><div class="sd">Khung cảnh ngẫu nhiên, 50 episode</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Bước</th><th>Việc làm</th><th>Notebook / công cụ</th><th>Kết quả</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Tải dataset teleop 4 loại quả (táo, lê, khế, nho); thử checkpoint táo của kịch bản 1</td><td>PhysicalAI-Robotics-GR00T-Teleop-G1</td><td>Checkpoint táo dùng lại: 0 %</td></tr>
+        <tr><td>2</td><td>Động học thuận URDF → quỹ đạo bàn tay, thời điểm nắm/thả → vị trí quả và đĩa; đặt vật nhiễu ngoài vùng tay quét; phát lại action trong Isaac Lab, giữ episode thành công</td><td><code>g1_real2sim</code> (urdf_fk, scene, distractors, isaac_scene)</td><td>Khung cảnh mô phỏng cho từng quỹ đạo thật</td></tr>
+        <tr><td>3</td><td>Gộp 4 loại quả thành một dataset đa nhiệm; chia train/test theo episode gốc; giữ 100 khung cảnh đánh giá</td><td>make_groot_dataset, lerobot_io</td><td>790 / 86.822 frame train · 89 test</td></tr>
+        <tr><td>4</td><td>Fine-tune GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, 31 chiều state/action, horizon 16 bước @ 20 Hz, batch 32</td><td>launch_finetune.py trên server H100</td><td><code>g1_fruits_n17</code> · 2 giờ 34 phút · loss 1,50 → 0,019</td></tr>
+        <tr><td>5</td><td>Dựng khung cảnh giống dataset, chọn câu lệnh, model tự gắp; chạy N episode với seed riêng</td><td>nb09_multi_object_task_pipeline, nb10_eval_multi_object</td><td>66 %, không lần nào gắp nhầm quả</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
+    <p>Theo hướng dẫn chính thức của NVIDIA (fine-tuning on sim data): GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, camera <code>rs_view</code>, 5 nhóm state/action (31 chiều), horizon 16 bước @ 20 Hz (0,8 s); batch 32 trên H100; đóng băng LLM, tune thị giác + projector + diffusion; color jitter (sáng 0,3 · tương phản 0,4 · bão hoà 0,5 · sắc 0,08).</p>
+    <p class="todo">[TODO: số bước, thời gian train, đường loss, MAE open-loop trên tập test, checkpoint dùng để đánh giá, kết quả kiểm tra ReplayPolicy.]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Kết quả đạt được</h3></div>
+    <p>Mỗi episode ngẫu nhiên hoá quả mục tiêu, vị trí/hướng quả, vị trí đĩa và quả gây nhiễu; seed riêng cho từng episode. Câu lệnh nguyên văn dataset (vd. "Pick up the green grapes and place it on the plate"). Nhận 16 bước, thực thi 8 rồi hỏi lại; tối đa 10 s. 50 episode, 0 lỗi kỹ thuật.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Model</th><th class="num">Thành công</th><th>Wilson 95 %</th><th class="num">Nhấc được</th><th class="num">Trên đĩa</th><th class="num">Gắp nhầm</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Fine-tune real2sim</td><td class="num">33/50 (66 %)</td><td>52–78 %</td><td class="num">78 %</td><td class="num">76 %</td><td class="num">0 %</td></tr>
+        <tr><td>Checkpoint táo của Arena (đối chứng)</td><td class="num">0/50 (0 %)</td><td>0–7 %</td><td class="num">0 %</td><td class="num">0 %</td><td class="num">0 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="bars" data-source="real2sim-groups">
+      <div class="chart-head"><div><div class="ct">Tỉ lệ thành công theo nhóm · model real2sim</div><div class="cs">Di chuột lên thanh để xem số lần thử. n nhỏ (9–29) ⇒ khoảng tin cậy rộng.</div></div><button class="btn" type="button" data-table-toggle>Xem dạng bảng</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nhóm</th><th class="num">n</th><th class="num">Thành công</th><th class="num">Tỉ lệ</th></tr></thead><tbody>
+        <tr><td>Táo</td><td class="num">9</td><td class="num">8</td><td class="num">89 %</td></tr>
+        <tr><td>Nho</td><td class="num">13</td><td class="num">9</td><td class="num">69 %</td></tr>
+        <tr><td>Khế</td><td class="num">13</td><td class="num">8</td><td class="num">62 %</td></tr>
+        <tr><td>Lê</td><td class="num">15</td><td class="num">8</td><td class="num">53 %</td></tr>
+        <tr><td>Quả bên trái</td><td class="num">21</td><td class="num">16</td><td class="num">76 %</td></tr>
+        <tr><td>Quả bên phải</td><td class="num">29</td><td class="num">17</td><td class="num">59 %</td></tr>
+        <tr class="hl"><td>Tổng</td><td class="num">50</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody></table></div></div>
+    </div>
+    <figure class="fig"><img src="images/nb10_eval_real2sim.png" alt="Kết quả real2sim" loading="lazy"><figcaption><b>Vị trí quả mục tiêu theo kết quả</b> (xanh = thành công, cam = nhấc được nhưng không thành công, đỏ = không nhấc được, vòng xám = tâm đĩa) và tỉ lệ theo loại quả.</figcaption></figure>
+    <div class="grid">
+      <div class="sub"><div class="sl">NHẬN XÉT</div><div class="st">Model hiểu câu lệnh</div><p>Không lần nào gắp nhầm dù luôn có quả khác trên bàn.</p></div>
+      <div class="sub"><div class="sl">NHẬN XÉT</div><div class="st">Thất bại chủ yếu ở pha nhấc</div><p>11/50 không nhấc được; lê có tỉ lệ nhấc thấp nhất (53 %).</p></div>
+      <div class="sub"><div class="sl warn">LƯU Ý</div><div class="st">Đối chứng là model tác vụ khác</div><p>Không phải N1.7 gốc chưa fine-tune; 0 % chỉ cho thấy không dùng lại được model tác vụ khác.</p></div>
+    </div>
+    <div class="callout"><b>Bài học kỹ thuật:</b> lần chạy thử đầu tiên dùng cấu hình không render camera mỗi bước điều khiển (đặc thù Isaac Lab 3.0) — model nhìn một ảnh đứng yên. Đã phát hiện và sửa; kết quả lần thử đó không được dùng.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Phân tích kết quả</h3></div>
+    <p>Theo dõi 50 episode của model fine-tune qua từng pha để thấy hao hụt nằm ở đâu.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Pha (50 episode)</th><th class="num">Số episode</th><th class="num">Tỉ lệ</th></tr></thead>
+      <tbody>
+        <tr><td>Nhấc được quả mục tiêu</td><td class="num">39</td><td class="num">78 %</td></tr>
+        <tr><td>Quả nằm trên đĩa (trong số đã nhấc)</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr class="hl"><td>Thành công (không xê dịch vật nhiễu)</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Loại thất bại (17 lần)</th><th>Số lần</th><th>Biểu hiện</th></tr></thead>
+      <tbody>
+        <tr><td>Không nhấc được</td><td>11</td><td>Nắm trượt hoặc không khép đủ tay; lê có tỉ lệ nhấc thấp nhất (53 %)</td></tr>
+        <tr><td>Nhấc nhưng không lên đĩa</td><td>5</td><td>Thả lệch đĩa; khế lên đĩa thấp nhất (62 %) dù nhấc được 85 %</td></tr>
+        <tr><td>Lên đĩa nhưng xê dịch vật nhiễu</td><td>1</td><td>Tay chạm quả gây nhiễu &gt; 1 cm</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 1</div><div class="st">Model hiểu câu lệnh</div><p>0 lần gắp nhầm trong 50 episode luôn có quả khác trên bàn: phần ngôn ngữ được học tốt từ dữ liệu real2sim.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 2</div><div class="st">Nút thắt là pha nắm</div><p>11/17 thất bại là không nhấc được quả. Cải thiện tiếp nên tập trung vào dữ liệu nắm (hình dạng, ma sát từng loại quả).</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 3</div><div class="st">Khác biệt theo loại quả và phía bàn</div><p>Táo 89 %, nho 69 %, khế 62 %, lê 53 %; bên trái 76 %, bên phải 59 %. n nhỏ, khoảng tin cậy chồng nhau — chưa đủ kết luận.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 4</div><div class="st">Phạm vi kết luận</div><p>Huấn luyện và đánh giá cùng trong mô phỏng: kết quả dùng để so sánh tương đối, không dự đoán hiệu năng trên robot thật.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>Kết luận kịch bản</h3></div>
+    <div class="panel"><div class="pl">KẾT LUẬN</div><p>Từ dữ liệu teleop của robot G1 thật chỉ có góc khớp và video, dự án đã <b>dựng được dataset mô phỏng bằng real2sim</b> (790 episode) và fine-tune GR00T: từ <b>0 %</b> với checkpoint táo dùng lại lên <b>66 %</b> trên khung cảnh ngẫu nhiên có quả gây nhiễu, <b>không lần nào gắp nhầm</b>. Model đã hiểu câu lệnh; phần còn hao hụt chủ yếu nằm ở pha nắm.</p></div>
+    <ul>
+      <li>Xây dựng được quy trình <b>real2sim chỉ từ dữ liệu khớp</b>: động học thuận suy vị trí quả và đĩa, đặt vật nhiễu an toàn, phát lại và lọc tự động trong Isaac Lab.</li>
+      <li>Fine-tune GR00T N1.7 trong 2 giờ 34 phút trên một H100; 11/17 thất bại là không nhấc được quả, lê có tỉ lệ nhấc thấp nhất.</li>
+      <li>Kết quả chỉ dùng để <b>so sánh tương đối</b> trong mô phỏng: mô phỏng dễ hơn thực tế (PD cứng, ma sát cao, đĩa cố định), không dự đoán hiệu năng trên robot thật.</li>
+      <li>Hướng tiếp theo: tăng dữ liệu rẻ bằng cách đổi bố cục vật nhiễu, ánh sáng, chất liệu rồi phát lại; bổ sung dữ liệu nắm theo hình dạng và ma sát từng loại quả.</li>
+    </ul>
+  </div>
+</section>

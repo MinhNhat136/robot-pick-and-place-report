@@ -1,0 +1,191 @@
+<section class="section" id="ban-giao" data-hue="blue" data-kicker="I.03 · SẢN PHẨM ĐẦU RA" data-title="Sản phẩm đầu ra của dự án">
+  <div class="hero">
+    <span class="pill">MỤC I.03 · SẢN PHẨM ĐẦU RA</span>
+    <h2>Khách hàng nhận được gì, nằm ở đâu, dùng thế nào<span class="dot">.</span></h2>
+    <p class="lead">Toàn bộ sản phẩm của giai đoạn này nằm trong <b>một thư mục gồm 6 phần</b>, đánh số theo thứ tự nên đọc: báo cáo → mã nguồn → dữ liệu → model → kết quả → tài liệu. Dữ liệu gốc và checkpoint có dung lượng lớn được <b>cung cấp riêng</b>.</p>
+    <div class="meta">
+      <div><span class="ml">THƯ MỤC</span><span class="mv">G1_GR00T_san_pham/</span></div>
+      <div><span class="ml">GÓI CHÍNH</span><span class="mv">6 phần · ≈ 1,9 GB</span></div>
+      <div><span class="ml">CUNG CẤP RIÊNG</span><span class="mv">≈ 85 GB dữ liệu gốc + checkpoint</span></div>
+    </div>
+  </div>
+
+  <p class="todo">[TODO: thư mục sản phẩm chưa được tạo. Cấu trúc dưới đây là đề xuất, dựng từ vị trí và dung lượng thực của các thành phần trong máy dự án. Xác nhận tên thư mục, hình thức chuyển giao (ổ cứng / cloud) và chốt danh sách trước khi phát hành.]</p>
+
+  <!-- ================= 1 · overview tiles ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Sáu phần trong gói sản phẩm</h3></div>
+    <p>Mỗi ô là một thư mục con. Bấm vào ô để xem danh sách file bên trong (card 3).</p>
+    <div class="pkg">
+      <button type="button" class="pkg-tile" data-jump="f-bao-cao"><div class="pkg-top"><span class="pkg-no">01</span><span class="pkg-name">01_bao_cao/</span><span class="pkg-size">21 MB</span></div><div class="pkg-t">Báo cáo</div><div class="pkg-d">Báo cáo tương tác này (mở bằng trình duyệt, không cần cài đặt) và bản markdown để chỉnh sửa.</div><span class="pkg-go">Xem nội dung →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ma-nguon"><div class="pkg-top"><span class="pkg-no">02</span><span class="pkg-name">02_ma_nguon/</span><span class="pkg-size">13 MB</span></div><div class="pkg-t">Mã nguồn</div><div class="pkg-d">Pipeline điều khiển độc lập, 12 notebook nghiên cứu, công cụ real2sim, bản vá Arena và bộ script teleop.</div><span class="pkg-go">Xem nội dung →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-du-lieu"><div class="pkg-top"><span class="pkg-no">03</span><span class="pkg-name">03_du_lieu/</span><span class="pkg-size">≈ 1 GB</span></div><div class="pkg-t">Dữ liệu huấn luyện</div><div class="pkg-d">Dataset búa → thùng (200 và 400 episode) và dataset real2sim 4 loại quả, định dạng LeRobot.</div><span class="pkg-go">Xem nội dung →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-mo-hinh"><div class="pkg-top"><span class="pkg-no">04</span><span class="pkg-name">04_mo_hinh/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">Thông tin model</div><div class="pkg-d">Thẻ mô tả từng checkpoint: dữ liệu, cấu hình huấn luyện, kết quả, nơi tải. Bản trọng số cung cấp riêng.</div><span class="pkg-go">Xem nội dung →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ket-qua"><div class="pkg-top"><span class="pkg-no">05</span><span class="pkg-name">05_ket_qua_danh_gia/</span><span class="pkg-size">≈ 0,9 GB</span></div><div class="pkg-t">Kết quả đánh giá</div><div class="pkg-d">Log từng episode, bảng tổng kết, đồ thị và video thành công / thất bại của 3 kịch bản.</div><span class="pkg-go">Xem nội dung →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-tai-lieu"><div class="pkg-top"><span class="pkg-no">06</span><span class="pkg-name">06_tai_lieu/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">Tài liệu hướng dẫn</div><div class="pkg-d">Hướng dẫn teleop, fine-tune, đánh giá; tài liệu API server; báo cáo theo từng mốc.</div><span class="pkg-go">Xem nội dung →</span></button>
+    </div>
+
+    <h4>Dung lượng gói chính (≈ 1,9 GB)</h4>
+    <div class="split"><i style="width:51%;background:var(--accent)">Dữ liệu ≈ 1 GB</i><i style="width:46%;background:oklch(0.68 0.1 var(--h))">Kết quả ≈ 0,9 GB</i><i style="width:3%;background:oklch(0.82 0.06 var(--h))"></i></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>03 Dữ liệu</span><span><b style="background:oklch(0.68 0.1 var(--h))"></b>05 Kết quả đánh giá (chủ yếu là video)</span><span><b style="background:oklch(0.82 0.06 var(--h))"></b>Báo cáo, mã nguồn, model card, tài liệu (≈ 35 MB)</span></div>
+  </div>
+
+  <!-- ================= 2 · who uses what ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Ai dùng phần nào</h3></div>
+    <p>Không phải ai cũng cần cả gói. Bảng dưới gợi ý phần nên đọc trước theo vai trò.</p>
+    <div class="tbl-wrap"><table class="tbl role-tbl">
+      <thead><tr><th>Phần</th><th class="c">Quản lý dự án</th><th class="c">Kỹ sư phần mềm</th><th class="c">Kỹ sư AI / robot</th><th class="c">Người thu dữ liệu (teleop)</th></tr></thead>
+      <tbody>
+        <tr><td><b>01</b> Báo cáo</td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>02</b> Mã nguồn</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>03</b> Dữ liệu</td><td class="c"></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>04</b> Model</td><td class="c"></td><td class="c"><i>·</i></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>05</b> Kết quả</td><td class="c"><b>✓</b></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>06</b> Tài liệu</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>Cần dùng chính</span><span><b style="background:var(--accent-softer);border:1px solid var(--accent-border)"></b>Tham khảo khi cần</span></div>
+  </div>
+
+  <!-- ================= 3 · folder contents ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Nội dung chi tiết từng thư mục</h3></div>
+    <p>Bấm vào từng thư mục để xem các file chính bên trong.</p>
+
+    <details class="acc" id="f-bao-cao"><summary><span class="n">01</span>01_bao_cao/ — Báo cáo<span class="sz">21 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Mở: index.html</span><span>Không cần cài đặt</span></div>
+      <ul class="ftree">
+        <li><code>index.html</code> — <b>báo cáo tương tác</b>: mục lục, video, bảng so sánh, xuất PDF</li>
+        <li><code>assets/</code>, <code>images/</code> — giao diện, video minh hoạ, hình ảnh</li>
+        <li><code>src/</code>, <code>build.py</code>, <code>README.md</code> — nội dung từng mục và cách chỉnh sửa báo cáo</li>
+        <li><code>markdown/</code> — bản báo cáo dạng văn bản (10 file) để trích dẫn, chỉnh sửa</li>
+      </ul>
+      <p class="internal"><b>Nguồn:</b> <code>report/</code>, <code>bao_cao_khach_hang/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-ma-nguon"><summary><span class="n">02</span>02_ma_nguon/ — Mã nguồn<span class="sz">13 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Python</span><span>84 unit test</span><span>Không kèm môi trường đã cài</span></div>
+      <ul class="ftree">
+        <li><b><code>standalone_g1_gr00t/</code></b> — pipeline điều khiển G1 bằng GR00T, không phụ thuộc Arena
+          <ul class="ftree">
+            <li><code>g1gr00t/</code> — package: kết nối server, ánh xạ khớp, quan sát, action, lớp an toàn, AGILE, backend Isaac Lab, runner</li>
+            <li><code>notebooks/</code> — 12 notebook nghiên cứu (nb01 → nb12)</li>
+            <li><code>configs/</code> — cấu hình kịch bản táo, búa và bộ giữ thăng bằng</li>
+            <li><code>scripts/</code>, <code>tools/</code> — chạy vòng kín, đánh giá open-loop, tải tài nguyên, chạy notebook tự động</li>
+            <li><code>tests/</code> — unit test và test trong mô phỏng</li>
+            <li><code>README.md</code>, <code>Makefile</code> — cài đặt và các lệnh chạy</li>
+          </ul></li>
+        <li><b><code>g1_real2sim/</code></b> — tái tạo khung cảnh từ dữ liệu G1 thật: FK từ URDF, vật nhiễu, khung cảnh Isaac Lab, đọc/ghi LeRobot, cấu hình GR00T <span class="todo">[script sinh dataset nằm trên máy Windows]</span></li>
+        <li><b><code>arena_bua_thung/</code></b> — mở rộng Isaac Lab Arena cho kịch bản búa
+          <ul class="ftree">
+            <li><code>patches/</code> — 4 bản vá môi trường: bố trí búa–thùng, khối kê, điều kiện thành công chặt</li>
+            <li><code>teleop/</code> — script mở teleop, ghi, phát lại, gộp demo, chẩn đoán</li>
+            <li><code>scripts/</code> — sinh demo tăng cường, kiểm tra dataset, kiểm chứng khung cảnh</li>
+          </ul></li>
+      </ul>
+      <p class="internal"><b>Nguồn:</b> <code>codes/standalone_g1_gr00t/</code> (bỏ <code>.venv</code>, <code>data/</code>), <code>codes/g1_real2sim/</code> (bỏ <code>output/</code>, <code>.venv</code>), <code>hammer_to_bin/{patches,teleop_kit/current,scripts}</code></p>
+    </div></details>
+
+    <details class="acc" id="f-du-lieu"><summary><span class="n">03</span>03_du_lieu/ — Dữ liệu huấn luyện<span class="sz">≈ 1 GB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Định dạng LeRobot v2.1</span><span>Video H.264 640×480</span></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Thư mục</th><th>Nội dung</th><th class="num">Dung lượng</th></tr></thead>
+        <tbody>
+          <tr><td><code>bua_thung_mix200/</code></td><td>200 episode (100 teleop thật + 100 sinh thêm), 28.022 frame @ 50 Hz</td><td class="num">131 MB</td></tr>
+          <tr><td><code>bua_thung_mix400/</code></td><td>400 episode</td><td class="num">261 MB</td></tr>
+          <tr><td><code>real2sim_4_loai_qua/</code></td><td>Dataset mô phỏng từ dữ liệu G1 thật: táo, nho, lê <span class="todo">[khế: chưa có bản local]</span></td><td class="num">≈ 584 MB</td></tr>
+        </tbody>
+      </table></div>
+      <p>Mỗi dataset gồm <code>meta/</code> (mô tả, câu lệnh, thống kê), <code>data/</code> (góc khớp, action theo từng episode) và <code>videos/</code> (camera đầu robot).</p>
+      <p class="internal"><b>Nguồn:</b> <code>~/IsaacLab-Arena/teleop_data/static_hammer_train/*/lerobot</code>, <code>codes/g1_real2sim/output/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-mo-hinh"><summary><span class="n">04</span>04_mo_hinh/ — Thông tin model<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <p>Mỗi checkpoint có một thẻ mô tả (model card); bản trọng số 12,6 GB được cung cấp riêng (card 4).</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Checkpoint</th><th>Huấn luyện trên</th><th>Kết quả</th></tr></thead>
+        <tbody>
+          <tr><td>Búa → thùng, 200 episode</td><td>mix200 · 10.000 bước · 1× H100 · 61 phút</td><td>66 %</td></tr>
+          <tr><td>Búa → thùng, 400 episode</td><td>mix400 · 10.000 bước</td><td>63 % (73 % khi nới ngưỡng đứng yên)</td></tr>
+          <tr><td>Real2sim 4 loại quả</td><td>790 episode mô phỏng <span class="todo">[số bước, vị trí]</span></td><td>66 %</td></tr>
+          <tr><td>Táo → đĩa (của NVIDIA)</td><td>Không huấn luyện lại — tải từ Hugging Face</td><td>92 % trong Arena</td></tr>
+        </tbody>
+      </table></div>
+    </div></details>
+
+    <details class="acc" id="f-ket-qua"><summary><span class="n">05</span>05_ket_qua_danh_gia/ — Kết quả đánh giá<span class="sz">≈ 0,9 GB</span></summary><div class="acc-body">
+      <ul class="ftree">
+        <li><b><code>tao_dia/</code></b> — 50 episode khung cảnh tự dựng, 50 episode khung cảnh Galileo: log từng episode, video camera đầu</li>
+        <li><b><code>4_loai_qua/</code></b> — 50 episode model fine-tune và 50 episode đối chứng: log, tổng kết, đồ thị, video</li>
+        <li><b><code>bua_thung/</code></b> — 100 video đánh giá trong Arena (camera ngoài + camera đầu); các đợt 66 % và 73 %: log, tổng kết, ảnh các lần thất bại, video</li>
+      </ul>
+      <p>File chung ở mỗi đợt: <code>episodes.jsonl</code> (một dòng mỗi lần thử), <code>summary.json</code> / <code>summary.md</code> (tỉ lệ thành công, khoảng tin cậy, phân loại thất bại), video <code>…_success.mp4</code> / <code>…_fail.mp4</code>.</p>
+      <p class="internal"><b>Nguồn:</b> <code>codes/standalone_g1_gr00t/data/</code>: <code>runs_*.jsonl</code>, <code>videos/</code>, <code>nb10_eval*</code>, <code>nb12_eval/</code>, <code>arena_eval_hammer_ckpt10000/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-tai-lieu"><summary><span class="n">06</span>06_tai_lieu/ — Tài liệu hướng dẫn<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Tài liệu</th><th>Dùng khi</th></tr></thead>
+        <tbody>
+          <tr><td>Hướng dẫn teleop bài búa</td><td>Thu thêm demo bằng kính Meta Quest</td></tr>
+          <tr><td>Kế hoạch &amp; kết quả fine-tune bài búa</td><td>Huấn luyện lại, đánh giá trong Arena</td></tr>
+          <tr><td>Hướng dẫn fine-tune real2sim</td><td>Huấn luyện model 4 loại quả</td></tr>
+          <tr><td>Tài liệu API GR00T server</td><td>Viết client mới, ví dụ cho robot thật</td></tr>
+          <tr><td>Báo cáo theo mốc (M0 → nb07), kế hoạch kiến trúc</td><td>Hiểu lý do các quyết định kỹ thuật</td></tr>
+        </tbody>
+      </table></div>
+      <p class="internal"><b>Nguồn:</b> <code>hammer_to_bin/*.md</code>, <code>codes/g1_real2sim/GROOT_FINETUNE.md</code>, <code>codes/standalone_g1_gr00t/report/</code></p>
+    </div></details>
+  </div>
+
+  <!-- ================= 4 · large items ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Thành phần dung lượng lớn (cung cấp riêng)</h3></div>
+    <p>Cần khi muốn <b>chạy model ngay</b> hoặc <b>huấn luyện lại từ dữ liệu gốc</b>; không cần để đọc báo cáo hay xem kết quả.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Thành phần</th><th>Dung lượng</th><th>Cần khi</th></tr></thead>
+      <tbody>
+        <tr><td>Checkpoint búa → thùng (mỗi bản)</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12,6 GB</div></td><td>Chạy model búa <span class="todo">[xác nhận checkpoint của bản 400 episode]</span></td></tr>
+        <tr><td>Checkpoint real2sim 4 loại quả</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12,6 GB</div></td><td>Chạy model 4 loại quả <span class="todo">[vị trí]</span></td></tr>
+        <tr><td>Dữ liệu teleop gốc bài búa (HDF5)</td><td><div class="bar-cell"><span class="b" style="width:45%"></span>19 GB</div></td><td>Chuyển đổi lại, sinh thêm demo</td></tr>
+        <tr><td>Bộ huấn luyện mix200 dạng HDF5</td><td><div class="bar-cell"><span class="b" style="width:31%"></span>13 GB</div></td><td>Chuyển LeRobot với cấu hình khác</td></tr>
+        <tr><td>Bộ huấn luyện mix400 dạng HDF5</td><td><div class="bar-cell"><span class="b" style="width:62%"></span>26 GB</div></td><td>như trên</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Không kèm:</b> môi trường Python đã cài (tạo lại bằng lệnh trong mã nguồn) và dữ liệu, checkpoint gốc của NVIDIA (tải từ Hugging Face theo hướng dẫn trong <code>06_tai_lieu</code>).</div>
+  </div>
+
+  <!-- ================= 5 · how to use ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Bắt đầu từ đâu</h3></div>
+    <p>Ba lộ trình theo mục đích sử dụng, từ đơn giản tới đầy đủ.</p>
+    <div class="journeys">
+      <div class="journey"><div class="jk">LỘ TRÌNH 1</div><div class="jt">Xem kết quả</div>
+        <ol><li>Mở <code>01_bao_cao/index.html</code></li><li>Đọc mục Tổng quan và ba kịch bản</li><li>Xem video trong <code>05_ket_qua_danh_gia</code></li></ol>
+        <div class="jtime">Cần: trình duyệt · ~30 phút</div></div>
+      <div class="journey"><div class="jk">LỘ TRÌNH 2</div><div class="jt">Chạy lại đánh giá</div>
+        <ol><li>Cài Isaac Sim 6.0.1, Isaac Lab 3.0-beta2 và môi trường của <code>standalone_g1_gr00t</code></li><li>Chạy GR00T server trên máy GPU với checkpoint ở card 4</li><li>Chạy notebook đánh giá nb10 (4 loại quả) hoặc nb12 (búa), không cần giao diện</li></ol>
+        <div class="jtime">Cần: máy trạm GPU + máy chủ GPU (mục I.02)</div></div>
+      <div class="journey"><div class="jk">LỘ TRÌNH 3</div><div class="jt">Dạy robot tác vụ mới</div>
+        <ol><li>Dựng môi trường và thu demo bằng teleop (<code>arena_bua_thung</code>)</li><li>Sinh thêm demo, chuyển sang LeRobot</li><li>Fine-tune GR00T theo hướng dẫn trong <code>06_tai_lieu</code></li><li>Đánh giá bằng notebook như lộ trình 2</li></ol>
+        <div class="jtime">Tham khảo: bài búa mất ~6 ngày từ đầu tới kết quả</div></div>
+    </div>
+  </div>
+
+  <!-- ================= 6 · licenses ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Giấy phép và lưu ý sử dụng</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Thành phần</th><th>Điều khoản</th></tr></thead>
+      <tbody>
+        <tr><td>Model gốc GR00T N1.7-3B và các checkpoint fine-tune từ nó</td><td>Theo NVIDIA Open Model Agreement</td></tr>
+        <tr><td>Checkpoint táo → đĩa của NVIDIA (Arena)</td><td>Model card ghi "ready for non-commercial use only"</td></tr>
+        <tr><td>Dataset NVIDIA (táo → đĩa, dữ liệu G1 thật)</td><td>CC-BY-4.0: dùng được, cần ghi nguồn</td></tr>
+        <tr><td>Dữ liệu teleop bài búa, dataset sinh thêm, dataset real2sim</td><td>Do dự án tạo ra <span class="todo">[xác nhận quyền sở hữu theo hợp đồng]</span></td></tr>
+        <tr><td>Bản vá Isaac Lab Arena</td><td><span class="todo">[TODO: kiểm tra giấy phép của Isaac Lab Arena]</span></td></tr>
+        <tr><td>Video minh hoạ mô hình VLA (mục II.01)</td><td>Của bên thứ ba <span class="todo">[xác nhận quyền sử dụng]</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

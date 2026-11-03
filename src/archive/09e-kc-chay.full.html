@@ -1,0 +1,88 @@
+<section class="section" id="kc-chay" data-hue="blue" data-kicker="IV.03 · CHẠY KIỂM CHỨNG" data-title="Kiểm chứng kết quả: chạy notebook standalone cho từng kịch bản">
+  <div class="hero">
+    <span class="pill">MỤC IV.03 · CHẠY KIỂM CHỨNG</span>
+    <h2>Chạy lại notebook và so với số liệu báo cáo<span class="dot">.</span></h2>
+    <p class="lead">Mọi kịch bản được đánh giá bằng notebook trong <code>codes/standalone_g1_gr00t</code>, chạy trực tiếp trên Isaac Sim cục bộ, <b>không cần Docker Arena</b>. Mỗi notebook có lệnh <code>make</code> để chạy không giao diện (headless) và ghi kết quả vào <code>data/</code>.</p>
+    <div class="meta">
+      <div><span class="ml">THƯ MỤC</span><span class="mv">codes/standalone_g1_gr00t</span></div>
+      <div><span class="ml">CHẠY</span><span class="mv">make sim-nbXX (headless) · make nb (tương tác)</span></div>
+      <div><span class="ml">ĐẦU RA</span><span class="mv">data/nbXX_eval/: log, tổng kết, video</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Quy trình chung</h3></div>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01 · SERVER</div><div class="sv">Nạp đúng checkpoint</div><div class="sd">Mục IV.02, card 1–2</div></div>
+      <div class="step"><div class="sk">02 · TUNNEL</div><div class="sv">Mở và để chạy suốt</div><div class="sd"><code>tsh ssh -N -L …</code></div></div>
+      <div class="step"><div class="sk">03 · KIỂM TRA</div><div class="sv">Ping server</div><div class="sd"><code>make smoke</code></div></div>
+      <div class="step"><div class="sk">04 · CHẠY</div><div class="sv">Lệnh make của kịch bản</div><div class="sd">Card 3 bên dưới</div></div>
+      <div class="step"><div class="sk">05 · SO SÁNH</div><div class="sv">Đọc tổng kết</div><div class="sd">So với khoảng tin cậy trong báo cáo</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Kiểm tra nền trước khi đánh giá</h3></div>
+    <p>Bốn lệnh không cần server, xác nhận mô phỏng, robot và lớp an toàn chạy đúng trước khi tốn thời gian chạy model (tương ứng tầng 2 của kiểm chứng theo tầng, mục II.02).</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Lệnh</th><th>Làm gì</th><th>Đạt khi</th></tr></thead>
+      <tbody>
+        <tr><td><code>make sim-stand</code></td><td>Robot đứng 500 tick, có cửa sổ</td><td>Không ngã, thân cao ~0,73–0,75 m</td></tr>
+        <tr><td><code>make sim-replay</code></td><td>Phát lại demo episode 0 của dataset táo</td><td>Robot nhặt được táo, đặt lên đĩa</td></tr>
+        <tr><td><code>make sim-nb05</code></td><td>Dựng lại backend từng bước (nb05)</td><td>Notebook chạy hết, không lỗi</td></tr>
+        <tr><td><code>make sim-nb08</code></td><td>Runner, nguồn action, lớp an toàn (nb08)</td><td>Notebook chạy hết; §9 cần server</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Lệnh kiểm chứng từng kịch bản</h3></div>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# Kịch bản 1 · táo → đĩa, khung cảnh Galileo (server 5556)
+make sim-nb07 EPISODES=50
+
+# Kịch bản 2 · Multi Fruit, real2sim (server 5556)
+make sim-nb10 EPISODES=50
+
+# Kịch bản 3 · búa → thùng (server 5557)
+make sim-nb12 EPISODES=100 CKPT=checkpoint-10000
+#   POLICY=hold   chạy không cần server (kiểm tra scene, chấm điểm)
+#   SUCCESS=strict dùng điều kiện thành công của Arena</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kịch bản</th><th>Notebook</th><th class="num">Episode</th><th>Thời gian ước tính</th><th>Kết quả trong báo cáo</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Táo → đĩa</td><td><code>nb07_galileo_scene</code></td><td class="num">50</td><td>~25 phút (+ tải asset lần đầu)</td><td><b>56 %</b> · 28/50 · Wilson 42–69 %</td></tr>
+        <tr><td>2 · Multi Fruit</td><td><code>nb10_eval_multi_object</code></td><td class="num">50</td><td>~1 phút / episode (10 s mô phỏng)</td><td><b>66 %</b> · 33/50 · Wilson 52–78 %</td></tr>
+        <tr class="hl"><td>3 · Búa → thùng</td><td><code>nb12_eval_hammer_to_bin</code></td><td class="num">100</td><td>~16,5 s / episode</td><td><b>66 %</b> · 66/100 (mix200, checkpoint-10000)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>Ngoài phạm vi các lệnh trên:</b> con số 92 % của kịch bản 1 đo bằng client Arena gốc trong Docker; con số 73 % của kịch bản 3 dùng checkpoint mix400 và ngưỡng đứng yên 0,02 <span class="todo">[bổ sung lệnh chạy cấu hình mix400, ngưỡng 0,02]</span>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Đọc và so sánh kết quả</h3></div>
+    <p>Mỗi lần chạy ghi một thư mục riêng trong <code>data/</code> (vd. <code>data/nb10_eval/</code>, <code>data/nb12_eval/</code>) gồm log từng episode, bảng tổng kết, đồ thị và video.</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">KHỚP VỚI BÁO CÁO</div><div class="st">Nằm trong khoảng tin cậy</div><p>Mô phỏng ngẫu nhiên hoá mỗi episode: với 50 episode, chênh khoảng ±13 điểm vẫn là bình thường; 100 episode khoảng ±9–10 điểm.</p></div>
+      <div class="sub"><div class="sl">LỖI KỸ THUẬT</div><div class="st">Không tính vào tỉ lệ</div><p>Episode lỗi (server hết giờ, mất tunnel) được ghi lý do và loại khỏi tỉ lệ thành công. Notebook dừng nếu server không sống lại.</p></div>
+      <div class="sub"><div class="sl">CHẠY TIẾP</div><div class="st">Không phải chạy lại từ đầu</div><p>Bật lại server, tunnel rồi chạy lại cell đánh giá: nb12 tiếp tục từ episode đang dở (RESUME).</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Chạy tương tác trong Jupyter</h3></div>
+    <p>Muốn xem từng bước hoặc cửa sổ mô phỏng, mở notebook trong Jupyter thay vì chạy headless.</p>
+<pre class="diagram">make sim-kernel && make nb     # Jupyter Lab, chọn kernel "Isaac Sim Python 3 (isaacsim6)"
+make sim-nb                    # hoặc Jupyter đi kèm Isaac Sim</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Gặp</th><th>Xử lý</th></tr></thead>
+      <tbody>
+        <tr><td><code>No module named 'isaaclab'</code></td><td>Đang ở kernel <code>.venv</code>: đổi sang kernel <code>isaacsim6</code></td></tr>
+        <tr><td><code>print</code> không hiện trong cell</td><td>Isaac Lab gán lại <code>sys.stdout</code>; xem terminal, cell đầu notebook đã gán lại</td></tr>
+        <tr><td>Treo khi đóng mô phỏng</td><td>Không gọi <code>app.close()</code>; dùng Kernel ▸ Restart</td></tr>
+        <tr><td>Notebook bị sửa ngoài Jupyter</td><td>Đóng tab rồi mở lại; đừng Save bản cũ kẻo ghi đè</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

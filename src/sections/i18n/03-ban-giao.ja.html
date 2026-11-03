@@ -1,0 +1,191 @@
+<section class="section" id="ban-giao" data-hue="blue" data-kicker="I.03 · 成果物" data-title="プロジェクトの成果物">
+  <div class="hero">
+    <span class="pill">I.03 節 · 成果物</span>
+    <h2>顧客が受け取るもの、その場所、使い方<span class="dot">。</span></h2>
+    <p class="lead">本フェーズの成果物はすべて<b>6 部構成の 1 つのフォルダ</b>に収め、推奨する読む順に番号を付けています：レポート → ソースコード → データ → モデル → 結果 → ドキュメント。容量の大きい元データとチェックポイントは<b>別途提供</b>します。</p>
+    <div class="meta">
+      <div><span class="ml">フォルダ</span><span class="mv">G1_GR00T_san_pham/</span></div>
+      <div><span class="ml">メインパッケージ</span><span class="mv">6 部 · ≈ 1.9 GB</span></div>
+      <div><span class="ml">別途提供</span><span class="mv">≈ 85 GB の元データ + チェックポイント</span></div>
+    </div>
+  </div>
+
+  <p class="todo">[TODO: 成果物フォルダはまだ作成されていません。以下の構成は、プロジェクトマシン上の各コンポーネントの実際の場所と容量に基づく案です。リリース前にフォルダ名、受け渡し方法（ハードディスク / クラウド）を確認し、一覧を確定してください。]</p>
+
+  <!-- ================= 1 · overview tiles ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>パッケージの 6 つの部分</h3></div>
+    <p>各タイルは 1 つのサブフォルダです。タイルをクリックすると中のファイル一覧を表示します（カード 3）。</p>
+    <div class="pkg">
+      <button type="button" class="pkg-tile" data-jump="f-bao-cao-ja"><div class="pkg-top"><span class="pkg-no">01</span><span class="pkg-name">01_bao_cao/</span><span class="pkg-size">21 MB</span></div><div class="pkg-t">レポート</div><div class="pkg-d">本インタラクティブレポート（ブラウザで開く、インストール不要）と編集用の markdown 版。</div><span class="pkg-go">内容を見る →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ma-nguon-ja"><div class="pkg-top"><span class="pkg-no">02</span><span class="pkg-name">02_ma_nguon/</span><span class="pkg-size">13 MB</span></div><div class="pkg-t">ソースコード</div><div class="pkg-d">独立した制御パイプライン、研究用 notebook 12 本、real2sim ツール、Arena パッチ、テレオペ用スクリプト一式。</div><span class="pkg-go">内容を見る →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-du-lieu-ja"><div class="pkg-top"><span class="pkg-no">03</span><span class="pkg-name">03_du_lieu/</span><span class="pkg-size">≈ 1 GB</span></div><div class="pkg-t">学習データ</div><div class="pkg-d">ハンマー → 箱のデータセット（200 および 400 エピソード）と real2sim 果物 4 種のデータセット、LeRobot 形式。</div><span class="pkg-go">内容を見る →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-mo-hinh-ja"><div class="pkg-top"><span class="pkg-no">04</span><span class="pkg-name">04_mo_hinh/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">モデル情報</div><div class="pkg-d">各チェックポイントの説明カード：データ、学習設定、結果、ダウンロード先。重みは別途提供。</div><span class="pkg-go">内容を見る →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ket-qua-ja"><div class="pkg-top"><span class="pkg-no">05</span><span class="pkg-name">05_ket_qua_danh_gia/</span><span class="pkg-size">≈ 0.9 GB</span></div><div class="pkg-t">評価結果</div><div class="pkg-d">3 シナリオのエピソードごとのログ、集計表、グラフ、成功 / 失敗動画。</div><span class="pkg-go">内容を見る →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-tai-lieu-ja"><div class="pkg-top"><span class="pkg-no">06</span><span class="pkg-name">06_tai_lieu/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">ガイド・ドキュメント</div><div class="pkg-d">テレオペ、ファインチューニング、評価のガイド、API サーバーのドキュメント、マイルストーンごとのレポート。</div><span class="pkg-go">内容を見る →</span></button>
+    </div>
+
+    <h4>メインパッケージの容量（≈ 1.9 GB）</h4>
+    <div class="split"><i style="width:51%;background:var(--accent)">データ ≈ 1 GB</i><i style="width:46%;background:oklch(0.68 0.1 var(--h))">結果 ≈ 0.9 GB</i><i style="width:3%;background:oklch(0.82 0.06 var(--h))"></i></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>03 データ</span><span><b style="background:oklch(0.68 0.1 var(--h))"></b>05 評価結果（主に動画）</span><span><b style="background:oklch(0.82 0.06 var(--h))"></b>レポート、ソースコード、モデルカード、ドキュメント（≈ 35 MB）</span></div>
+  </div>
+
+  <!-- ================= 2 · who uses what ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>役割別の利用部分</h3></div>
+    <p>全員がパッケージ全体を必要とするわけではありません。下表は役割ごとに先に読むべき部分の目安です。</p>
+    <div class="tbl-wrap"><table class="tbl role-tbl">
+      <thead><tr><th>部分</th><th class="c">プロジェクトマネージャー</th><th class="c">ソフトウェアエンジニア</th><th class="c">AI / ロボットエンジニア</th><th class="c">データ収集担当（テレオペ）</th></tr></thead>
+      <tbody>
+        <tr><td><b>01</b> レポート</td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>02</b> ソースコード</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>03</b> データ</td><td class="c"></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>04</b> モデル</td><td class="c"></td><td class="c"><i>·</i></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>05</b> 結果</td><td class="c"><b>✓</b></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>06</b> ドキュメント</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>主に使用</span><span><b style="background:var(--accent-softer);border:1px solid var(--accent-border)"></b>必要に応じて参照</span></div>
+  </div>
+
+  <!-- ================= 3 · folder contents ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>各フォルダの詳細内容</h3></div>
+    <p>フォルダをクリックすると中の主なファイルを表示します。</p>
+
+    <details class="acc" id="f-bao-cao-ja"><summary><span class="n">01</span>01_bao_cao/ — レポート<span class="sz">21 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>開く: index.html</span><span>インストール不要</span></div>
+      <ul class="ftree">
+        <li><code>index.html</code> — <b>インタラクティブレポート</b>：目次、動画、比較表、PDF 出力</li>
+        <li><code>assets/</code>, <code>images/</code> — UI、デモ動画、画像</li>
+        <li><code>src/</code>, <code>build.py</code>, <code>README.md</code> — 各節の内容とレポートの編集方法</li>
+        <li><code>markdown/</code> — 引用・編集用のテキスト版レポート（10 ファイル）</li>
+      </ul>
+      <p class="internal"><b>出典:</b> <code>report/</code>, <code>bao_cao_khach_hang/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-ma-nguon-ja"><summary><span class="n">02</span>02_ma_nguon/ — ソースコード<span class="sz">13 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Python</span><span>unit test 84 件</span><span>インストール済み環境は含まない</span></div>
+      <ul class="ftree">
+        <li><b><code>standalone_g1_gr00t/</code></b> — GR00T で G1 を制御するパイプライン、Arena に依存しない
+          <ul class="ftree">
+            <li><code>g1gr00t/</code> — パッケージ：サーバー接続、関節マッピング、観測、アクション、安全レイヤー、AGILE、Isaac Lab バックエンド、runner</li>
+            <li><code>notebooks/</code> — 研究用 notebook 12 本（nb01 → nb12）</li>
+            <li><code>configs/</code> — リンゴ・ハンマーのシナリオとバランス制御器の設定</li>
+            <li><code>scripts/</code>, <code>tools/</code> — 閉ループ実行、open-loop 評価、アセットのダウンロード、notebook の自動実行</li>
+            <li><code>tests/</code> — unit test とシミュレーション内テスト</li>
+            <li><code>README.md</code>, <code>Makefile</code> — インストールと実行コマンド</li>
+          </ul></li>
+        <li><b><code>g1_real2sim/</code></b> — 実機 G1 データからのシーン再構成：URDF からの FK、妨害物体、Isaac Lab シーン、LeRobot の読み書き、GR00T 設定 <span class="todo">[データセット生成スクリプトは Windows マシン上にあります]</span></li>
+        <li><b><code>arena_bua_thung/</code></b> — ハンマーシナリオ用の Isaac Lab Arena 拡張
+          <ul class="ftree">
+            <li><code>patches/</code> — 環境パッチ 4 件：ハンマー–箱の配置、支持ブロック、厳格な成功条件</li>
+            <li><code>teleop/</code> — テレオペの起動、記録、再生、デモの統合、診断用スクリプト</li>
+            <li><code>scripts/</code> — 拡張デモの生成、データセットのチェック、シーンの検証</li>
+          </ul></li>
+      </ul>
+      <p class="internal"><b>出典:</b> <code>codes/standalone_g1_gr00t/</code>（<code>.venv</code>、<code>data/</code> を除く）、<code>codes/g1_real2sim/</code>（<code>output/</code>、<code>.venv</code> を除く）、<code>hammer_to_bin/{patches,teleop_kit/current,scripts}</code></p>
+    </div></details>
+
+    <details class="acc" id="f-du-lieu-ja"><summary><span class="n">03</span>03_du_lieu/ — 学習データ<span class="sz">≈ 1 GB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>LeRobot v2.1 形式</span><span>H.264 動画 640×480</span></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>フォルダ</th><th>内容</th><th class="num">容量</th></tr></thead>
+        <tbody>
+          <tr><td><code>bua_thung_mix200/</code></td><td>200 エピソード（実テレオペ 100 + 生成 100）、28,022 フレーム @ 50 Hz</td><td class="num">131 MB</td></tr>
+          <tr><td><code>bua_thung_mix400/</code></td><td>400 エピソード</td><td class="num">261 MB</td></tr>
+          <tr><td><code>real2sim_4_loai_qua/</code></td><td>実機 G1 データから作成したシミュレーションデータセット：リンゴ、ブドウ、洋ナシ <span class="todo">[スターフルーツ：ローカル版なし]</span></td><td class="num">≈ 584 MB</td></tr>
+        </tbody>
+      </table></div>
+      <p>各データセットは <code>meta/</code>（説明、指示文、統計）、<code>data/</code>（エピソードごとの関節角とアクション）、<code>videos/</code>（ロボット頭部カメラ）で構成されます。</p>
+      <p class="internal"><b>出典:</b> <code>~/IsaacLab-Arena/teleop_data/static_hammer_train/*/lerobot</code>, <code>codes/g1_real2sim/output/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-mo-hinh-ja"><summary><span class="n">04</span>04_mo_hinh/ — モデル情報<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <p>各チェックポイントに説明カード（model card）があります。12.6 GB の重みは別途提供します（カード 4）。</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Checkpoint</th><th>学習データ</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td>ハンマー → 箱、200 エピソード</td><td>mix200 · 10,000 ステップ · 1× H100 · 61 分</td><td>66 %</td></tr>
+          <tr><td>ハンマー → 箱、400 エピソード</td><td>mix400 · 10,000 ステップ</td><td>63 %（静止しきい値を緩和すると 73 %）</td></tr>
+          <tr><td>Real2sim 果物 4 種</td><td>シミュレーション 790 エピソード <span class="todo">[ステップ数、保存場所]</span></td><td>66 %</td></tr>
+          <tr><td>リンゴ → 皿（NVIDIA 提供）</td><td>再学習なし — Hugging Face からダウンロード</td><td>Arena で 92 %</td></tr>
+        </tbody>
+      </table></div>
+    </div></details>
+
+    <details class="acc" id="f-ket-qua-ja"><summary><span class="n">05</span>05_ket_qua_danh_gia/ — 評価結果<span class="sz">≈ 0.9 GB</span></summary><div class="acc-body">
+      <ul class="ftree">
+        <li><b><code>tao_dia/</code></b> — 自作シーン 50 エピソード、Galileo シーン 50 エピソード：エピソードごとのログ、頭部カメラ動画</li>
+        <li><b><code>4_loai_qua/</code></b> — ファインチューニング済みモデル 50 エピソードと比較対照 50 エピソード：ログ、集計、グラフ、動画</li>
+        <li><b><code>bua_thung/</code></b> — Arena での評価動画 100 本（外部カメラ + 頭部カメラ）、66 % と 73 % の実行：ログ、集計、失敗時の画像、動画</li>
+      </ul>
+      <p>各実行の共通ファイル：<code>episodes.jsonl</code>（試行ごとに 1 行）、<code>summary.json</code> / <code>summary.md</code>（成功率、信頼区間、失敗分類）、動画 <code>…_success.mp4</code> / <code>…_fail.mp4</code>。</p>
+      <p class="internal"><b>出典:</b> <code>codes/standalone_g1_gr00t/data/</code>: <code>runs_*.jsonl</code>, <code>videos/</code>, <code>nb10_eval*</code>, <code>nb12_eval/</code>, <code>arena_eval_hammer_ckpt10000/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-tai-lieu-ja"><summary><span class="n">06</span>06_tai_lieu/ — ガイド・ドキュメント<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>ドキュメント</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>ハンマータスクのテレオペガイド</td><td>Meta Quest ヘッドセットでデモを追加収集</td></tr>
+          <tr><td>ハンマータスクのファインチューニング計画 &amp; 結果</td><td>再学習、Arena での評価</td></tr>
+          <tr><td>real2sim ファインチューニングガイド</td><td>果物 4 種モデルの学習</td></tr>
+          <tr><td>GR00T サーバー API ドキュメント</td><td>新しいクライアントの作成、実機ロボット向けの例</td></tr>
+          <tr><td>マイルストーンごとのレポート（M0 → nb07）、アーキテクチャ計画</td><td>技術的判断の理由の理解</td></tr>
+        </tbody>
+      </table></div>
+      <p class="internal"><b>出典:</b> <code>hammer_to_bin/*.md</code>, <code>codes/g1_real2sim/GROOT_FINETUNE.md</code>, <code>codes/standalone_g1_gr00t/report/</code></p>
+    </div></details>
+  </div>
+
+  <!-- ================= 4 · large items ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>大容量コンポーネント（別途提供）</h3></div>
+    <p><b>モデルをすぐに実行する</b>場合や<b>元データから再学習する</b>場合に必要です。レポートを読む、結果を見るだけなら必要ありません。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>コンポーネント</th><th>容量</th><th>必要な場面</th></tr></thead>
+      <tbody>
+        <tr><td>ハンマー → 箱のチェックポイント（1 つあたり）</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12.6 GB</div></td><td>ハンマーモデルの実行 <span class="todo">[400 エピソード版のチェックポイントを確認]</span></td></tr>
+        <tr><td>real2sim 果物 4 種のチェックポイント</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12.6 GB</div></td><td>果物 4 種モデルの実行 <span class="todo">[保存場所]</span></td></tr>
+        <tr><td>ハンマータスクの元テレオペデータ（HDF5）</td><td><div class="bar-cell"><span class="b" style="width:45%"></span>19 GB</div></td><td>再変換、デモの追加生成</td></tr>
+        <tr><td>mix200 学習セット（HDF5 形式）</td><td><div class="bar-cell"><span class="b" style="width:31%"></span>13 GB</div></td><td>別の設定で LeRobot に変換</td></tr>
+        <tr><td>mix400 学習セット（HDF5 形式）</td><td><div class="bar-cell"><span class="b" style="width:62%"></span>26 GB</div></td><td>同上</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>含まないもの:</b> インストール済みの Python 環境（ソースコード内のコマンドで再作成）、NVIDIA の元データとチェックポイント（<code>06_tai_lieu</code> のガイドに従い Hugging Face からダウンロード）。</div>
+  </div>
+
+  <!-- ================= 5 · how to use ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>どこから始めるか</h3></div>
+    <p>利用目的に応じた 3 つのルートを、簡単なものから完全なものの順に示します。</p>
+    <div class="journeys">
+      <div class="journey"><div class="jk">ルート 1</div><div class="jt">結果を見る</div>
+        <ol><li><code>01_bao_cao/index.html</code> を開く</li><li>概要の節と 3 つのシナリオを読む</li><li><code>05_ket_qua_danh_gia</code> の動画を見る</li></ol>
+        <div class="jtime">必要なもの：ブラウザ · 約 30 分</div></div>
+      <div class="journey"><div class="jk">ルート 2</div><div class="jt">評価を再実行する</div>
+        <ol><li>Isaac Sim 6.0.1、Isaac Lab 3.0-beta2 と <code>standalone_g1_gr00t</code> の環境をインストール</li><li>カード 4 のチェックポイントを使い、GPU マシンで GR00T サーバーを起動</li><li>評価 notebook nb10（果物 4 種）または nb12（ハンマー）を GUI なしで実行</li></ol>
+        <div class="jtime">必要なもの：GPU ワークステーション + GPU サーバー（I.02 節）</div></div>
+      <div class="journey"><div class="jk">ルート 3</div><div class="jt">ロボットに新しいタスクを教える</div>
+        <ol><li>環境を構築し、テレオペでデモを収集（<code>arena_bua_thung</code>）</li><li>デモを追加生成し、LeRobot に変換</li><li><code>06_tai_lieu</code> のガイドに従い GR00T をファインチューニング</li><li>ルート 2 と同様に notebook で評価</li></ol>
+        <div class="jtime">参考：ハンマータスクは開始から結果まで約 6 日</div></div>
+    </div>
+  </div>
+
+  <!-- ================= 6 · licenses ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>ライセンスと利用上の注意</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>コンポーネント</th><th>条件</th></tr></thead>
+      <tbody>
+        <tr><td>ベースモデル GR00T N1.7-3B とそこからファインチューニングしたチェックポイント</td><td>NVIDIA Open Model Agreement に準拠</td></tr>
+        <tr><td>NVIDIA のリンゴ → 皿チェックポイント（Arena）</td><td>Model card に "ready for non-commercial use only" と記載</td></tr>
+        <tr><td>NVIDIA データセット（リンゴ → 皿、実機 G1 データ）</td><td>CC-BY-4.0：利用可、出典表記が必要</td></tr>
+        <tr><td>ハンマータスクのテレオペデータ、生成データセット、real2sim データセット</td><td>本プロジェクトで作成 <span class="todo">[契約に基づく所有権を確認]</span></td></tr>
+        <tr><td>Isaac Lab Arena パッチ</td><td><span class="todo">[TODO: Isaac Lab Arena のライセンスを確認]</span></td></tr>
+        <tr><td>VLA モデルのデモ動画（II.01 節）</td><td>第三者のもの <span class="todo">[利用権を確認]</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

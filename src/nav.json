@@ -1,0 +1,165 @@
+{
+  "_comment": "Sidebar groups and section order. Numbering restarts at 01 inside each group. Each item: id (= <section id>), label (sidebar text), file (in src/sections/).  Optional *_en / *_ja keys translate the sidebar (ui/lang.js). Run build.py after editing.",
+  "groups": [
+    {
+      "hue": "blue",
+      "kicker": "PHẦN I",
+      "title": "Bối cảnh & nền tảng",
+      "items": [
+        {
+          "id": "tong-quan",
+          "label": "Tổng quan & kết quả",
+          "file": "01-tong-quan.html",
+          "label_en": "Overview & results",
+          "label_ja": "概要と成果"
+        },
+        {
+          "id": "kien-truc",
+          "label": "Hạ tầng & hiệu năng",
+          "file": "02-kien-truc.html",
+          "label_en": "Infrastructure & performance",
+          "label_ja": "インフラと性能"
+        },
+        {
+          "id": "ban-giao",
+          "label": "Sản phẩm đầu ra",
+          "file": "03-ban-giao.html",
+          "label_en": "Deliverables",
+          "label_ja": "成果物"
+        }
+      ],
+      "kicker_en": "PART I",
+      "title_en": "Background & foundation",
+      "kicker_ja": "第 I 部",
+      "title_ja": "背景と基盤"
+    },
+    {
+      "hue": "blue",
+      "kicker": "PHẦN II",
+      "title": "Nghiên cứu bài toán",
+      "items": [
+        {
+          "id": "nghien-cuu",
+          "label": "Nghiên cứu mô hình",
+          "file": "04-nghien-cuu.html",
+          "label_en": "Model research",
+          "label_ja": "モデルの調査"
+        },
+        {
+          "id": "nghien-cuu-pipeline",
+          "label": "Nghiên cứu pipeline",
+          "file": "05-nghien-cuu-pipeline.html",
+          "label_en": "Pipeline research",
+          "label_ja": "パイプラインの調査"
+        },
+        {
+          "id": "dong-hoc",
+          "label": "Nghiên cứu chuyển động",
+          "file": "06-dong-hoc.html",
+          "label_en": "Motion research",
+          "label_ja": "動作の調査"
+        },
+        {
+          "id": "du-lieu",
+          "label": "Nghiên cứu dữ liệu",
+          "file": "06b-du-lieu.html",
+          "label_en": "Data research",
+          "label_ja": "データの調査"
+        }
+      ],
+      "kicker_en": "PART II",
+      "title_en": "Problem research",
+      "kicker_ja": "第 II 部",
+      "title_ja": "課題の調査"
+    },
+    {
+      "hue": "blue",
+      "kicker": "PHẦN III",
+      "title": "Kịch bản triển khai",
+      "items": [
+        {
+          "id": "hm1",
+          "label": "Kịch bản Apple & Plate",
+          "file": "07-hm1.html",
+          "label_en": "Scenario Apple & Plate",
+          "label_ja": "シナリオ Apple & Plate"
+        },
+        {
+          "id": "hm2",
+          "label": "Kịch bản Multi Fruit",
+          "file": "08-hm2.html",
+          "label_en": "Scenario Multi Fruit",
+          "label_ja": "シナリオ Multi Fruit"
+        },
+        {
+          "id": "hm3",
+          "label": "Kịch bản Hammer & Bin",
+          "file": "09-hm3.html",
+          "label_en": "Scenario Hammer & Bin",
+          "label_ja": "シナリオ Hammer & Bin"
+        }
+      ],
+      "kicker_en": "PART III",
+      "title_en": "Deployment scenarios",
+      "kicker_ja": "第 III 部",
+      "title_ja": "実施シナリオ"
+    },
+    {
+      "hue": "blue",
+      "kicker": "PHẦN IV",
+      "title": "Kiểm chứng kết quả",
+      "items": [
+        {
+          "id": "kc-moi-truong",
+          "label": "Cài đặt môi trường",
+          "file": "09c-kc-moi-truong.html",
+          "label_en": "Environment setup",
+          "label_ja": "環境構築"
+        },
+        {
+          "id": "kc-server",
+          "label": "Chạy server GR00T",
+          "file": "09d-kc-server.html",
+          "label_en": "Run the GR00T server",
+          "label_ja": "GR00T サーバーの起動"
+        },
+        {
+          "id": "kc-chay",
+          "label": "Chạy kiểm chứng",
+          "file": "09e-kc-chay.html",
+          "label_en": "Run the verification",
+          "label_ja": "検証の実行"
+        }
+      ],
+      "kicker_en": "PART IV",
+      "title_en": "Result verification",
+      "kicker_ja": "第 IV 部",
+      "title_ja": "結果の検証"
+    },
+    {
+      "hue": "blue",
+      "kicker": "PHẦN V",
+      "title": "Đánh giá & phụ lục",
+      "items": [
+        {
+          "id": "danh-gia",
+          "label": "Đánh giá tổng hợp",
+          "file": "10-danh-gia.html",
+          "label_en": "Overall evaluation",
+          "label_ja": "総合評価"
+        },
+        {
+          "id": "phu-luc",
+          "label": "Phụ lục",
+          "file": "12-phu-luc.html",
+          "label_en": "Appendix",
+          "label_ja": "付録"
+        }
+      ],
+      "kicker_en": "PART V",
+      "title_en": "Evaluation & appendix",
+      "kicker_ja": "第 V 部",
+      "title_ja": "評価と付録"
+    }
+  ]
+}

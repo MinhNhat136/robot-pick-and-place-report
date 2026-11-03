@@ -1,0 +1,191 @@
+<section class="section" id="ban-giao" data-hue="blue" data-kicker="I.03 · DELIVERABLES" data-title="Project deliverables">
+  <div class="hero">
+    <span class="pill">SECTION I.03 · DELIVERABLES</span>
+    <h2>What the client receives, where it is, how to use it<span class="dot">.</span></h2>
+    <p class="lead">All deliverables of this phase are in <b>one folder with 6 parts</b>, numbered in the recommended reading order: report → source code → data → model → results → documentation. The large raw data and checkpoints are <b>provided separately</b>.</p>
+    <div class="meta">
+      <div><span class="ml">FOLDER</span><span class="mv">G1_GR00T_san_pham/</span></div>
+      <div><span class="ml">MAIN PACKAGE</span><span class="mv">6 parts · ≈ 1.9 GB</span></div>
+      <div><span class="ml">PROVIDED SEPARATELY</span><span class="mv">≈ 85 GB raw data + checkpoints</span></div>
+    </div>
+  </div>
+
+  <p class="todo">[TODO: the deliverables folder has not been created yet. The structure below is a proposal, built from the actual locations and sizes of the components on the project machine. Confirm the folder name, the handover method (hard drive / cloud) and finalise the list before release.]</p>
+
+  <!-- ================= 1 · overview tiles ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>The six parts of the package</h3></div>
+    <p>Each tile is a subfolder. Click a tile to see the list of files inside (card 3).</p>
+    <div class="pkg">
+      <button type="button" class="pkg-tile" data-jump="f-bao-cao-en"><div class="pkg-top"><span class="pkg-no">01</span><span class="pkg-name">01_bao_cao/</span><span class="pkg-size">21 MB</span></div><div class="pkg-t">Report</div><div class="pkg-d">This interactive report (opens in a browser, no installation needed) and a markdown version for editing.</div><span class="pkg-go">View contents →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ma-nguon-en"><div class="pkg-top"><span class="pkg-no">02</span><span class="pkg-name">02_ma_nguon/</span><span class="pkg-size">13 MB</span></div><div class="pkg-t">Source code</div><div class="pkg-d">Standalone control pipeline, 12 research notebooks, real2sim tools, Arena patches and the teleop script kit.</div><span class="pkg-go">View contents →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-du-lieu-en"><div class="pkg-top"><span class="pkg-no">03</span><span class="pkg-name">03_du_lieu/</span><span class="pkg-size">≈ 1 GB</span></div><div class="pkg-t">Training data</div><div class="pkg-d">Hammer → bin datasets (200 and 400 episodes) and the real2sim 4-fruit dataset, in LeRobot format.</div><span class="pkg-go">View contents →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-mo-hinh-en"><div class="pkg-top"><span class="pkg-no">04</span><span class="pkg-name">04_mo_hinh/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">Model information</div><div class="pkg-d">A card for each checkpoint: data, training configuration, results, download location. The weights are provided separately.</div><span class="pkg-go">View contents →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-ket-qua-en"><div class="pkg-top"><span class="pkg-no">05</span><span class="pkg-name">05_ket_qua_danh_gia/</span><span class="pkg-size">≈ 0.9 GB</span></div><div class="pkg-t">Evaluation results</div><div class="pkg-d">Per-episode logs, summary tables, charts and success / failure videos for the 3 scenarios.</div><span class="pkg-go">View contents →</span></button>
+      <button type="button" class="pkg-tile" data-jump="f-tai-lieu-en"><div class="pkg-top"><span class="pkg-no">06</span><span class="pkg-name">06_tai_lieu/</span><span class="pkg-size">&lt; 1 MB</span></div><div class="pkg-t">Guides and documentation</div><div class="pkg-d">Teleop, fine-tune and evaluation guides; API server documentation; milestone reports.</div><span class="pkg-go">View contents →</span></button>
+    </div>
+
+    <h4>Main package size (≈ 1.9 GB)</h4>
+    <div class="split"><i style="width:51%;background:var(--accent)">Data ≈ 1 GB</i><i style="width:46%;background:oklch(0.68 0.1 var(--h))">Results ≈ 0.9 GB</i><i style="width:3%;background:oklch(0.82 0.06 var(--h))"></i></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>03 Data</span><span><b style="background:oklch(0.68 0.1 var(--h))"></b>05 Evaluation results (mostly videos)</span><span><b style="background:oklch(0.82 0.06 var(--h))"></b>Report, source code, model cards, documentation (≈ 35 MB)</span></div>
+  </div>
+
+  <!-- ================= 2 · who uses what ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Who uses which part</h3></div>
+    <p>Not everyone needs the whole package. The table below suggests which parts to read first, by role.</p>
+    <div class="tbl-wrap"><table class="tbl role-tbl">
+      <thead><tr><th>Part</th><th class="c">Project manager</th><th class="c">Software engineer</th><th class="c">AI / robotics engineer</th><th class="c">Data collector (teleop)</th></tr></thead>
+      <tbody>
+        <tr><td><b>01</b> Report</td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>02</b> Source code</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>03</b> Data</td><td class="c"></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><i>·</i></td></tr>
+        <tr><td><b>04</b> Model</td><td class="c"></td><td class="c"><i>·</i></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>05</b> Results</td><td class="c"><b>✓</b></td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"></td></tr>
+        <tr><td><b>06</b> Documentation</td><td class="c"></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td><td class="c"><b>✓</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="split-legend"><span><b style="background:var(--accent)"></b>Primary use</span><span><b style="background:var(--accent-softer);border:1px solid var(--accent-border)"></b>Reference when needed</span></div>
+  </div>
+
+  <!-- ================= 3 · folder contents ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Detailed contents of each folder</h3></div>
+    <p>Click a folder to see the main files inside.</p>
+
+    <details class="acc" id="f-bao-cao-en"><summary><span class="n">01</span>01_bao_cao/ — Report<span class="sz">21 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Open: index.html</span><span>No installation needed</span></div>
+      <ul class="ftree">
+        <li><code>index.html</code> — <b>interactive report</b>: table of contents, videos, comparison tables, PDF export</li>
+        <li><code>assets/</code>, <code>images/</code> — interface, demo videos, images</li>
+        <li><code>src/</code>, <code>build.py</code>, <code>README.md</code> — content of each section and how to edit the report</li>
+        <li><code>markdown/</code> — text version of the report (10 files) for quoting and editing</li>
+      </ul>
+      <p class="internal"><b>Source:</b> <code>report/</code>, <code>bao_cao_khach_hang/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-ma-nguon-en"><summary><span class="n">02</span>02_ma_nguon/ — Source code<span class="sz">13 MB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>Python</span><span>84 unit tests</span><span>Installed environment not included</span></div>
+      <ul class="ftree">
+        <li><b><code>standalone_g1_gr00t/</code></b> — pipeline controlling G1 with GR00T, independent of Arena
+          <ul class="ftree">
+            <li><code>g1gr00t/</code> — package: server connection, joint mapping, observations, actions, safety layer, AGILE, Isaac Lab backend, runner</li>
+            <li><code>notebooks/</code> — 12 research notebooks (nb01 → nb12)</li>
+            <li><code>configs/</code> — configurations for the apple and hammer scenarios and the balance controller</li>
+            <li><code>scripts/</code>, <code>tools/</code> — closed-loop runs, open-loop evaluation, asset download, automated notebook execution</li>
+            <li><code>tests/</code> — unit tests and in-simulation tests</li>
+            <li><code>README.md</code>, <code>Makefile</code> — installation and run commands</li>
+          </ul></li>
+        <li><b><code>g1_real2sim/</code></b> — scene reconstruction from real G1 data: FK from URDF, distractor objects, Isaac Lab scene, LeRobot read/write, GR00T configuration <span class="todo">[the dataset generation script is on the Windows machine]</span></li>
+        <li><b><code>arena_bua_thung/</code></b> — Isaac Lab Arena extension for the hammer scenario
+          <ul class="ftree">
+            <li><code>patches/</code> — 4 environment patches: hammer–bin layout, support block, strict success condition</li>
+            <li><code>teleop/</code> — scripts to launch teleop, record, replay, merge demos, diagnose</li>
+            <li><code>scripts/</code> — augmented demo generation, dataset checks, scene verification</li>
+          </ul></li>
+      </ul>
+      <p class="internal"><b>Source:</b> <code>codes/standalone_g1_gr00t/</code> (excluding <code>.venv</code>, <code>data/</code>), <code>codes/g1_real2sim/</code> (excluding <code>output/</code>, <code>.venv</code>), <code>hammer_to_bin/{patches,teleop_kit/current,scripts}</code></p>
+    </div></details>
+
+    <details class="acc" id="f-du-lieu-en"><summary><span class="n">03</span>03_du_lieu/ — Training data<span class="sz">≈ 1 GB</span></summary><div class="acc-body">
+      <div class="fmeta"><span>LeRobot v2.1 format</span><span>H.264 video 640×480</span></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Folder</th><th>Contents</th><th class="num">Size</th></tr></thead>
+        <tbody>
+          <tr><td><code>bua_thung_mix200/</code></td><td>200 episodes (100 real teleop + 100 generated), 28,022 frames @ 50 Hz</td><td class="num">131 MB</td></tr>
+          <tr><td><code>bua_thung_mix400/</code></td><td>400 episodes</td><td class="num">261 MB</td></tr>
+          <tr><td><code>real2sim_4_loai_qua/</code></td><td>Simulated dataset from real G1 data: apple, grape, pear <span class="todo">[starfruit: no local copy yet]</span></td><td class="num">≈ 584 MB</td></tr>
+        </tbody>
+      </table></div>
+      <p>Each dataset contains <code>meta/</code> (description, instructions, statistics), <code>data/</code> (joint angles, actions per episode) and <code>videos/</code> (robot head camera).</p>
+      <p class="internal"><b>Source:</b> <code>~/IsaacLab-Arena/teleop_data/static_hammer_train/*/lerobot</code>, <code>codes/g1_real2sim/output/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-mo-hinh-en"><summary><span class="n">04</span>04_mo_hinh/ — Model information<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <p>Each checkpoint has a model card; the 12.6 GB weights are provided separately (card 4).</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Checkpoint</th><th>Trained on</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Hammer → bin, 200 episodes</td><td>mix200 · 10,000 steps · 1× H100 · 61 min</td><td>66 %</td></tr>
+          <tr><td>Hammer → bin, 400 episodes</td><td>mix400 · 10,000 steps</td><td>63 % (73 % with relaxed at-rest threshold)</td></tr>
+          <tr><td>Real2sim 4 fruits</td><td>790 simulated episodes <span class="todo">[number of steps, location]</span></td><td>66 %</td></tr>
+          <tr><td>Apple → plate (NVIDIA)</td><td>Not retrained — downloaded from Hugging Face</td><td>92 % in Arena</td></tr>
+        </tbody>
+      </table></div>
+    </div></details>
+
+    <details class="acc" id="f-ket-qua-en"><summary><span class="n">05</span>05_ket_qua_danh_gia/ — Evaluation results<span class="sz">≈ 0.9 GB</span></summary><div class="acc-body">
+      <ul class="ftree">
+        <li><b><code>tao_dia/</code></b> — 50 episodes in the self-built scene, 50 episodes in the Galileo scene: per-episode logs, head camera videos</li>
+        <li><b><code>4_loai_qua/</code></b> — 50 episodes of the fine-tuned model and 50 baseline episodes: logs, summaries, charts, videos</li>
+        <li><b><code>bua_thung/</code></b> — 100 evaluation videos in Arena (external camera + head camera); the 66 % and 73 % runs: logs, summaries, images of failures, videos</li>
+      </ul>
+      <p>Common files in each run: <code>episodes.jsonl</code> (one line per attempt), <code>summary.json</code> / <code>summary.md</code> (success rate, confidence interval, failure classification), videos <code>…_success.mp4</code> / <code>…_fail.mp4</code>.</p>
+      <p class="internal"><b>Source:</b> <code>codes/standalone_g1_gr00t/data/</code>: <code>runs_*.jsonl</code>, <code>videos/</code>, <code>nb10_eval*</code>, <code>nb12_eval/</code>, <code>arena_eval_hammer_ckpt10000/</code></p>
+    </div></details>
+
+    <details class="acc" id="f-tai-lieu-en"><summary><span class="n">06</span>06_tai_lieu/ — Guides and documentation<span class="sz">&lt; 1 MB</span></summary><div class="acc-body">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Document</th><th>Use when</th></tr></thead>
+        <tbody>
+          <tr><td>Hammer task teleop guide</td><td>Collecting more demos with a Meta Quest headset</td></tr>
+          <tr><td>Hammer task fine-tune plan &amp; results</td><td>Retraining, evaluating in Arena</td></tr>
+          <tr><td>Real2sim fine-tune guide</td><td>Training the 4-fruit model</td></tr>
+          <tr><td>GR00T server API documentation</td><td>Writing a new client, example for the real robot</td></tr>
+          <tr><td>Milestone reports (M0 → nb07), architecture plan</td><td>Understanding the reasons behind technical decisions</td></tr>
+        </tbody>
+      </table></div>
+      <p class="internal"><b>Source:</b> <code>hammer_to_bin/*.md</code>, <code>codes/g1_real2sim/GROOT_FINETUNE.md</code>, <code>codes/standalone_g1_gr00t/report/</code></p>
+    </div></details>
+  </div>
+
+  <!-- ================= 4 · large items ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Large components (provided separately)</h3></div>
+    <p>Needed to <b>run the model right away</b> or to <b>retrain from the raw data</b>; not needed to read the report or view the results.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Component</th><th>Size</th><th>Needed for</th></tr></thead>
+      <tbody>
+        <tr><td>Hammer → bin checkpoint (each)</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>12.6 GB</div></td><td>Running the hammer model <span class="todo">[confirm the checkpoint of the 400-episode version]</span></td></tr>
+        <tr><td>Real2sim 4-fruit checkpoint</td><td><div class="bar-cell"><span class="b" style="width:30%"></span>≈ 12.6 GB</div></td><td>Running the 4-fruit model <span class="todo">[location]</span></td></tr>
+        <tr><td>Raw hammer task teleop data (HDF5)</td><td><div class="bar-cell"><span class="b" style="width:45%"></span>19 GB</div></td><td>Re-converting, generating more demos</td></tr>
+        <tr><td>mix200 training set in HDF5</td><td><div class="bar-cell"><span class="b" style="width:31%"></span>13 GB</div></td><td>Converting to LeRobot with a different configuration</td></tr>
+        <tr><td>mix400 training set in HDF5</td><td><div class="bar-cell"><span class="b" style="width:62%"></span>26 GB</div></td><td>same as above</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Not included:</b> installed Python environments (recreate them with the commands in the source code) and NVIDIA's original data and checkpoints (download from Hugging Face following the guide in <code>06_tai_lieu</code>).</div>
+  </div>
+
+  <!-- ================= 5 · how to use ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Where to start</h3></div>
+    <p>Three paths by purpose, from simple to complete.</p>
+    <div class="journeys">
+      <div class="journey"><div class="jk">PATH 1</div><div class="jt">View the results</div>
+        <ol><li>Open <code>01_bao_cao/index.html</code></li><li>Read the Overview section and the three scenarios</li><li>Watch the videos in <code>05_ket_qua_danh_gia</code></li></ol>
+        <div class="jtime">Needs: a browser · ~30 min</div></div>
+      <div class="journey"><div class="jk">PATH 2</div><div class="jt">Re-run the evaluation</div>
+        <ol><li>Install Isaac Sim 6.0.1, Isaac Lab 3.0-beta2 and the <code>standalone_g1_gr00t</code> environment</li><li>Run the GR00T server on a GPU machine with the checkpoint from card 4</li><li>Run evaluation notebook nb10 (4 fruits) or nb12 (hammer), headless</li></ol>
+        <div class="jtime">Needs: GPU workstation + GPU server (section I.02)</div></div>
+      <div class="journey"><div class="jk">PATH 3</div><div class="jt">Teach the robot a new task</div>
+        <ol><li>Build the environment and collect demos via teleop (<code>arena_bua_thung</code>)</li><li>Generate more demos, convert to LeRobot</li><li>Fine-tune GR00T following the guide in <code>06_tai_lieu</code></li><li>Evaluate with the notebooks as in path 2</li></ol>
+        <div class="jtime">Reference: the hammer task took ~6 days from start to results</div></div>
+    </div>
+  </div>
+
+  <!-- ================= 6 · licenses ================= -->
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Licenses and usage notes</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Component</th><th>Terms</th></tr></thead>
+      <tbody>
+        <tr><td>Base model GR00T N1.7-3B and the checkpoints fine-tuned from it</td><td>Under the NVIDIA Open Model Agreement</td></tr>
+        <tr><td>NVIDIA apple → plate checkpoint (Arena)</td><td>Model card states "ready for non-commercial use only"</td></tr>
+        <tr><td>NVIDIA datasets (apple → plate, real G1 data)</td><td>CC-BY-4.0: usable, attribution required</td></tr>
+        <tr><td>Hammer task teleop data, generated dataset, real2sim dataset</td><td>Created by the project <span class="todo">[confirm ownership under the contract]</span></td></tr>
+        <tr><td>Isaac Lab Arena patches</td><td><span class="todo">[TODO: check the Isaac Lab Arena license]</span></td></tr>
+        <tr><td>VLA model demo videos (section II.01)</td><td>Third-party <span class="todo">[confirm usage rights]</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

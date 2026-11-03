@@ -1,0 +1,127 @@
+<section class="section" id="dong-hoc" data-hue="blue" data-kicker="II.03 · MOTION RESEARCH" data-title="Motion research on the G1 robot">
+  <div class="hero">
+    <span class="pill">SECTION II.03 · MOTION RESEARCH</span>
+    <h2>From joint angles to motion and force<span class="dot">.</span></h2>
+    <p class="lead">GR00T only outputs <b>target joint angles</b>. Turning those numbers into real motion requires understanding <b>kinematics</b> (joint angles ↔ hand and camera positions) and <b>dynamics</b> (torque, inertia, contact, balance). This section summarises that knowledge and where it appears in the project; each concept has an illustration to try.</p>
+    <div class="meta">
+      <div><span class="ml">ROBOT</span><span class="mv">Unitree G1 · 43 joints</span></div>
+      <div><span class="ml">APPLIED IN</span><span class="mv">Real2sim · teleop · joint control · balance</span></div>
+      <div><span class="ml">KEYWORDS</span><span class="mv">FK · IK · PD · contact</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>G1 joint structure</h3></div>
+    <p>The G1 is a tree of links connected by revolute joints, rooted at the pelvis. Each joint group is controlled by a different component. Click a group to see it.</p>
+    <div class="ds-lab single" data-mo="body">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">THE 43 JOINTS OF THE G1 · FRONT VIEW</span><span class="ds-tag">SCHEMATIC</span></div>
+        <div class="mo-body">
+          <svg viewBox="0 0 260 330" role="img" aria-label="Joint diagram of the G1 robot" data-body-svg></svg>
+          <div class="mo-groups" data-body-list>
+            <button type="button" data-g="leg" aria-pressed="false"><span class="mg-n">12</span><span><b>Legs</b><small>Hip (3), knee, ankle (2) per side</small></span><em>AGILE</em></button>
+            <button type="button" data-g="waist" aria-pressed="false"><span class="mg-n">3</span><span><b>Waist</b><small>Yaw, roll, pitch</small></span><em>GR00T</em></button>
+            <button type="button" data-g="arm" aria-pressed="false"><span class="mg-n">14</span><span><b>Arms</b><small>Shoulder (3), elbow, wrist (3) per side</small></span><em>GR00T</em></button>
+            <button type="button" data-g="hand" aria-pressed="false"><span class="mg-n">14</span><span><b>Dex3 hands</b><small>Index (2), middle (2), thumb (3) per side</small></span><em>GR00T</em></button>
+            <p class="ds-note">GR00T controls the 31 upper-body joints (the waist is almost fixed in the tasks); AGILE handles the 12 leg joints.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><b>Four different joint orders</b> coexist: the order in simulation (USD tree traversal), the order of the whole-body controller, GR00T's group order and AGILE's input order. A single shifted column is enough to make the robot fall or the model go "blind", so the project maps everything by <b>joint name</b> and tests it automatically.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Forward kinematics</h3></div>
+    <p><b>Forward kinematics (FK)</b> computes the position of each link (hand, fingertip, camera) from the joint angles by multiplying, in turn, the transforms along the joint tree described in the URDF file. Drag the sliders to see it: knowing the joint angles means knowing exactly where the hand is.</p>
+    <div class="ds-lab single" data-mo="fk">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">ARM, SIDE VIEW · 3 JOINTS</span><span class="ds-tag">ILLUSTRATION · APPROXIMATE LINK LENGTHS</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="3-joint arm, forward kinematics" data-fk-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>Shoulder <b data-fk-v="0"></b></span><input type="range" min="-60" max="120" value="40" data-fk-q="0"></label>
+              <label><span>Elbow <b data-fk-v="1"></b></span><input type="range" min="0" max="140" value="60" data-fk-q="1"></label>
+              <label><span>Wrist <b data-fk-v="2"></b></span><input type="range" min="-60" max="60" value="0" data-fk-q="2"></label>
+            </div>
+            <div class="mo-out" data-fk-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout"><b>Use in real2sim:</b> the real G1 dataset has no object positions. A custom FK (numpy only) computes the palm trajectory from the joint angles; where the hand closes is where the fruit is, and where the hand opens is where the plate is. The body pose is inferred from the assumption that both feet rest flat on the floor. See the full illustration in section II.04.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Inverse kinematics</h3></div>
+    <p><b>Inverse kinematics (IK)</b> works the other way: given a desired wrist position, find the joint angles that reach it. In teleop with the Meta Quest headset, the controller pose becomes the robot's wrist target, and the <b>Pink</b> IK solver computes the joint angles every frame. Click or drag in the frame to set the target; try placing it out of reach.</p>
+    <div class="ds-lab single" data-mo="ik">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">CLICK / DRAG TO SET THE WRIST TARGET</span><span class="ds-tag">ILLUSTRATION · 2-JOINT IK</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="2-joint arm, inverse kinematics" data-ik-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-ik-out></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Dynamics</h3></div>
+    <p>Kinematics only tells <b>where the hand is</b> given the joint angles. <b>Dynamics</b> answers the next question: how to make the joint <b>actually rotate to</b> that angle. GR00T sends only <b>target angles</b>, not forces; the motor at each joint must produce enough torque to drive the link (which has mass and inertia) to the target without oscillating.</p>
+    <div class="pd-flow">
+      <div><span class="k">1 · TARGET</span><b>Joint angle to reach</b><small>from GR00T, every 20 ms</small></div>
+      <div class="hl"><span class="k">2 · PD CONTROLLER</span><b>Compute torque</b><small>from angle error and velocity</small></div>
+      <div><span class="k">3 · PHYSICS</span><b>Joint rotates</b><small>torque ÷ inertia = angular acceleration</small></div>
+      <div><span class="k">4 · MEASURE</span><b>New angle</b><small>repeated every 5 ms physics step</small></div>
+    </div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">P · STIFFNESS (K<sub>p</sub>)</div><div class="st">Like a spring</div><p>The further from the target, the stronger the pull back. The stiffer the spring, the faster the joint tracks the target, but it tends to overshoot and oscillate back and forth.</p></div>
+      <div class="sub"><div class="sl">D · DAMPING (K<sub>d</sub>)</div><div class="st">Like a shock absorber</div><p>The faster the joint rotates, the stronger the braking force. With enough damping the joint reaches the target smoothly without overshoot; too much and it gets there slowly.</p></div>
+    </div>
+    <pre class="diagram">torque = K<sub>p</sub> × (target angle − current angle)  −  K<sub>d</sub> × joint velocity
+         (spring pulls toward target)          (shock absorber brakes)</pre>
+    <p class="proj"><b>In the project:</b> K<sub>p</sub> and K<sub>d</sub> are not hand-tuned but derived from the motor inertia using two intuitive parameters: <b>natural frequency 10 Hz</b> (speed) and <b>damping ratio ζ = 2</b> (smoothness). Result: the joint reaches 90 % of the target after ~140 ms with no overshoot. Drag the sliders below to compare.</p>
+    <div class="ds-lab single" data-mo="pd">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">JOINT RECEIVES A STEP COMMAND · ACTUAL ANGLE OVER TIME</span><span class="ds-tag">ILLUSTRATION · IDEAL SECOND-ORDER SYSTEM</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 230" role="img" aria-label="Joint response with a PD controller" data-pd-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>Speed · natural frequency <b data-pd-v="w"></b></span><input type="range" min="2" max="20" step="0.5" value="10" data-pd="w"></label>
+              <label><span>Smoothness · damping ratio ζ <b data-pd-v="z"></b></span><input type="range" min="0.1" max="3" step="0.05" value="2" data-pd="z"></label>
+            </div>
+            <div class="gen-btns"><button type="button" class="chip" data-pd-preset="10,2">Project: smooth</button><button type="button" class="chip" data-pd-preset="10,0.3">Little damping: oscillates</button><button type="button" class="chip" data-pd-preset="3,2">Soft spring: slow</button></div>
+            <div class="mo-out" data-pd-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h4>Who computes the PD torque in simulation?</h4>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">OPTION 1 · IMPLICIT PD</div><div class="st">The physics solver computes it</div><p>PhysX computes the PD force inside the solver step. Very stable even with stiff joints; the default in Isaac Lab.</p></div>
+      <div class="sub"><div class="sl">OPTION 2 · EXPLICIT PD (IDEAL PD)</div><div class="st">Code computes it, then applies the torque</div><p>Applies exactly the formula above at every step, closer to the real robot's driver. Arena uses this option for the G1.</p></div>
+    </div>
+    <p class="proj"><b>Why it matters:</b> for the same sequence of target angles, the two options give slightly different arm motion. A model trained on demos recorded with one option should be evaluated with that same option.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Joint rate limit</h3></div>
+    <p>A safety layer blocks joint-angle jumps: per tick (20 ms) the arm angle changes by at most 0.2 rad, the waist 0.1 rad, the hands 1.5 rad. The thresholds come from real data (arm: 0.15 rad/tick at the 99.9th percentile). Try a large step command:</p>
+    <div class="ds-lab single" data-mo="rate">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">STEP COMMAND AND ANGLE AFTER LIMITING · ARM JOINT</span><span class="ds-tag">ILLUSTRATION</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 210" role="img" aria-label="Joint rate limiter" data-rate-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one"><label><span>Step size <b data-rate-v></b></span><input type="range" min="0.1" max="1.2" step="0.05" value="0.8" data-rate-q></label></div>
+            <div class="mo-out" data-rate-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figure class="fig"><img src="images/nb08_rate_limiter.png" alt="Shoulder joint command before and after the rate limiter" loading="lazy"><figcaption><b>Real data</b>: left shoulder joint command over 80 ticks (2 sequences of 40 steps joined). With normal motion, the line after the limiter (dashed) coincides with the original command: the safety layer only intervenes on abnormal jumps.</figcaption></figure>
+  </div>
+</section>

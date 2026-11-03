@@ -1,0 +1,117 @@
+/* Comparison tables: one column per run, rows = what was configured / what came out.
+   <table class="cmp">                          — columns are runs, left column is the row label
+     <th class="run" data-step="1">            — run header (step pill + title + subtitle)
+     <tr class="grp">                          — group header row (CẤU HÌNH / KẾT QUẢ / CHI TIẾT)
+     <td class="chg">                          — value changed vs the reference column
+     <td class="best"> / <th class="best">     — the column with the best outcome
+     .res / .meter / .ci / .delta              — result cell parts                             */
+
+.cmp-wrap{overflow-x:auto;margin:14px 0 6px;border:1px solid rgba(34,38,30,.12);border-radius:14px;background:#fff}
+table.cmp{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;font-size:13.5px;line-height:1.45}
+.cmp th,.cmp td{padding:10px 14px;border-bottom:1px solid var(--line-2);vertical-align:top;text-align:left}
+.cmp tr:last-child td{border-bottom:0}
+.cmp th.rl,.cmp td.rl{width:190px;min-width:160px;color:var(--muted);font-weight:600;font-size:12.5px;background:var(--surface-2);position:sticky;left:0;z-index:1;border-right:1px solid var(--line-2)}
+
+/* run header */
+.cmp thead th{background:var(--surface-2);border-bottom:1px solid var(--line)}
+.cmp th.run{min-width:170px}
+.cmp th.run .step{display:inline-flex;align-items:center;gap:6px;font:700 10px var(--mono);letter-spacing:.1em;color:var(--accent)}
+.cmp th.run .step::before{content:attr(data-n);display:grid;place-content:center;width:20px;height:20px;border-radius:6px;background:var(--accent);color:#fff;font:800 10.5px var(--mono);letter-spacing:0}
+.cmp th.run .rt{display:block;margin-top:7px;font-size:14px;font-weight:800;color:var(--ink);line-height:1.25}
+.cmp th.run .rs{display:block;margin-top:3px;font-size:12px;font-weight:500;color:var(--muted);line-height:1.4}
+.cmp th.best{background:linear-gradient(180deg,var(--accent-soft),var(--surface-2))}
+.cmp th.best .step::after{content:"TỐT NHẤT";margin-left:4px;font:700 9px var(--mono);letter-spacing:.1em;color:#fff;background:var(--accent);border-radius:5px;padding:3px 6px}
+
+/* group header rows */
+.cmp tr.grp td{background:#f7f8f2;font:600 9.5px var(--mono);letter-spacing:.14em;color:var(--faint);padding:7px 14px;border-bottom:1px solid var(--line-2)}
+.cmp tr.grp td.rl{background:#f7f8f2}
+
+/* changed / best cells */
+.cmp td.chg{background:var(--accent-softer);color:var(--ink);font-weight:600;box-shadow:inset 3px 0 0 var(--accent-bar)}
+.cmp td.best{background:oklch(0.985 0.015 var(--h))}
+.cmp td.chg.best{background:var(--accent-soft)}
+.cmp .same{color:var(--faint)}
+.cmp .na{color:var(--faint)}
+
+/* result cell */
+.cmp .res{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1;color:var(--ink)}
+.cmp .res small{font-size:14px;font-weight:600;color:var(--muted);margin-left:2px}
+.cmp .meter{margin-top:9px;height:6px;max-width:180px}
+.cmp .ci{margin-top:7px;font:500 11px var(--mono);color:var(--muted)}
+.cmp .delta{display:inline-flex;align-items:center;gap:4px;font:700 12px var(--mono);border-radius:6px;padding:3px 8px;white-space:nowrap}
+.cmp .delta.up{background:oklch(0.95 0.04 150);color:oklch(0.4 0.12 150)}
+.cmp .delta.down{background:var(--warn-bg);color:var(--warn)}
+.cmp .delta.flat{background:#eef0e8;color:var(--muted)}
+.cmp .delta.base{background:transparent;color:var(--faint);font-weight:600;padding-left:0}
+
+/* mini bar for breakdown counts */
+.cmp .cnt{display:flex;align-items:center;gap:8px}
+.cmp .cnt b{min-width:22px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cmp .cnt i{display:block;height:6px;border-radius:0 3px 3px 0;background:oklch(0.75 0.06 var(--h))}
+
+.cmp-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:2px 2px 12px}
+.cmp-legend span{display:inline-flex;align-items:center;gap:7px}
+.cmp-legend .sw{width:14px;height:14px;border-radius:4px;background:var(--accent-softer);box-shadow:inset 3px 0 0 var(--accent-bar);border:1px solid var(--accent-border)}
+.cmp-legend .sw.b{background:var(--accent-soft);box-shadow:none}
+.cmp-q{margin:4px 0 10px;font-size:14.5px;color:var(--ink-2)}
+
+/* Case tabs: large selectable cards, one per task, each in its own hue.
+   <div class="tab-list case-tabs"><button data-hue="blue">…ct-num / ct-body / ct-side…</button>…</div> */
+.tab-list.case-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border-bottom:0;padding-bottom:0;margin-bottom:4px}
+.case-tabs button{position:relative;display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px 14px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 10px 26px -22px rgba(34,38,30,.5);transition:border-color .15s,box-shadow .15s,transform .15s,background .15s;overflow:hidden}
+.case-tabs button::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent-bar);opacity:.35;transition:opacity .15s}
+.case-tabs button:hover{background:#fff;border-color:var(--accent-border);transform:translateY(-1px);box-shadow:0 16px 32px -22px rgba(34,38,30,.55)}
+.case-tabs button[aria-selected="true"]{background:radial-gradient(120% 140% at 100% 0%,var(--accent-wash) 0%,#fff 60%);border-color:var(--accent);box-shadow:0 0 0 3px oklch(0.6 0.13 var(--h)/.14),0 16px 32px -22px rgba(34,38,30,.55);color:var(--ink)}
+.case-tabs button[aria-selected="true"]::before{opacity:1}
+.case-tabs button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-1px;width:14px;height:14px;background:inherit;border-right:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:translate(-50%,50%) rotate(45deg);display:none}
+.case-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.ct-num{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-content:center;font:800 14px var(--mono);color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-border);transition:background .15s,color .15s}
+.case-tabs button[aria-selected="true"] .ct-num{background:var(--accent);border-color:var(--accent);color:#fff}
+.ct-body{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.ct-k{font:600 9px var(--mono);letter-spacing:.12em;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct-t{font-size:16px;font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
+.ct-s{font-size:12px;font-weight:500;color:var(--muted);line-height:1.35}
+.ct-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ct-best{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1;color:var(--ink)}
+.ct-best small{font-size:11px;font-weight:600;color:var(--muted);margin-left:1px}
+.ct-spark{display:flex;align-items:flex-end;gap:3px;height:22px}
+.ct-spark i{display:block;width:7px;border-radius:2px 2px 0 0;background:oklch(0.8 0.07 var(--h))}
+.case-tabs button[aria-selected="true"] .ct-spark i{background:var(--accent)}
+.case-tabs + .tab-panel,.case-tabs ~ .tab-panel{padding-top:18px}
+
+@media (max-width:960px){
+  .tab-list.case-tabs{grid-template-columns:1fr;gap:8px}
+  .case-tabs button{padding:10px 12px}
+  .cmp th.rl,.cmp td.rl{width:118px;min-width:118px;font-size:12px;padding:9px 10px}
+  table.cmp{min-width:600px}
+}
+@media print{.case-tabs{display:none !important}}
+
+/* Result tiles (overview): best result per task + the runs that led to it.
+   <div class="res-tiles"><div class="res-tile" data-hue="…">res-top / res-steps / res-take / res-more</div></div> */
+.res-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.res-tile{position:relative;display:flex;flex-direction:column;gap:12px;padding:18px 18px 16px;border-radius:16px;border:1px solid var(--accent-border);overflow:hidden;
+  background:radial-gradient(130% 90% at 100% 0%,var(--accent-wash) 0%,#fff 55%);box-shadow:0 16px 36px -28px rgba(34,38,30,.5)}
+.res-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent-bar)}
+.res-top{display:flex;align-items:flex-start;gap:12px}
+.res-k{font:600 9.5px var(--mono);letter-spacing:.13em;color:var(--accent)}
+.res-t{font-size:17px;font-weight:800;letter-spacing:-.01em;color:var(--ink);margin-top:4px}
+.res-best{margin-left:auto;text-align:right}
+.res-best span{display:block;font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:.95;color:var(--ink)}
+.res-best small{font-size:16px;font-weight:600;color:var(--muted);margin-left:2px}
+.res-best em{display:block;margin-top:5px;font:500 10.5px var(--mono);font-style:normal;color:var(--muted);white-space:nowrap}
+.res-steps{list-style:none;margin:0;padding:12px 0 0;border-top:1px dashed var(--accent-border);display:flex;flex-direction:column;gap:7px}
+.res-steps li{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 42px;align-items:center;gap:10px}
+.res-steps .rl{font-size:12.5px;color:var(--ink-3);line-height:1.3}
+.res-steps .rb{height:8px;border-radius:0 4px 4px 0;background:oklch(0.94 0.02 var(--h));overflow:hidden}
+.res-steps .rb i{display:block;height:100%;border-radius:0 4px 4px 0;background:oklch(0.72 0.09 var(--h))}
+.res-steps li.top .rb i{background:var(--accent)}
+.res-steps li.top .rl{color:var(--ink);font-weight:700}
+.res-steps .rv{font:700 12.5px var(--mono);color:var(--ink);text-align:right}
+.res-steps .rv small{font-size:10px;color:var(--muted);margin-left:1px}
+.res-take{margin:0;font-size:13px;line-height:1.55;color:var(--ink-2);flex:1}
+.res-more{align-self:flex-start;font:600 11px var(--mono);color:var(--accent-ink);background:#fff;border:1px solid var(--accent-border);border-radius:9px;padding:7px 11px;cursor:pointer;text-decoration:none}
+.res-more:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (max-width:1200px){.res-tiles{grid-template-columns:1fr}}
+@media print{.res-more{display:none}}

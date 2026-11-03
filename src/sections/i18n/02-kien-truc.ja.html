@@ -1,0 +1,106 @@
+<section class="section" id="kien-truc" data-hue="blue" data-kicker="I.02 · インフラ &amp; 性能" data-title="システムのインフラ &amp; 性能">
+  <div class="hero">
+    <span class="pill">I.02 節 · インフラ &amp; 性能</span>
+    <h2>2 台のマシン、1 台の VR ヘッドセット — そしてシステムを制約する数値<span class="dot">。</span></h2>
+    <p class="lead">シミュレーション、テレオペ、評価は<b>1 台のワークステーション</b>で実行し、学習とモデル実行は遠隔の<b>H100 GPU サーバー 1 台</b>で行います。本節では、使用した構成、各マシンに必要なソフトウェア、および計測した性能指標を示します。特に<b>モデルの遅延</b>は、実機ロボットへ移行する際の最も重要な制約です。</p>
+    <div class="meta">
+      <div><span class="ml">ワークステーション</span><span class="mv">RTX 5090 · Ryzen 7 9800X3D · 64 GB</span></div>
+      <div><span class="ml">サーバー</span><span class="mv">1× H100 80 GB · 188 GB</span></div>
+      <div><span class="ml">シミュレーション</span><span class="mv">Isaac Sim 6.0.1 · Isaac Lab 3.0-beta2</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>機器 &amp; 接続</h3></div>
+    <p>ワークステーションが中心となり、VR ヘッドセットからの操作を受け取り、ロボットのシミュレーションを実行し、観測を GPU サーバーへ送って動作シーケンスを受け取ります。</p>
+    <div class="topo">
+      <div class="topo-node "><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-4l-2-2h-2l-2 2H5a2 2 0 01-2-2z"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg></span><div><div class="tn-k">テレオペ</div><div class="tn-t">Meta Quest ヘッドセット</div></div></div><div class="tn-role">オペレーターがシミュレーション内でロボットを操作し、デモを作成します。</div><dl class="tn-spec"><dt>機器</dt><dd>ヘッドセット + コントローラー 2 本</dd><dt>接続</dt><dd>USB 3 ケーブル</dd><dt>プロトコル</dt><dd>OpenXR · CloudXR</dd></dl></div>
+      <div class="topo-link"><span>USB 3<br>CloudXR</span></div>
+      <div class="topo-node main"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><div><div class="tn-k">ワークステーション · 中心</div><div class="tn-t">シミュレーション &amp; 制御</div></div></div><div class="tn-role">Isaac Sim、Arena、制御クライアント、バランス制御器、評価、データ記録を実行します。</div><dl class="tn-spec"><dt>GPU</dt><dd>RTX 5090 · 32 GB</dd><dt>CPU</dt><dd>Ryzen 7 9800X3D · 8 コア</dd><dt>RAM / SSD</dt><dd>64 GB · NVMe 1 TB</dd><dt>OS</dt><dd>Ubuntu 24.04 LTS</dd></dl></div>
+      <div class="topo-link"><span>SSH tunnel<br>ZeroMQ</span></div>
+      <div class="topo-node dark"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/></svg></span><div><div class="tn-k">GPU サーバー · 遠隔</div><div class="tn-t">学習 &amp; モデル実行</div></div></div><div class="tn-role">GR00T をファインチューニングし、ワークステーションへ動作シーケンスを返す policy server を実行します。</div><dl class="tn-spec"><dt>GPU</dt><dd>1× H100 · 80 GB</dd><dt>RAM</dt><dd>188 GB</dd><dt>ドライバー</dt><dd>575.57</dd><dt>利用形態</dt><dd>複数プロジェクトで共用</dd></dl></div>
+    </div>
+    <div class="topo-below"><span class="vlink"></span></div>
+    <div class="topo-below"><div class="topo-node plan"><div class="tn-h"><span class="tn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="7" rx="2"/><path d="M12 10v3M8 13h8v5H8zM9 18v3M15 18v3"/></svg></span><div><div class="tn-k">次フェーズ</div><div class="tn-t">実機 Unitree G1 ロボット</div></div></div><div class="tn-role">Unitree SDK2 経由でクライアントから関節指令を受け取ります。現時点ではロボットはシミュレーション内でのみ動作しています。</div><dl class="tn-spec"><dt>関節</dt><dd>43 · Dex3 ハンド</dd><dt>カメラ</dt><dd>ロボット頭部、640×480</dd></dl></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>ソフトウェア &amp; バージョン</h3></div>
+    <p>各列は 1 台のマシンのソフトウェア層で、基盤（下）からプロジェクトのアプリケーション（上、強調表示）の順に並べています。</p>
+    <div class="stacks">
+      <div class="stack "><div class="stack-h"><b>ワークステーション</b><span>シミュレーション</span></div><ol><li class="base"><div><b>Ubuntu 24.04 LTS</b><small>オペレーティングシステム</small></div><em>LTS</em></li><li class="base"><div><b>NVIDIA ドライバー + CUDA</b><small>Isaac Sim 6.1 はドライバー ≥ 595 が必要</small></div><em>580 · 12.6</em></li><li class=""><div><b>Isaac Sim</b><small>Python 3.12、ローカルにインストール</small></div><em>6.0.1</em></li><li class=""><div><b>Isaac Lab</b><small>Isaac Sim 6.0 の公式な組み合わせ</small></div><em>3.0.0-beta2</em></li><li class=""><div><b>Isaac Lab Arena</b><small>Docker 29 で実行、ハンマータスク用の専用ブランチ</small></div><em>0.2.1</em></li><li class="sw-app"><div><b>g1gr00t クライアント + AGILE</b><small>numpy, pyzmq, msgpack, opencv, onnxruntime</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">その他：notebook とテスト用に Jupyter、pytest、pandas、matplotlib。</p></div>
+      <div class="stack "><div class="stack-h"><b>GPU サーバー</b><span>モデル</span></div><ol><li class="base"><div><b>Linux + NVIDIA ドライバー</b><small></small></div><em>575.57</em></li><li class=""><div><b>Isaac-GR00T</b><small>uv による Python 環境、Arena で検証済みの commit に固定</small></div><em>4b1dca9</em></li><li class=""><div><b>Cosmos-Reason2-2B</b><small>視覚–言語バックボーン、Hugging Face から取得</small></div><em>2B</em></li><li class="sw-app"><div><b>GR00T N1.7-3B + checkpoint</b><small>ZeroMQ policy server、checkpoint は 1 つあたり 12.6 GB</small></div><em>3B</em></li></ol><p class="stack-note">Hugging Face 上で NVIDIA のモデルライセンスへの同意が必要です。</p></div>
+      <div class="stack plan"><div class="stack-h"><b>実機ロボット</b><span>次フェーズ</span></div><ol><li class="base"><div><b>ロボット搭載コンピューター</b><small>またはロボットの近くに置くコンピューター</small></div></li><li class=""><div><b>Unitree SDK2</b><small>unitree_sdk2py パッケージ、設定に記載済み</small></div><em>—</em></li><li class="sw-app"><div><b>g1gr00t クライアント</b><small>そのまま再利用し、実機用バックエンドのみ追加</small></div><em>Python 3.10+</em></li></ol><p class="stack-note">本フェーズでは未実装です。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>推論性能</h3></div>
+    <p>ロボットが 1 秒間に何回指令を受け取るか、モデルを 1 回呼ぶと何ステップ分の動作が得られるか、モデルの応答にどれだけ時間がかかるかを示します。</p>
+    <div class="perf four">
+      <div><small>制御周波数</small><b>50<i>Hz</i></b><span>物理 200 Hz、1 tick あたり 4 ステップ · real2sim 20 Hz</span></div>
+      <div><small>モデル呼び出し 1 回あたり</small><b>40<i>ステップ</i></b><span>= 0.8 s の動作 · real2sim は 16 ステップ、うち 8 ステップを実行</span></div>
+      <div><small>サーバー上の推論</small><b>~100<i>ms</i></b><span>H100 上でモデルが 40 ステップのシーケンスを計算</span></div>
+      <div><small>モデルの遅延</small><b>~1.3<i>s</i></b><span>評価時の平均、SSH tunnel 経由で H100 へ</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>時間予算：動作時間とモデル遅延の比較</b><span>秒 · 目盛 0–4 s</span></div>
+      <div class="cb ref"><span class="l">1 つの動作シーケンス（ロボットが実行できる動作の長さ）</span><span class="t"><i class="" style="width:20%"></i></span><span class="v">0.8 s</span></div>
+      <div class="cb"><span class="l">サーバー上の推論時間</span><span class="t"><i class="" style="width:2.5%"></i></span><span class="v">~0.1 s</span></div>
+      <div class="cb"><span class="l">評価時の平均遅延</span><span class="t"><i class="" style="width:37%"></i></span><span class="v">1.3–1.6 s</span></div>
+      <div class="cb"><span class="l">初回呼び出し（ウォームアップ）</span><span class="t"><i class="range" style="width:85%"></i></span><span class="v">1.7–3.4 s</span></div>
+      <div class="cb"><span class="l">ロボット 4 台が同時に呼び出し</span><span class="t"><i class="soft" style="width:97%"></i></span><span class="v">3.5–3.9 s</span></div>
+      <p class="cb-note">モデルの応答は、ロボットが 1 つのシーケンスを実行し終える時間より<b>遅い</b>状態です。シミュレーションでは応答を待つ間シミュレーションが停止するため問題ありませんが、実機では次の呼び出しを先行して行い、GPU をロボットの近くに置かない限り、シーケンスの合間でロボットが止まってしまいます。モデル自体の計算は ~100 ms のみで、残りの遅延の大部分は SSH tunnel 経由の通信とデータのシリアライズにあります。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>データ収集性能</h3></div>
+    <p>Meta Quest ヘッドセットと CloudXR でハンマータスクのデモを記録した際に計測しました。</p>
+    <div class="perf">
+      <div><small>ヘッドセット向けレンダリング</small><b>42<i>%</i></b><span>1 ループの中で最大の割合、CloudXR の待機を含む</span></div>
+      <div><small>物理シミュレーション</small><b>11<i>%</i></b><span>ロボット頭部カメラ 10 %、逆運動学 7 %</span></div>
+      <div><small>RAM</small><b>~12<i>GB</i></b><span>記録中は ~15 MB/s で増加、デモ保存時に解放</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>テレオペ 1 ループの時間内訳</b><span>ハンマータスクのデモ記録時に計測</span></div>
+      <div class="split"><i style="width:42%;background:var(--accent)">42 %</i><i style="width:11%;background:oklch(0.62 0.12 var(--h))">11 %</i><i style="width:10%;background:oklch(0.7 0.1 var(--h))">10 %</i><i style="width:7%;background:oklch(0.78 0.08 var(--h))">7 %</i><i style="width:30%;background:#c9cdbf">30 %</i></div>
+      <div class="split-legend"><span><b style="background:var(--accent)"></b>ヘッドセット向けレンダリング、CloudXR の待機</span><span><b style="background:oklch(0.62 0.12 var(--h))"></b>物理シミュレーション</span><span><b style="background:oklch(0.7 0.1 var(--h))"></b>ロボット頭部カメラ</span><span><b style="background:oklch(0.78 0.08 var(--h))"></b>腕の逆運動学</span><span><b style="background:#c9cdbf"></b>その他</span></div>
+      <p class="cb-note">テレオペ時のボトルネックはシミュレーションではなく、ヘッドセットへの映像伝送です。プロセスは ~12 GB の RAM を使用し、記録中は ~15 MB/s で増加します（カメラ画像のバッファで、デモ保存時に解放）。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>学習性能</h3></div>
+    <p>H100 GPU 1 枚での GR00T N1.7 のファインチューニングと、学習データの準備です。</p>
+    <div class="perf">
+      <div><small>ファインチューニング時間</small><b>61<i>分</i></b><span>10,000 ステップ · 0.36 s/ステップ · batch 32</span></div>
+      <div><small>GPU メモリ</small><b>≈ 53<i>GB</i></b><span>LLM は凍結、vision・projector・diffusion を調整</span></div>
+      <div><small>チェックポイント</small><b>12.6<i>GB</i></b><span>重みのみ、optimizer を含めると ≈ 27 GB</span></div>
+    </div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>指標</th><th class="num">値</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td>学習速度</td><td class="num">0.36 s / ステップ</td><td>Batch 32、1× H100（GPU が他のジョブに占有されている場合は 2.9 s/ステップ）</td></tr>
+            <tr><td>学習時の GPU メモリ</td><td class="num">≈ 53 GB</td><td>LLM は凍結、vision・projector・diffusion を調整</td></tr>
+            <tr><td>学習 10,000 ステップ</td><td class="num">61 分</td><td>Loss 1.27 → 0.020</td></tr>
+            <tr><td>Checkpoint サイズ</td><td class="num">12.6 GB</td><td>重みのみ、optimizer の状態を含めると ≈ 27 GB</td></tr>
+            <tr><td>拡張データの生成</td><td class="num">100 デモ / 17 分</td><td>133 回実行し、成功した 100 回を保持</td></tr>
+            <tr><td>データ容量</td><td class="num">131 MB / 13 GB</td><td>ハンマー 200 エピソード、LeRobot 形式 / 画像付きの元の HDF5 形式</td></tr>
+            <tr><td>自動テスト</td><td class="num">84 unit test</td><td>シミュレーション内テスト：~3.5 分</td></tr>
+          </tbody>
+        </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>性能分析</h3></div>
+    <p>上の 3 つのカードを合わせて読み、各工程で時間とリソースが実際にどこで消費されているか、それが次フェーズにとって何を意味するかを整理します。</p>
+    <div class="grid three">
+      <div class="sub"><div class="sl">推論</div><div class="st">ボトルネックはモデルではなく通信</div><p>モデルの計算は ~100 ms のみですが、1 回の呼び出しには ~1.3 s かかり、1 つの動作シーケンス（0.8 s）より長くなります。差の大部分は SSH tunnel とデータのシリアライズにあります。ロボット 4 台が同時に呼び出すと、サーバーが順番に処理するため遅延は 3.5–3.9 s に増えます。</p></div>
+      <div class="sub"><div class="sl">データ収集</div><div class="st">ボトルネックはヘッドセットへの映像</div><p>レンダリングと CloudXR の待機が各ループの 42 % を占め、物理シミュレーション（11 %）の約 4 倍です。記録中は RAM が ~15 MB/s で増えるため、長いセッションを続けて記録するのではなく、デモごとに定期的に保存する必要があります。</p></div>
+      <div class="sub"><div class="sl">学習</div><div class="st">共用でなければ H100 1 枚で十分</div><p>ファインチューニング 10,000 ステップは 61 分で、GPU メモリは ≈ 53 GB と H100 1 枚に収まります。GPU が他のジョブに占有されると、速度は約 8 倍遅くなります（2.9 s/ステップ 対 0.36 s/ステップ）。</p></div>
+    </div>
+    <div class="callout"><b>改善の方向性：</b>GPU サーバーをロボットの近く、または同じローカルネットワーク内に置き、次のシーケンスを先行して呼び出してロボットが止まらないようにする。データ収集時はヘッドセットに有線接続を使う。ファインチューニングには専用の GPU を確保する。</div>
+  </div>
+
+</section>

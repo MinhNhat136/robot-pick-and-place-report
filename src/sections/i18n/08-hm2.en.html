@@ -1,0 +1,230 @@
+<section class="section" id="hm2" data-hue="blue" data-kicker="III.02 · SCENARIO 2" data-title="Scenario Multi Fruit">
+  <div class="hero">
+    <span class="pill">SCENARIO 2 · MULTI FRUIT</span>
+    <h2>G1 picks the fruit named in the instruction and places it on the plate<span class="dot">.</span></h2>
+    <p class="lead">The table holds 4 kinds of fruit (apple, pear, star fruit, grapes); the instruction decides which fruit to pick. From 1,095 teleop trajectories on the real G1 robot, the project <b>reconstructs the simulated scene from joint data alone</b> (real2sim), generates 790 training episodes and fine-tunes GR00T. Results: the reused apple checkpoint reaches <b>0 %</b>; the fine-tuned model reaches <b>66 %</b> on randomized scenes with distractor fruit and <b>never picks the wrong fruit</b>.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">790<small>episodes</small></div><ul class="fact-list"><li><span>Source</span><b>Real2sim · real G1</b></li><li><span>Frames</span><b>86,822</b></li><li><span>Test set</span><b>89 episodes · 20 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">20,000<small>steps</small></div><ul class="fact-list"><li><span>Time</span><b>2 h 34 min</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>Loss</span><b>1.50 → 0.019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>Checkpoint</span><b><code>g1_fruits_n17</code></b></li><li><span>Instructions</span><b>4 kinds of fruit</b></li><li><span>Action chunk</span><b>16 steps · 20 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">66<small>% success</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>NOT TUNED</em></span><i>→</i><span class="best"><b>66 %</b><em>FINE-TUNE</em></span></div><div class="fact-note">Never picked the wrong fruit</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 0 · SUCCESS</span>
+        <video src="assets/videos/kich-ban-2-4-loai-qua.mp4" poster="assets/videos/kich-ban-2-4-loai-qua-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">The robot picks the bunch of grapes from among the other fruit and places it on the plate</div>
+        <div class="cv-cmd"><small>INSTRUCTION SENT TO THE MODEL</small>"Pick up the green grapes and place it on the plate"</div>
+        <div class="cv-stats"><div><b>1.4<small>cm</small></b><span>Fruit centre to plate centre</span></div><div><b>16.5<small>cm</small></b><span>Maximum lift height</span></div><div><b>2</b><span>Distractor fruit, not disturbed</span></div><div><b>10<small>s</small></b><span>Episode length (200 steps × 50 ms)</span></div></div>
+        <div class="cv-note">Taken from the run of 50 randomized real2sim episodes (33/50 successful). The grapes are the green block.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Scenario setting</h3></div>
+    <p>The G1 robot stands fixed in front of a table; on the table are a plate and three fruit, one of which is the target while the other two are distractors. The image below is the <b>first frame</b> of the episode shown in the Video Showcase (episode 0: green grapes).</p>
+    <figure class="fig"><img src="images/kich-ban-2-4-loai-qua-frame0.jpg" alt="First frame of the Multi Fruit scenario" loading="lazy"><figcaption><b>Frame 0</b> · left: robot head camera, the image the model receives · right: external camera, used only for recording video. The target is the grapes (green block); the distractors are the apple and the pear.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scene &amp; objects</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Table</td><td>Simple table on a grid floor; dome light 700 + sun 600</td></tr>
+        <tr><td>Plate</td><td>Kinematic plate, radius 0.115 m; in episode 0 placed at (0.40; 0.08) m</td></tr>
+        <tr><td>Fruit</td><td>4 kinds as simple blocks (apple, pear, orange, grapes = green block); friction 1.5</td></tr>
+        <tr><td>Target</td><td>Episode 0: grapes at (0.41; −0.12) m</td></tr>
+        <tr><td>Distractors</td><td>2 fruit placed outside the hand's sweep area (episode 0: apple, pear)</td></tr>
+        <tr><td>Randomization</td><td>Each episode changes the target fruit, fruit position and orientation, plate position and distractor fruit; separate seed</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Robot, camera &amp; control</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>Robot</td><td>Unitree G1 29 DoF + Dex3 hands, pelvis fixed at (0; 0; ~0.74) m</td></tr>
+        <tr><td>Camera</td><td>Head-mounted RealSense D435, 640×480 (fx 606) + 1 external camera for recording</td></tr>
+        <tr><td>Rate</td><td>Physics 200 Hz, 10 substeps → control 20 Hz</td></tr>
+        <tr><td>Episode</td><td>Up to 200 steps = 10 s; receives a 16-step chunk, executes 8, then queries again</td></tr>
+        <tr><td>Instruction</td><td>Depends on the target fruit, e.g. "Pick up the green grapes and place it on the plate"</td></tr>
+        <tr><td>Success</td><td>Fruit lifted &gt; 3 cm, lying on the plate (within radius + 1 cm, lowest point above the table surface), distractor fruit moved ≤ 1 cm</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Scenario goals</h3></div>
+    <p>Bring teleop data from the real G1 robot into simulation (<b>real2sim</b>) to train and evaluate a model that picks the fruit named in the instruction.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">GOAL 1</div><div class="st">Closed-loop evaluation</div><p>A simulation environment for a task that previously had only real-robot data.</p></div>
+      <div class="sub"><div class="sl">GOAL 2</div><div class="st">Data multiplication</div><p>Change distractors, positions and lighting without additional teleop.</p></div>
+      <div class="sub"><div class="sl">GOAL 3</div><div class="st">Repeatable measurement</div><p>Compare checkpoints and training configurations on the same yardstick.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Scenario data</h3></div>
+    <p>Dataset <b>PhysicalAI-Robotics-GR00T-Teleop-G1</b> (NVIDIA GEAR, CC-BY-4.0): teleop on the real G1 robot, RealSense camera 640×480, 20 Hz. The robot picks the fruit named in the instruction and places it on the plate. The data contains <b>only joint angles and video</b>, no object positions.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Fruit</th><th class="num">Episodes</th><th class="num">Frames</th></tr></thead>
+      <tbody>
+        <tr><td>Apple</td><td class="num">311</td><td class="num">29,864</td></tr>
+        <tr><td>Grapes</td><td class="num">233</td><td class="num">26,970</td></tr>
+        <tr><td>Pear</td><td class="num">264</td><td class="num">32,319</td></tr>
+        <tr><td>Star fruit</td><td class="num">287</td><td class="num">34,640</td></tr>
+        <tr class="hl"><td>Total (dataset card states 1,000)</td><td class="num">1,095</td><td class="num">123,793</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Problems encountered</h3></div>
+    <p>The goal is a model that picks the fruit named in the instruction. Before creating its own data, the project tried fine-tuning on existing datasets.</p>
+    <div class="callout warn"><b>No suitable simulation dataset.</b> The only set with the right robot (G1) and the right pick-and-place task was recorded on the <b>real robot</b>, so it cannot be used directly in Isaac Sim.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">PROBLEM 1</div><div class="st">Existing checkpoint cannot be reused</div><p>The apple checkpoint from scenario 1 with the 4-fruit instructions reaches <b>0 %</b>: the model learned only one task in one scene.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 2</div><div class="st">No simulation dataset</div><p>Public datasets were reviewed for trial fine-tuning: no simulated set exists for G1 + Dex3 pick-and-place of multiple fruit by instruction.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 3</div><div class="st">The only suitable set is real data</div><p><b>PhysicalAI-Robotics-GR00T-Teleop-G1</b>: same G1 robot, same pick-and-place of fruit onto a plate, but recorded on the real robot.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 4</div><div class="st">Real data lacks information needed for simulation</div><p>Only joint angles and video, <b>no object positions</b>; real images do not match rendered images; actions on the real robot and in simulation have different meanings.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Proposed method</h3></div>
+    <p>Solved with <b>real2sim</b>: use the joint trajectories of the real data to rebuild the corresponding simulated scene, replay it in Isaac Lab and record it as a simulation dataset — keeping the real motion of the teleoperator while images and physics stay consistent with the evaluation environment.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">STEP 1</div><div class="sv">Forward kinematics (FK)</div><div class="sd">URDF G1 29-DoF + Dex3 → torso pose, hand trajectory, grasp/release timing</div></div>
+      <div class="step"><div class="sk">STEP 2</div><div class="sv">Infer object positions</div><div class="sd">Fruit = palm at grasp; plate = position at release</div></div>
+      <div class="step"><div class="sk">STEP 3</div><div class="sv">Safe distractors</div><div class="sd">Placed outside the hand's sweep, the fruit-carrying path and the plate</div></div>
+      <div class="step"><div class="sk">STEP 4</div><div class="sv">Replay &amp; filter</div><div class="sd">Isaac Lab; keep successful episodes that do not touch distractors</div></div>
+      <div class="step"><div class="sk">STEP 5</div><div class="sv">LeRobot dataset</div><div class="sd">Multi-task, 4 fruit; train/test split by source episode</div></div>
+    </div>
+    <ul>
+      <li><b>Vision-free reconstruction:</b> assume both feet are flat on the floor to infer the torso tilt; detect grasp/release from finger closure; custom FK written with numpy only.</li>
+      <li><b>Simulation:</b> G1 + Dex3 with fixed pelvis, D435 camera with RealSense parameters, physics 200 Hz / control 20 Hz, stiff PD for the arms, fruit friction 1.5, fixed plate.</li>
+      <li><b>Scoring:</b> fruit lifted &gt; 3 cm; finally lying on the plate; no distractor moved &gt; 1 cm.</li>
+      <li><b>Data-leakage prevention:</b> test scenes never appear in train; 100 evaluation scenes are kept, including scenes whose replay failed, so as not to bias toward easy scenes.</li>
+    </ul>
+    <p><b>Three real ↔ simulation video pairs.</b> Robot head camera, 20 Hz: left is the original teleop video, right is the real2sim episode replayed from the same joint trajectory. Both episodes have the same length, so they run frame by frame in sync; the poster of each video is a representative frame of one phase (start, grasp, place).</p>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-apple.mp4" poster="assets/videos/real2sim-pair-apple-poster.jpg" aria-label="Real2sim apple pair: left real video, right simulation" muted loop playsinline controls preload="metadata"></video><figcaption><b>Pair 1 · Apple</b> · real episode 0 ↔ sim 0 · 111 frames (5.6 s). From the very first frame, the apple and plate positions in simulation nearly coincide with the real image even though no vision is used: the apple is inferred from the palm at grasp, the plate from the position at release. The bunch of grapes in the corner of the real image is not in the joint data and so is not reconstructed; the simulation places 2 new distractors (star fruit, grapes) far from the hand's sweep. Left: real · right: simulation.</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-grapes.mp4" poster="assets/videos/real2sim-pair-grapes-poster.jpg" aria-label="Real2sim grapes pair: left real video, right simulation" muted loop playsinline controls preload="metadata"></video><figcaption><b>Pair 2 · Grapes</b> · real episode 1 ↔ sim 0 · 102 frames (5.1 s). The arm and Dex3 hand poses while reaching, closing the fingers and lifting all match the real video because the joint angles are the same. The soft bunch of grapes is replaced by a rigid green block; the real pear on the left is not reconstructed, and the simulation places a pear and a star fruit as distractors elsewhere. Left: real · right: simulation.</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-pear.mp4" poster="assets/videos/real2sim-pair-pear-poster.jpg" aria-label="Real2sim pear pair: left real video, right simulation" muted loop playsinline controls preload="metadata"></video><figcaption><b>Pair 3 · Pear</b> · real episode 0 ↔ sim 0 · 131 frames (6.6 s). The fruit is carried to the plate area at the same moment as in the real video. The real plate is pink, the simulated plate is always a turquoise polygon; the wooden table top becomes a plain plane; the simulated view shows both the table edge and the background behind it. Left: real · right: simulation.</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">SAME</div><div class="st">Motion and task layout</div><p>Arm trajectory, finger closure and grasp/release timing are kept from teleop; target fruit and plate positions match the real image; the left hand rests in the same pose; the instruction is kept verbatim.</p></div>
+      <div class="sub"><div class="sl warn">DIFFERENT</div><div class="st">Visuals and distractors</div><p>Fruit are simple geometric blocks; plate, table top and lighting come from the simulation; distractors in the real image are dropped and replaced by 2 random, safely placed distractors; the camera angle is slightly off. Therefore the model learns only on rendered images, not on real images.</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Split</th><th class="num">Episodes</th><th class="num">Frames</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Train</td><td class="num">790</td><td class="num">86,822</td><td>4 kinds of fruit, 20 Hz</td></tr>
+        <tr><td>Test</td><td class="num">89</td><td class="num">—</td><td>Scenes not in train</td></tr>
+        <tr><td>Evaluation scenes</td><td class="num">100</td><td class="num">—</td><td>30 apple, 24 pear, 26 star fruit, 20 grapes</td></tr>
+      </tbody>
+    </table></div>
+    <p class="todo">[TODO: replay success rate per fruit (episodes kept / real episodes).]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Workflow</h3></div>
+    <p>The source dataset is teleop on the real G1 robot, so it cannot run directly in simulation: it must be <b>converted via real2sim</b> to obtain the corresponding scenes and simulation data, then GR00T is <b>fine-tuned</b> on that data, and only then is the closed loop run in Isaac Sim.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">STEP 1</div><div class="sv">Real data</div><div class="sd">1,095 G1 teleop trajectories, joint angles + video only</div></div>
+      <div class="step"><div class="sk">STEP 2</div><div class="sv">Real2sim conversion</div><div class="sd">FK infers fruit and plate positions; replay &amp; filter in Isaac Lab</div></div>
+      <div class="step"><div class="sk">STEP 3</div><div class="sv">Simulation dataset</div><div class="sd">Multi-task LeRobot · train 790 / test 89</div></div>
+      <div class="step"><div class="sk">STEP 4</div><div class="sv">Fine-tune</div><div class="sd">GR00T N1.7 · 20,000 steps · 1× H100</div></div>
+      <div class="step"><div class="sk">STEP 5</div><div class="sv">Run &amp; evaluate</div><div class="sd">Randomized scenes, 50 episodes</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>Work</th><th>Notebook / tool</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Download the 4-fruit teleop dataset (apple, pear, star fruit, grapes); try the apple checkpoint from scenario 1</td><td>PhysicalAI-Robotics-GR00T-Teleop-G1</td><td>Reused apple checkpoint: 0 %</td></tr>
+        <tr><td>2</td><td>URDF forward kinematics → hand trajectory, grasp/release timing → fruit and plate positions; place distractors outside the hand's sweep; replay actions in Isaac Lab, keep successful episodes</td><td><code>g1_real2sim</code> (urdf_fk, scene, distractors, isaac_scene)</td><td>A simulated scene for each real trajectory</td></tr>
+        <tr><td>3</td><td>Merge the 4 fruit into one multi-task dataset; split train/test by source episode; keep 100 evaluation scenes</td><td>make_groot_dataset, lerobot_io</td><td>790 / 86,822 frames train · 89 test</td></tr>
+        <tr><td>4</td><td>Fine-tune GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, 31-dim state/action, horizon 16 steps @ 20 Hz, batch 32</td><td>launch_finetune.py on the H100 server</td><td><code>g1_fruits_n17</code> · 2 h 34 min · loss 1.50 → 0.019</td></tr>
+        <tr><td>5</td><td>Build scenes like the dataset, choose an instruction, the model picks on its own; run N episodes with separate seeds</td><td>nb09_multi_object_task_pipeline, nb10_eval_multi_object</td><td>66 %, never picked the wrong fruit</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
+    <p>Following NVIDIA's official guide (fine-tuning on sim data): GR00T N1.7-3B, <code>NEW_EMBODIMENT</code>, camera <code>rs_view</code>, 5 state/action groups (31 dims), horizon 16 steps @ 20 Hz (0.8 s); batch 32 on H100; LLM frozen, vision + projector + diffusion tuned; color jitter (brightness 0.3 · contrast 0.4 · saturation 0.5 · hue 0.08).</p>
+    <p class="todo">[TODO: number of steps, training time, loss curve, open-loop MAE on the test set, checkpoint used for evaluation, ReplayPolicy check result.]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Results</h3></div>
+    <p>Each episode randomizes the target fruit, fruit position/orientation, plate position and distractor fruit; a separate seed per episode. Instructions verbatim from the dataset (e.g. "Pick up the green grapes and place it on the plate"). Receives 16 steps, executes 8, then queries again; up to 10 s. 50 episodes, 0 technical errors.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Model</th><th class="num">Success</th><th>Wilson 95 %</th><th class="num">Lifted</th><th class="num">On plate</th><th class="num">Wrong pick</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Real2sim fine-tune</td><td class="num">33/50 (66 %)</td><td>52–78 %</td><td class="num">78 %</td><td class="num">76 %</td><td class="num">0 %</td></tr>
+        <tr><td>Arena apple checkpoint (baseline)</td><td class="num">0/50 (0 %)</td><td>0–7 %</td><td class="num">0 %</td><td class="num">0 %</td><td class="num">0 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="bars" data-source="real2sim-groups-en">
+      <div class="chart-head"><div><div class="ct">Success rate by group · real2sim model</div><div class="cs">Hover over a bar to see the number of trials. Small n (9–29) ⇒ wide confidence intervals.</div></div><button class="btn" type="button" data-table-toggle data-l-table="Show as table" data-l-chart="Show chart">Show as table</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Group</th><th class="num">n</th><th class="num">Success</th><th class="num">Rate</th></tr></thead><tbody>
+        <tr><td>Apple</td><td class="num">9</td><td class="num">8</td><td class="num">89 %</td></tr>
+        <tr><td>Grapes</td><td class="num">13</td><td class="num">9</td><td class="num">69 %</td></tr>
+        <tr><td>Star fruit</td><td class="num">13</td><td class="num">8</td><td class="num">62 %</td></tr>
+        <tr><td>Pear</td><td class="num">15</td><td class="num">8</td><td class="num">53 %</td></tr>
+        <tr><td>Fruit on the left</td><td class="num">21</td><td class="num">16</td><td class="num">76 %</td></tr>
+        <tr><td>Fruit on the right</td><td class="num">29</td><td class="num">17</td><td class="num">59 %</td></tr>
+        <tr class="hl"><td>Total</td><td class="num">50</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody></table></div></div>
+    </div>
+    <figure class="fig"><img src="images/nb10_eval_real2sim.png" alt="Real2sim results" loading="lazy"><figcaption><b>Target fruit positions by outcome</b> (green = success, orange = lifted but not successful, red = not lifted, grey ring = plate centre) and rate per fruit.</figcaption></figure>
+    <div class="grid">
+      <div class="sub"><div class="sl">OBSERVATION</div><div class="st">The model understands the instruction</div><p>Never picked the wrong fruit even though other fruit are always on the table.</p></div>
+      <div class="sub"><div class="sl">OBSERVATION</div><div class="st">Failures occur mainly in the lift phase</div><p>11/50 not lifted; the pear has the lowest lift rate (53 %).</p></div>
+      <div class="sub"><div class="sl warn">NOTE</div><div class="st">The baseline is a model for a different task</div><p>Not the original N1.7 without fine-tuning; 0 % only shows that a model for a different task cannot be reused.</p></div>
+    </div>
+    <div class="callout"><b>Technical lesson:</b> the first trial run used a configuration that did not render the camera at every control step (an Isaac Lab 3.0 specific) — the model saw a frozen image. This was detected and fixed; the results of that run are not used.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Result analysis</h3></div>
+    <p>The 50 episodes of the fine-tuned model are tracked through each phase to see where the losses occur.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Phase (50 episodes)</th><th class="num">Episodes</th><th class="num">Rate</th></tr></thead>
+      <tbody>
+        <tr><td>Target fruit lifted</td><td class="num">39</td><td class="num">78 %</td></tr>
+        <tr><td>Fruit on the plate (among those lifted)</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr class="hl"><td>Success (distractors not moved)</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Failure type (17 cases)</th><th>Count</th><th>Symptom</th></tr></thead>
+      <tbody>
+        <tr><td>Not lifted</td><td>11</td><td>Grasp slips or the hand does not close enough; the pear has the lowest lift rate (53 %)</td></tr>
+        <tr><td>Lifted but not on the plate</td><td>5</td><td>Released off the plate; the star fruit has the lowest on-plate rate (62 %) despite an 85 % lift rate</td></tr>
+        <tr><td>On the plate but distractor moved</td><td>1</td><td>Hand touched a distractor fruit &gt; 1 cm</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">FINDING 1</div><div class="st">The model understands the instruction</div><p>0 wrong picks in 50 episodes that always have other fruit on the table: the language part is learned well from the real2sim data.</p></div>
+      <div class="sub"><div class="sl">FINDING 2</div><div class="st">The bottleneck is the grasp phase</div><p>11/17 failures are failures to lift the fruit. Further improvement should focus on grasp data (shape, friction of each fruit).</p></div>
+      <div class="sub"><div class="sl">FINDING 3</div><div class="st">Differences by fruit and table side</div><p>Apple 89 %, grapes 69 %, star fruit 62 %, pear 53 %; left 76 %, right 59 %. Small n, overlapping confidence intervals — not enough to conclude.</p></div>
+      <div class="sub"><div class="sl">FINDING 4</div><div class="st">Scope of conclusions</div><p>Training and evaluation both in simulation: the results serve for relative comparison and do not predict performance on the real robot.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>Scenario conclusion</h3></div>
+    <div class="panel"><div class="pl">CONCLUSION</div><p>From teleop data of the real G1 robot containing only joint angles and video, the project <b>built a simulation dataset with real2sim</b> (790 episodes) and fine-tuned GR00T: from <b>0 %</b> with the reused apple checkpoint to <b>66 %</b> on randomized scenes with distractor fruit, <b>never picking the wrong fruit</b>. The model understands the instruction; the remaining losses lie mainly in the grasp phase.</p></div>
+    <ul>
+      <li>Built a <b>real2sim pipeline from joint data alone</b>: forward kinematics infers fruit and plate positions, distractors are placed safely, and replay and filtering run automatically in Isaac Lab.</li>
+      <li>Fine-tuned GR00T N1.7 in 2 h 34 min on one H100; 11/17 failures are failures to lift the fruit, with the pear having the lowest lift rate.</li>
+      <li>The results are only for <b>relative comparison</b> in simulation: simulation is easier than reality (stiff PD, high friction, fixed plate) and does not predict performance on the real robot.</li>
+      <li>Next steps: increase cheap data by changing distractor layout, lighting and materials and replaying; add grasp data by shape and friction of each fruit.</li>
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,184 @@
+<section class="section" id="nghien-cuu" data-hue="blue" data-kicker="II.01 · モデル調査" data-title="NVIDIA Isaac GR00T モデルの調査">
+  <div class="hero">
+    <span class="pill">II.01 節 · モデル調査</span>
+    <h2>GR00T N1 と本プロジェクトで使用する N1.7<span class="dot">。</span></h2>
+    <p class="lead">GR00T N1 はヒューマノイドロボット向けのオープンな VLA モデルで、<b>理解</b>を担う視覚–言語モデルと、<b>行動</b>を担う Diffusion Transformer で構成されます。本プロジェクトでは後継版の <b>GR00T N1.7-3B</b> を使用します。本節では、モデルが何をするか、何で構成されるか、効果はあるか、プロジェクトでどう適用したかを順に説明します。</p>
+    <div class="meta">
+      <div><span class="ml">論文</span><span class="mv">arXiv:2503.14734 (03/2025)</span></div>
+      <div><span class="ml">使用モデル</span><span class="mv">GR00T N1.7-3B</span></div>
+      <div><span class="ml">キーワード</span><span class="mv">VLA · flow matching · data pyramid</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-thuat-ngu-ja">
+    <div class="card-head"><span class="num">1</span><h3>用語集</h3></div>
+    <div class="gloss"><div><b>Token</b><span>画像や文章を符号化した後の小さな断片です。モデルは元の画像や文字ではなく、トークン列を読み込みます。</span></div><div><b>VLA (Vision-Language-Action)</b><span>画像を見て指示文を読み、ロボットの行動を出力するモデルです。</span></div><div><b>System 2 / System 1</b><span>GR00T の理解部（低速）と行動部（高速）です。</span></div><div><b>Action / アクション列</b><span>1 つのアクションは 1 ステップ分の目標関節角の組で、アクション列はこれからの動作区間です。</span></div><div><b>Flow matching</b><span>アクション列の生成方法です。ランダムノイズから始め、少しずつ修正して動作にします。</span></div><div><b>Embodiment</b><span>ロボットの機体の種類（G1、GR-1…）です。種類ごとに専用のエンコーダを持ちます。</span></div><div><b>Pre-train / fine-tune</b><span>大規模な汎用データで事前学習すること / 特定のロボット・タスク向けに追加で調整することです。</span></div><div><b>Checkpoint</b><span>学習済みモデルの重みで、再利用のためにファイルとして保存したものです。</span></div><div><b>Teleop</b><span>人がロボットを遠隔操作（ここでは VR ヘッドセットを使用）してデモを記録することです。</span></div></div>
+  </div>
+
+  <div class="card" id="nc-video-ja">
+    <div class="card-head"><span class="num">2</span><h3>動作の仕組み</h3></div>
+    <p>以下の動画は、GR00T のような <b>Vision-Language-Action</b> モデルがカメラ画像と指示文をどのように動作に変換するかを示します。右側の各ステップをクリックすると、動画の該当箇所に移動します。各ステップには本プロジェクトでの適用方法を記載しています。</p>
+    <div class="vchap" data-hue="blue">
+      <figure class="vchap-video">
+        <video src="assets/videos/pipeline.mp4" poster="assets/videos/pipeline-poster.jpg" controls preload="metadata" playsinline></video>
+        <div class="vchap-progress"><span></span></div>
+      </figure>
+      <div class="vchap-side">
+        <div class="vchap-head"><span class="vk">7 ステップ · クリックで動画を移動</span><span class="vh">画像と指示文から動作まで</span></div>
+        <ol class="vchap-list">
+            <li><button type="button" data-seek="0"><span class="ts">0:00</span><span><span class="vt"><small>IMAGE TOKENS</small>カメラ画像を画像トークンに変換</span><span class="vd">画像を小さなパッチに分割し、視覚エンコーダ（画像–キャプションのペアで学習）に通した後、言語モデルの空間に射影します。</span><span class="vp"><b>プロジェクト：</b>G1 頭部カメラの画像 640×480。GR00T N1.7 は SigLip2 エンコーダを使用します。</span></span></button></li>
+            <li><button type="button" data-seek="12"><span class="ts">0:12</span><span><span class="vt"><small>TEXT TOKENS</small>指示文をテキストトークンに変換</span><span class="vd">"pick up the dessert item" のような指示文を単語の断片に分割します。</span><span class="vp"><b>プロジェクト：</b>例："put the hammer in the bin"。指示文はデータ記録時と一字一句同じである必要があります。</span></span></button></li>
+            <li><button type="button" data-seek="18"><span class="ts">0:18</span><span><span class="vt"><small>VISION-LANGUAGE MODEL</small>視覚–言語モデルが両方を読む</span><span class="vd">インターネットのデータで事前学習した言語モデルが、画像トークンとテキストトークンを同時に読み込みます。</span><span class="vp"><b>プロジェクト：</b>GR00T N1.7 は Cosmos-Reason2-2B（「System 2」）を使用します。</span></span></button></li>
+            <li><button type="button" data-seek="23"><span class="ts">0:23</span><span><span class="vt"><small>ACTION EXPERT</small>Action expert が関節角も読む</span><span class="vd">より小さな transformer が、上記のトークンとロボットの現在の関節角を読み込みます。</span><span class="vp"><b>プロジェクト：</b>上半身 31 関節（腕、手、腰）。脚は AGILE が担当します。</span></span></button></li>
+            <li><button type="button" data-seek="29"><span class="ts">0:29</span><span><span class="vt"><small>ACTION CHUNK · FLOW MATCHING</small>flow matching で動作列全体を生成</span><span class="vd">モデルは将来の関節指令の列を書き出します。列はノイズから始まり、学習した方向に沿って少しずつノイズが除去され、実際の動作になります。</span><span class="vp"><b>プロジェクト：</b>40 ステップ = 0.8 s（リンゴ、ハンマー）、16 ステップ（real2sim）。</span></span></button></li>
+            <li><button type="button" data-seek="40"><span class="ts">0:40</span><span><span class="vt"><small>CLOSED-LOOP CONTROL</small>実行して再び見る：閉ループ</span><span class="vd">ロボットは列の前半を実行し、新しい画像を撮影して繰り返します。</span><span class="vp"><b>プロジェクト：</b>リンゴとハンマーは 40 ステップをすべて実行してから再問い合わせします。real2sim は動画と同様に 8/16 ステップを実行します。</span></span></button></li>
+            <li><button type="button" data-seek="48"><span class="ts">0:48</span><span><span class="vt"><small>VISION-LANGUAGE-ACTION</small>多種のロボットのデモで学習</span><span class="vd">モデル全体を多種のロボットのデモで学習し、VLA モデルとします。</span><span class="vp"><b>プロジェクト：</b>タスクごとに 200–790 件のデモで GR00T を G1 向けにファインチューニングしました。</span></span></button></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-dau-vao-ja">
+    <div class="card-head"><span class="num">3</span><h3>入力データ</h3></div>
+    <p>呼び出しごとに、モデルは<b>現在の時点のみ</b>の 3 種類のデータを受け取ります：カメラ画像 1 枚、上半身の関節角、指示文です。過去のフレームの履歴は受け取らず、12 の脚関節も見ません（脚は AGILE が担当）。</p>
+    <div class="io-sumrow">
+      <div><b>1</b><span>頭部カメラ画像<br><small>480×640、現在のフレーム</small></span></div>
+      <div><b>31</b><span>上半身の関節角<br><small>腕、指、腰</small></span></div>
+      <div><b>1</b><span>指示文<br><small>エピソード中は不変</small></span></div>
+    </div>
+    <div class="io-grid">
+      <figure class="io-robot" data-md="body"><svg viewBox="40 4 440 440" role="img" aria-label="G1 ロボット：モデルに送る上半身の関節" data-body-svg></svg><figcaption><span class="io-k">状態 · G1 ロボット</span>青い点：モデルに送る 31 関節 · 白い点：AGILE が制御する 12 の脚関節</figcaption></figure>
+      <div class="io-side">
+        <figure class="io-img"><img src="images/kich-ban-1-tao-dia-frame0.jpg" alt="G1 頭部カメラ画像、リンゴ → 皿シナリオの最初のフレーム" loading="lazy"><figcaption><span class="io-k">ロボットの視点 · 頭部カメラ</span>シナリオ 1 の最初のフレーム</figcaption></figure>
+        <div class="io-blk"><span class="io-k">送信する指示文</span><p class="io-cmd">"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</p></div>
+      </div>
+    </div>
+    <p class="proj"><b>本プロジェクトでは：</b>シナリオ 1 と 3 は上記の <code>ego_view</code> カメラを、シナリオ 2（real2sim）は同じ 31 関節で <code>rs_view</code> カメラを使用します。</p>
+  </div>
+
+  <div class="card" id="nc-dau-ra-ja">
+    <div class="card-head"><span class="num">4</span><h3>出力データ</h3></div>
+    <p>呼び出しごとに、モデルは近い将来に向けた <b>40 ステップの列</b>を返し、各ステップは 35 個の値を持ちます。ロボットは 20 ms のティックごとに 1 ステップを実行するため、1 つの列で次の列が必要になるまでの 0.8 s 分の動作をまかなえます。</p>
+    <div class="io-sumrow">
+      <div><b>40</b><span>列あたりのステップ数<br><small>1 ステップ 20 ms = 0.8 s の動作</small></span></div>
+      <div><b>35</b><span>ステップあたりの値<br><small>関節角 31 + 脚への指令 4</small></span></div>
+      <div><b>1</b><span>呼び出しあたりの列数<br><small>列が尽きる前に再度呼び出し</small></span></div>
+    </div>
+    <div class="io-blk io-chunkviz" data-md="chunk">
+      <span class="io-k">例 · リンゴ → 皿デモの 40 ステップ列 1 つ（EPISODE 0、0.4 秒から）</span>
+      <svg viewBox="0 0 640 260" role="img" aria-label="40 ステップの列 1 つ：左腕の関節角 7 つと左手の握りの時間変化" data-chunk-svg></svg>
+      <div class="io-leg" data-chunk-leg></div>
+      <div class="io-frames">
+        <figure><img src="images/chunk-buoc01.jpg" alt="ステップ 1 の頭部カメラ" loading="lazy"><figcaption>ステップ 1 · 手がリンゴに向かう</figcaption></figure>
+        <figure><img src="images/chunk-buoc21.jpg" alt="ステップ 21 の頭部カメラ" loading="lazy"><figcaption>ステップ 21 · 手がリンゴのすぐそばに到達</figcaption></figure>
+        <figure><img src="images/chunk-buoc40.jpg" alt="ステップ 40 の頭部カメラ" loading="lazy"><figcaption>ステップ 40 · リンゴを把持</figcaption></figure>
+      </div>
+      <p>これはデモデータに記録されたアクション列で、モデルが返す列と同じ形式です。オープンループ検証では、同じ時点に対してモデルが予測した列とこの列のずれは、動作の振幅より 10–70 倍小さくなりました。</p>
+    </div>
+    <div class="io-blk"><span class="io-k">1 ステップ · 35 個の値</span><div class="io-seg">
+        <span style="flex:7"><b>左腕</b>7</span><span style="flex:7"><b>右腕</b>7</span><span style="flex:7"><b>左手</b>7</span><span style="flex:7"><b>右手</b>7</span><span style="flex:3"><b>腰</b>3</span><span class="cmd" style="flex:3"><b>移動</b>3</span><span class="cmd" style="flex:3"><b>高さ</b>1</span>
+      </div><div class="io-leg"><span><i></i>目標関節角 31 → そのまま関節へ</span><span><i class="cmd"></i>指令 4 → AGILE へ渡す</span></div></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">絶対角</div><p>31 個の関節値は目標角であり、前ステップからの変化量ではありません。使用前に、クライアントは関節の可動範囲とティックごとの速度上限でクランプします（II.02、カード 7）。</p></div>
+      <div class="sub"><div class="sl">脚への指令</div><p>モデルは 12 の脚関節を直接制御しません。移動指令と腰の高さ（~0.72 m）のみを出力し、AGILE がそれを基にバランスを保ちます。本プロジェクトの 3 シナリオはいずれもその場で静止したままです。</p></div>
+    </div>
+    <p class="proj"><b>本プロジェクトでは：</b>シナリオ 1 と 3 は上記のとおり 50 Hz の 40 ステップ列を使用します。シナリオ 2 は腰を固定するため脚への指令がなく、20 Hz の 16 ステップ列（同じく 0.8 s）、各ステップ 31 個の値で、呼び出しごとに 8 ステップを実行します。</p>
+  </div>
+
+  <div class="card" id="nc-kien-truc-ja">
+    <div class="card-head"><span class="num">5</span><h3>モデルアーキテクチャ</h3></div>
+    <p>理解部（論文では <b>System 2</b>）は視覚–言語モデルで、毎秒約 10 回と低速で動作します。行動部（<b>System 1</b>、動画では「action expert」）は理解部の出力とロボットの現在の関節角を受け取り、はるかに高速に動作します。図の各ブロックをクリックすると、その役割が表示されます。</p>
+    <div class="vref"><span class="vref-k">動画で見る</span><button type="button" data-vseek="0"><b>0:00</b>画像</button><button type="button" data-vseek="12"><b>0:12</b>指示文</button><button type="button" data-vseek="18"><b>0:18</b>理解部</button><button type="button" data-vseek="23"><b>0:23</b>行動部</button></div>
+    <div class="ds-lab single" data-md="arch">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">GR00T N1 のデータフロー</span><span class="ds-tag">図 · 数値は論文より</span></div>
+        <div class="mo-arm wide">
+          <svg viewBox="0 0 760 330" role="img" aria-label="GR00T のデュアルシステム構成" data-arch-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-arch-out></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="proj"><b>本プロジェクトでは：</b>GR00T N1.7 はこの二部構成を維持し、理解部をより新しいモデルに置き換えています（カード 7）。入力は G1 頭部カメラの画像と上半身 31 関節の角度です。3 つの MLP ブロック（state encoder、action encoder、action decoder）はロボットの種類ごとに専用で、G1 をモデルに導入する際に学習が必要な部分です。</p>
+    <div class="perf">
+      <div><small>総パラメータ数</small><b>22<i>億</i></b><span>GR00T N1、論文の版</span></div>
+      <div><small>理解部</small><b>13.4<i>億</i></b><span>パラメータの大部分は視覚–言語モデルにある</span></div>
+      <div><small>速度</small><b>10 · 120<i>Hz</i></b><span>理解部 ~10 Hz、制御ループ ~120 Hz</span></div>
+    </div>
+    <details class="acc"><summary>技術的詳細 · 論文</summary><div class="acc-body"><ul><li>理解部：Eagle-2。画像エンコーダ SigLIP-2 と言語モデル SmolLM2 で構成されます。224×224 の画像を 64 トークンに圧縮します（pixel shuffle）。</li><li>特徴量は言語モデルの最終層ではなく第 12 層から取得します。論文では、この方が高速かつ成功率も高いと報告されています。</li><li>行動部：Diffusion Transformer (DiT)。cross-attention（理解部のトークンを参照）と self-attention（状態トークンとアクショントークンの間）を交互に配置します。</li><li>状態とアクションは、ロボットの種類（embodiment）ごとに専用の MLP エンコーダ/デコーダを通ります。</li></ul></div></details>
+  </div>
+
+  <div class="card" id="nc-ket-qua-ja">
+    <div class="card-head"><span class="num">6</span><h3>公表された結果</h3></div>
+    <p>論文では、GR00T N1 を、事前学習なしでそのタスク自身のデータのみから学習するモデル Diffusion Policy と比較しています。GR00T N1 はすべての構成で上回り、データが少ないときに差が最も大きくなります。</p>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>成功率：Diffusion Policy と GR00T N1 の比較</b><span>論文の数値</span></div>
+      <div class="cb-group">シミュレーション · 3 ベンチマークの平均（タスクあたり 100 デモ）</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:33.4%"></i></span><span class="v">33.4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:45%"></i></span><span class="v">45.0 %</span></div>
+      <div class="cb-group">実機 GR-1 ロボット · データ全量</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:46.4%"></i></span><span class="v">46.4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:76.8%"></i></span><span class="v">76.8 %</span></div>
+      <div class="cb-group">実機 GR-1 ロボット · データの 10 % のみ</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:10.2%"></i></span><span class="v">10.2 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:42.6%"></i></span><span class="v">42.6 %</span></div>
+    </div>
+    <p class="proj"><b>本プロジェクトでは：</b>これが、数百件のデモで G1 の新しいタスクをファインチューニングでき、real2sim データや生成データで十分に足りる理由です。</p>
+    <details class="acc"><summary>シミュレーションベンチマーク別の詳細表 · 論文の表 4</summary><div class="acc-body"><div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ベンチマーク</th><th class="num">Diffusion Policy<br>30 / 100 / 300 デモ</th><th class="num">GR00T-N1-2B<br>30 / 100 / 300 デモ</th></tr></thead>
+      <tbody>
+        <tr><td>RoboCasa（24 タスク）</td><td class="num">14.7 / 25.6 / 43.2</td><td class="num"><b>17.4 / 32.1 / 49.6</b></td></tr>
+        <tr><td>DexMimicGen（9 タスク）</td><td class="num">23.7 / 46.9 / 68.4</td><td class="num"><b>29.6 / 58.5 / 74.2</b></td></tr>
+        <tr><td>GR-1 Tabletop（24 タスク）</td><td class="num">21.3 / 32.7 / 40.4</td><td class="num"><b>43.2 / 50.0 / 49.3</b></td></tr>
+      </tbody>
+    </table></div><p>平均成功率（%）。GR00T N1 はすべてのセルで上回っています。GR-1 Tabletop のみ、100 から 300 デモに増やしてもほとんど向上しません。</p></div></details>
+  </div>
+
+  <div class="card" id="nc-n17-ja">
+    <div class="card-head"><span class="num">7</span><h3>バージョン比較</h3></div>
+    <p>カード 6 の数値は、Fourier GR-1 ロボット上の N1 のものです。本プロジェクトの実験はすべて Unitree G1 上の N1.7 を使用しています。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>項目</th><th>GR00T N1（論文）</th><th>GR00T N1.7（本プロジェクト）</th></tr></thead>
+      <tbody>
+        <tr><td>規模</td><td>パラメータ約 22 億</td><td>パラメータ約 30 億</td></tr>
+        <tr><td>理解部（System 2）</td><td>NVIDIA Eagle-2</td><td>Cosmos-Reason2-2B（Qwen3-VL アーキテクチャ）、画像は元のアスペクト比のまま</td></tr>
+        <tr><td>行動部（System 1）</td><td>DiT + flow matching</td><td>変更なし</td></tr>
+        <tr><td>複数ロボットへの対応</td><td>ロボットごとに専用の MLP</td><td>変更なし。状態は固定長までパディング</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card" id="nc-checkpoint-ja">
+    <div class="card-head"><span class="num">8</span><h3>実験で使用したチェックポイント</h3></div>
+    <p>3 シナリオで使用した 3 つのチェックポイントは、いずれも GR00T N1.7-3B を起点としています。違いは、誰がどのデータでファインチューニングしたかです。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Checkpoint</th><th>タスク</th><th>提供元</th><th>ファインチューニングデータ</th><th class="num">成功率</th></tr></thead>
+      <tbody>
+        <tr><td><b>シナリオ 1</b><br><code class="ck">GN1x-Tuned-Arena-G1-Static-PickNPlace</code></td><td>リンゴ → 皿</td><td>NVIDIA、そのまま再利用</td><td>シミュレーション内のテレオペデモ 208 件</td><td class="num">92 % 元の Arena<br>56 % 自作シーン</td></tr>
+        <tr><td><b>シナリオ 2</b><br><code class="ck">g1_fruits_n17</code></td><td>4 種類の果物から正しい 1 つを選ぶ</td><td>本プロジェクトでファインチューニング</td><td>G1 実機データからの real2sim エピソード 790 件</td><td class="num">66 % (33/50)</td></tr>
+        <tr><td><b>シナリオ 3</b><br><code class="ck">hammer_mix200_n17</code></td><td>ハンマー → 箱</td><td>本プロジェクトでファインチューニング</td><td>200 エピソード：テレオペ + 生成</td><td class="num">66 % (66/100)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="proj"><b>ライセンス：</b>N1.7 は NVIDIA Open Model Agreement に準拠し、Arena チェックポイントには "non-commercial use" と記載されています。</p>
+  </div>
+
+  <div class="card" id="nc-nhan-dinh-ja">
+    <div class="card-head"><span class="num">9</span><h3>調査の結論</h3></div>
+    <p>3 シナリオすべてで GR00T N1.7 を使用した結果、本プロジェクトが得た知見です。</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">長所</div><div class="st">少ないデータで新しいタスクを素早く学習</div><ul>
+        <li>数百件のデモで十分です：ハンマータスクは 200–400 エピソードで 0 % から 66–73 % に向上しました（III.03 節）。</li>
+        <li>ファインチューニングは H100 1 枚で約 1 時間、GPU 1 枚で実行できます。</li>
+        <li>自然な指示文を理解します：4 種類の果物モデルは指示どおりの果物を選び、誤った果物をつかんだことは一度もありません（III.02 節）。</li>
+        <li>1 つのモデルで腕、手、腰を同時に制御します。</li>
+      </ul></div>
+      <div class="sub"><div class="sl warn">制約</div><div class="st">画像に敏感で、タスクごとの調整が必要</div><ul>
+        <li>シーンに依存します：リンゴタスクは照明が異なると 92 % から 56 % に、シーン全体が異なると 0 % に低下しました（II.04 節）。</li>
+        <li>他のタスクに再利用できません：リンゴのチェックポイントは 4 種類の果物タスクで 0 % でした。</li>
+        <li>1 回の呼び出しはネットワーク経由で約 1.3 s（モデルの計算は約 100 ms）かかり、0.8 s の動作列より長くなります（I.02 節）。</li>
+        <li>NVIDIA の Arena チェックポイントには "non-commercial use" と記載されています。</li>
+      </ul></div>
+    </div>
+    <div class="callout"><b>結論：</b>GR00T は G1 のピック＆プレースタスクの基盤として適しています。結果を左右するのはモデルではなくデータです：実際の作業環境で収集するか、画像の多様性を十分に確保する必要があります。</div>
+  </div>
+
+</section>

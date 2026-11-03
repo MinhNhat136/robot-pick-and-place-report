@@ -1,0 +1,217 @@
+<section class="section" id="hm3" data-hue="blue" data-kicker="III.03 · KỊCH BẢN 3" data-title="Kịch bản Hammer &amp; Bin">
+  <div class="hero">
+    <span class="pill">KỊCH BẢN 3 · HAMMER &amp; BIN</span>
+    <h2>Robot G1 gắp búa trên kệ, thả vào thùng<span class="dot">.</span></h2>
+    <p class="lead">Tác vụ hoàn toàn mới do dự án tự xây dựng: tay trái nắm cán búa, nhấc qua thành thùng, thả vào giữa thùng và rút tay. Khó hơn quả táo vì búa <b>dài, mỏng, sát mặt kệ</b> và dễ gác lên mép thùng. Dự án dựng môi trường, thu <b>100 demo teleop</b> bằng kính Meta Quest, sinh thêm demo và fine-tune GR00T (~1 giờ trên 1 H100) — trọn chu trình trong khoảng 6 ngày. Kết quả: chưa tune <b>0 %</b> → 200 episode <b>66 %</b> → 400 episode <b>63 %</b> → nới ngưỡng đứng yên <b>73 %</b>.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">200 · 400<small>episode</small></div><ul class="fact-list"><li><span>Nguồn</span><b>Teleop + sinh thêm</b></li><li><span>Frame</span><b>28.022 · 54.541</b></li><li><span>Tần số</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">10k · 20k<small>bước</small></div><ul class="fact-list"><li><span>Thời gian</span><b>61 phút · 2 giờ 15</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>Loss cuối</span><b>0,020 · 0,019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>mix200</span><b><code>hammer_mix200_n17</code></b></li><li><span>mix400</span><b><code>hammer_mix400_n17</code></b></li><li><span>Chuỗi action</span><b>40 bước · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">73<small>% thành công</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>GỐC</em></span><i>→</i><span class=""><b>66 %</b><em>200 EP</em></span><i>→</i><span class=""><b>63 %</b><em>400 EP</em></span><i>→</i><span class="best"><b>73 %</b><em>NGƯỠNG</em></span></div><div class="fact-note">Nới ngưỡng đứng yên 0,01 → 0,02</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 89 · THÀNH CÔNG</span>
+        <video src="assets/videos/kich-ban-3-bua-thung.mp4" poster="assets/videos/kich-ban-3-bua-thung-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">Robot nắm cán búa, nhấc qua thành thùng, thả vào giữa thùng và buông tay</div>
+        <div class="cv-cmd"><small>CÂU LỆNH GỬI MODEL</small>"put the hammer in the bin"</div>
+        <div class="cv-stats"><div><b>3,0<small>s</small></b><span>Thời gian tới thành công</span></div><div><b>12,8<small>cm</small></b><span>Độ nâng búa cao nhất</span></div><div><b>0,7<small>cm</small></b><span>Tâm búa cách tâm thùng</span></div><div><b>0<small>N</small></b><span>Lực tay lên búa: đã buông</span></div></div>
+        <div class="cv-note">Trích từ đợt 100 episode ở cấu hình tốt nhất (73/100).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Bối cảnh kịch bản</h3></div>
+    <p>Robot G1 đứng trước kệ trong phòng lab Galileo; chiếc búa nằm bên trái, đầu búa kê lên một khối nhỏ, thùng nhựa đỏ ở bên phải. Ảnh dưới là <b>khung đầu tiên</b> của episode trong Video Showcase.</p>
+    <figure class="fig"><img src="images/kich-ban-3-bua-thung-frame0.jpg" alt="Khung đầu kịch bản Hammer &amp; Bin" loading="lazy"><figcaption><b>Khung 0</b> · trái: camera đầu robot, ảnh model nhận vào · phải: camera ngoài, chỉ dùng để quay video.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Khung cảnh &amp; vật thể</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>Nền</td><td>Phòng lab Galileo; ẩn thêm các hộp shield_controller_box_02, jetson_orin_05, jetson_orin_07 để tay không va chạm (khe hở ≥ 2 cm)</td></tr>
+        <tr><td>Búa</td><td><code>hammer_2_handal_robolab</code> 33 × 13 × 3 cm tại (0,63; 0,25) m, yaw 0; đầu búa tựa lên khối kê 5 cm (nghiêng ~10°) để dễ nắm cán</td></tr>
+        <tr><td>Thùng</td><td><code>red_container</code> tỉ lệ 0,65 → 40 × 27 × 5,9 cm tại (0,68; 0,00) m</td></tr>
+        <tr><td>Khoảng cách</td><td>Búa cách mép thùng 5,1 cm</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Robot, camera &amp; điều khiển</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>Robot</td><td>Unitree G1 + Dex3 tại (0,25; 0,08) m; tay trái nắm cán, nhấc qua thành thùng cao 5,9 cm, dịch sang phải ~25 cm rồi thả</td></tr>
+        <tr><td>Camera</td><td>Camera đầu robot (ảnh model nhận vào) + 1 camera ngoài để quay</td></tr>
+        <tr><td>Tần số</td><td>Điều khiển 50 Hz; mỗi lần gọi model trả về chuỗi 40 bước</td></tr>
+        <tr><td>Episode</td><td>Tối đa 300 bước = 6 s</td></tr>
+        <tr><td>Câu lệnh</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>Thành công</td><td>Tâm búa cách tâm thùng ≤ 10 cm và thấp hơn thành; búa đứng yên (&lt; 0,01 m/s, &lt; 0,1 rad/s — sau nới lên 0,02 m/s); tay đã buông (22 khâu tay ≤ 0,01 N); giữ liên tục 10 bước</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Mục tiêu kịch bản</h3></div>
+    <p>Kịch bản kiểm chứng năng lực <b>dạy robot một tác vụ mới từ đầu</b> bằng công cụ và dữ liệu do dự án tự xây dựng.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">MỤC TIÊU 1</div><div class="st">Tác vụ hoàn toàn mới</div><p>Tự đặt ra một tác vụ chưa có dữ liệu hay model sẵn: gắp búa trên kệ, thả vào thùng.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 2</div><div class="st">Trọn chu trình</div><p>Đi hết các khâu: dựng môi trường, teleop thu demo, tăng cường dữ liệu, fine-tune, đánh giá.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 3</div><div class="st">Đo chi phí và hiệu quả</div><p>Biết cần bao nhiêu dữ liệu, thời gian huấn luyện, và mỗi cải tiến đóng góp bao nhiêu vào tỉ lệ thành công.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Dữ liệu kịch bản</h3></div>
+    <p>Kịch bản mới nên không có dataset sẵn: dự án tự thu demo bằng <b>teleop kính Meta Quest</b> trong Isaac Lab, 50 Hz, rồi bổ sung demo sinh thêm (card 6). Mọi demo đều được chạy lại với điều kiện thành công chặt trước khi đưa vào huấn luyện.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Dataset hammer_to_bin</th><th>Giá trị</th></tr></thead>
+      <tbody>
+        <tr><td>Nguồn</td><td>Teleop kính Meta Quest trong Isaac Lab, 50 Hz; 100 demo thật đầu tiên thu trong 10 phiên</td></tr>
+        <tr><td>Demo thật</td><td>~13.700 bước; búa nhấc trung bình 10,6 cm; tâm búa cuối cách tâm thùng 3,7 cm (tối đa 8,4 cm)</td></tr>
+        <tr><td>Bộ mix200</td><td>200 episode (100 thật + 100 tăng cường), 28.022 frame (~9,3 phút), LeRobot v2.1, 131 MB</td></tr>
+        <tr><td>Bộ mix400</td><td>400 episode (mix200 + 200 demo teleop mới), 54.541 frame (~18 phút)</td></tr>
+        <tr><td>Câu lệnh</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>Kiểm tra</td><td>Toàn bộ demo thành công; với mix200: búa nhấc tối thiểu 6,4 cm, khoảng cách cuối trung bình 3,8 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Vấn đề gặp phải</h3></div>
+    <p>Tác vụ búa → thùng hoàn toàn mới: không có dữ liệu, không có model, không có khung cảnh sẵn. Khó khăn lớn nhất nằm ở việc có đủ dữ liệu tốt để fine-tune.</p>
+    <div class="callout warn"><b>Không có gì để bắt đầu.</b> Mọi dữ liệu phải tự thu bằng teleop, và đây là khâu tốn công nhất: 100 demo thật mất 10 phiên.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">VẤN ĐỀ 1</div><div class="st">Không có dữ liệu sẵn</div><p>Không có dataset hay checkpoint nào cho tác vụ gắp búa đặt vào thùng trên G1; model gốc chưa fine-tune không làm được tác vụ.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 2</div><div class="st">Teleop tốn công và chậm</div><p>Người điều khiển đeo kính Meta Quest thao tác từng demo; mỗi phiên chỉ được khoảng 10 demo, cần nhiều phiên mới đủ dữ liệu.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 3</div><div class="st">Teleop không ổn định</div><p>Tay robot đứng im khi mất tín hiệu tay cầm, giật lag từ lượt thứ 2; nhiều lượt phải bỏ và làm lại.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 4</div><div class="st">Demo có chất lượng không đều</div><p>Có demo được chấm thành công khi búa còn gác lên thành thùng hoặc tay chưa buông; demo hỏng lẫn vào dữ liệu làm model học sai.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Phương pháp đề xuất</h3></div>
+    <p>Giải quyết bằng <b>sinh thêm dữ liệu</b>: từ các demo teleop thật, tự động tạo demo mới theo kiểu MimicGen, chạy lại trong mô phỏng và chỉ giữ demo đạt điều kiện thành công chặt. Cách này nhân dữ liệu mà không tốn thêm giờ teleop, và mọi demo đưa vào huấn luyện đều đã được kiểm tra.</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">CÁCH SINH</div><div class="st">Biến đổi demo khuôn</div><p>Lấy demo thật làm khuôn (60 khuôn khác nhau); co giãn thời gian ×0,85–1,2; dịch điểm xuất phát (σ 1 cm), gắp (σ 4 mm), thả (±1–1,2 cm), nối bằng quỹ đạo min-jerk; thêm rung tay 0,2–0,6 mm.</p></div>
+      <div class="sub"><div class="sl">LỌC</div><div class="st">100/133 lượt giữ lại</div><p>Mỗi demo sinh ra được chạy lại trong mô phỏng với điều kiện thành công chặt; 100 trên 133 lượt đạt và được đưa vào bộ mix200.</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Chỉ số</th><th class="num">Tăng cường</th><th class="num">Thật</th></tr></thead>
+      <tbody>
+        <tr><td>Độ dài episode (bước)</td><td class="num">145</td><td class="num">137</td></tr>
+        <tr><td>Độ nâng búa</td><td class="num">10,5 cm</td><td class="num">10,6 cm</td></tr>
+        <tr><td>Khoảng cách tới tâm thùng, trung bình</td><td class="num">4,0 cm</td><td class="num">3,7 cm</td></tr>
+        <tr><td>Khoảng cách tới tâm thùng, tối đa</td><td class="num">8,0 cm</td><td class="num">8,4 cm</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_generated_demo.png" alt="Demo tăng cường" loading="lazy"><figcaption><b>Một demo tăng cường</b>: khung đầu, giữa, cuối. Tư thế ở các điểm then chốt lệch dưới 1 cm so với demo thật; dùng 60 demo khuôn khác nhau.</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Chu trình thực hiện</h3></div>
+    <p>Kịch bản mới hoàn toàn: không có dữ liệu hay model sẵn. Dự án dựng môi trường, <b>tự tạo dữ liệu bằng teleop</b>, <b>chạy tăng cường</b> để nhân dữ liệu, <b>fine-tune</b> GR00T, rồi mới chạy và đánh giá vòng kín.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">BƯỚC 1 · 07/10</div><div class="sv">Thiết kế môi trường</div><div class="sd">Vật thể, bố trí, khối kê, điều kiện thành công</div></div>
+      <div class="step"><div class="sk">BƯỚC 2 · 08–10/10</div><div class="sv">Teleop thu demo</div><div class="sd">Meta Quest · 100 demo thật</div></div>
+      <div class="step"><div class="sk">BƯỚC 3 · 08–10/10</div><div class="sv">Tăng cường dữ liệu</div><div class="sd">Sinh kiểu MimicGen · 100/133 giữ lại</div></div>
+      <div class="step"><div class="sk">BƯỚC 4 · 12/10</div><div class="sv">Fine-tune</div><div class="sd">mix200 10k bước · mix400 20k bước</div></div>
+      <div class="step"><div class="sk">BƯỚC 5 · 12–19/10</div><div class="sv">Chạy &amp; đánh giá</div><div class="sd">Isaac Lab Arena · 50–100 episode</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Bước</th><th>Việc làm</th><th>Notebook / công cụ</th><th>Kết quả</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Chọn búa, thùng; đặt búa tựa khối kê 5 cm; ẩn hộp nền vướng tay; viết điều kiện thành công chặt</td><td>Isaac Lab Arena, hammer_to_bin/scripts</td><td>Bố trí cuối, khe hở ≥ 2 cm</td></tr>
+        <tr><td>2</td><td>Thu demo bằng kính Meta Quest với preset và công cụ chẩn đoán teleop; chạy lại từng demo với điều kiện chặt</td><td>teleop_kit, record_demos.sh</td><td>100 demo thật (10 phiên), sau thêm 200 demo</td></tr>
+        <tr><td>3</td><td>Biến đổi demo khuôn (thời gian, điểm gắp/thả, rung tay), chạy lại và lọc</td><td>gen_scripted_demos.py</td><td>100 demo tăng cường → bộ mix200</td></tr>
+        <tr><td>4</td><td>Fine-tune GR00T N1.7-3B; LLM đóng băng, tune thị giác + projector + diffusion</td><td>Server H100</td><td>mix200: 61 phút · mix400: 2 giờ 15 phút</td></tr>
+        <tr><td>5</td><td>Chạy vòng kín N episode, phân loại thất bại, quay video</td><td>Arena eval, nb11_hammer_to_bin, nb12_eval_hammer_to_bin</td><td>0 % gốc → 66 % → 63 % → 73 %</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Thời gian huấn luyện</div><div class="kv">61<small>phút</small></div><div class="kd">1× H100 · 0,36 s/bước · ~53 GB VRAM</div></div>
+      <div class="kpi"><div class="kl">Số bước · batch</div><div class="kv">10k<small>· 32</small></div><div class="kd">~11 epoch · checkpoint mỗi 2k bước</div></div>
+      <div class="kpi"><div class="kl">Loss cuối</div><div class="kv">0,020</div><div class="kd">từ 1,27 ở bước 10</div></div>
+    </div>
+    <div class="chart" data-chart="line" data-source="hammer-loss">
+      <div class="chart-head"><div><div class="ct">Loss huấn luyện · thang log</div><div class="cs">GR00T N1.7-3B trên mix200. LLM đóng băng; tune thị giác + projector + diffusion. Di chuột để xem từng bước.</div></div><button class="btn" type="button" data-table-toggle>Xem dạng bảng</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Bước</th><th class="num">10</th><th class="num">500</th><th class="num">1.000</th><th class="num">2.000</th><th class="num">4.000</th><th class="num">6.000</th><th class="num">8.000</th><th class="num">10.000</th></tr></thead><tbody><tr><td>Loss</td><td class="num">1,270</td><td class="num">0,222</td><td class="num">0,108</td><td class="num">0,064</td><td class="num">0,045</td><td class="num">0,031</td><td class="num">0,023</td><td class="num">0,020</td></tr></tbody></table></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Kết quả đạt được</h3></div>
+    <p>Số liệu đo được qua chu trình teleop → tăng cường → fine-tune → đánh giá, trong Isaac Sim local (điều kiện <code>inside</code>: tâm búa trong lòng thùng, đứng yên, đã buông).</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Tốt nhất · local</div><div class="kv">73<small>%</small></div><div class="kd">mix400 · ngưỡng 0,02 · 73/100</div></div>
+      <div class="kpi"><div class="kl">Local · mix200</div><div class="kv">66<small>%</small></div><div class="kd">66/100 · Wilson 56–75 %</div></div>
+      <div class="kpi"><div class="kl">Dữ liệu</div><div class="kv">400<small>demo</small></div><div class="kd">54.541 frame · 300 teleop + 100 sinh</div></div>
+      <div class="kpi"><div class="kl">Loss fine-tune</div><div class="kv">0,019</div><div class="kd">mix400 · 20k bước · 2 giờ 15</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm3-results">
+      <div class="chart-head"><div><div class="ct">Tỉ lệ thành công và khoảng tin cậy Wilson 95 %</div><div class="cs">Isaac Sim local · điều kiện inside · 100 episode mỗi lần chạy.</div></div><button class="btn" type="button" data-table-toggle>Xem dạng bảng</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Bước</th><th>Số liệu đo được</th></tr></thead>
+      <tbody>
+        <tr><td>Teleop</td><td>100 demo thật (10 phiên, ~13.700 bước); sau thêm 200 demo</td></tr>
+        <tr><td>Tăng cường</td><td>133 lượt sinh → 100 demo đạt điều kiện chặt</td></tr>
+        <tr><td>Dataset</td><td>mix200: 200 episode, 28.022 frame · mix400: 400 episode, 54.541 frame</td></tr>
+        <tr><td>Fine-tune</td><td>mix200: 10k bước, 61 phút, loss 0,020 · mix400: 20k bước, 2 giờ 15 phút, loss 0,019</td></tr>
+        <tr><td>Local · mix200</td><td>66/100; nhấc ≥ 3 cm 95/100; khoảng cách cuối trung vị 6,1 cm</td></tr>
+        <tr><td>Local · mix400</td><td>63/100; nhấc ≥ 3 cm 94/100; khoảng cách cuối trung vị 4,4 cm</td></tr>
+        <tr class="hl"><td>Local · mix400, ngưỡng 0,02</td><td>73/100; nhấc ≥ 3 cm 91/100; thành công trung bình 2,5 s</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Phân tích kết quả</h3></div>
+    <p>Phân loại kết quả của ba lần chạy 100 episode trên Isaac Sim local để thấy thêm dữ liệu và nới ngưỡng thay đổi điều gì.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kết quả (100 episode)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · ngưỡng 0,02</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Thành công</td><td class="num">66</td><td class="num">63</td><td class="num">73</td></tr>
+        <tr><td>Tâm búa ngoài lòng thùng</td><td class="num">19</td><td class="num">5</td><td class="num">6</td></tr>
+        <tr><td>Búa chưa đứng yên khi hết giờ</td><td class="num">6</td><td class="num">22</td><td class="num">8</td></tr>
+        <tr><td>Búa gác trên miệng thùng</td><td class="num">3</td><td class="num">4</td><td class="num">4</td></tr>
+        <tr><td>Không nhấc được (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
+        <tr><td>Robot ngã</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
+        <tr><td>Chưa buông tay</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_place_positions.png" alt="Vị trí tâm búa lúc kết thúc: mix200, mix400 ngưỡng 0,01 và mix400 ngưỡng 0,02" loading="lazy"><figcaption><b>Vị trí tâm búa lúc kết thúc episode</b>, nhìn từ trên xuống, gốc là tâm thùng · trái: mix200 · giữa: mix400 · phải: mix400 với ngưỡng đứng yên 0,02 m/s. Ở mix200, nhiều lần búa được thả lệch về phía tay trái, ngay ngoài thành thùng (cụm xám); ở mix400, các điểm dồn quanh tâm thùng hơn. Với mix400 ngưỡng 0,01, phần lớn thất bại là búa đã nằm giữa thùng nhưng chưa đứng yên khi hết giờ (22 điểm xanh lam); ở lần chạy với ngưỡng 0,02, nhóm này giảm còn 8. Điểm đỏ (không nhấc được) và tím (robot ngã) là các lần búa chưa được đưa tới thùng.</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 1</div><div class="st">Pha nắm và nhấc đã ổn</div><p>91–95/100 lần nhấc búa ≥ 3 cm ở cả ba lần chạy; chỉ 3–4 lần không nhấc được. Hao hụt chủ yếu ở pha thả.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 2</div><div class="st">Thêm dữ liệu giúp đặt chính xác hơn</div><p>mix400 giảm số lần búa rơi ngoài lòng thùng từ 19 xuống 5, khoảng cách cuối trung vị từ 6,1 xuống 4,4 cm.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 3</div><div class="st">Ngưỡng đứng yên là nút thắt còn lại</div><p>Ảnh giữa cho thấy với mix400 (ngưỡng 0,01 m/s), cả 22 lần thất bại "chưa đứng yên" đều nằm trong lòng thùng và robot đã buông tay. Các điểm này còn gần tâm thùng hơn các lần thành công (trung vị 2,9 cm so với 4,3 cm). Búa chỉ còn chuyển động chậm tới hết 6 s (vận tốc cuối 0,005–0,023 m/s, quay 0,04–0,32 rad/s), nên chưa lần nào đạt điều kiện đứng yên. Đây là thất bại do cách chấm điểm hơn là do đặt sai chỗ. Ở lần chạy với ngưỡng 0,02 m/s (ảnh phải), nhóm này còn 8 và tỉ lệ lên 73 %.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 4</div><div class="st">Vì sao búa nằm yên vẫn bị chấm là "chưa đứng yên"</div><p>Điều kiện đứng yên (giữ nguyên từ Arena) chỉ xét <b>vận tốc tức thời</b> của búa tại từng bước mô phỏng: phải đồng thời dưới 0,01 m/s và 0,1 rad/s. Cả 22 búa này đều nằm trong lòng thùng và tay đã buông; video các episode đã xem không thấy búa trôi. Nếu búa thật sự di chuyển với vận tốc đo được (0,5–2,3 cm/s) suốt khoảng 3,5 s từ lúc tới tâm thùng đến hết giờ, nó phải trôi xa nhiều centimet; thực tế khoảng cách tới tâm thùng lúc cuối chỉ lệch trung vị 1,2 cm so với lúc gần tâm nhất. Nghĩa là búa chủ yếu <b>rung tại chỗ</b>: mô phỏng vật lý không đưa vận tốc về đúng 0 khi búa nằm trên đáy lưới của thùng (12/22 búa nằm phẳng trên đáy, so với 8/63 lần thành công), và thùng cũng là vật thể động đặt trên kệ. Dao động nhỏ này vượt ngưỡng 0,01 m/s, nên ngưỡng tức thời quá chặt so với độ nhiễu của mô phỏng; cách chấm hợp lý hơn là xét búa có dịch chuyển trong một khoảng thời gian (ví dụ 0,5 s) hay không.</p></div>
+    </div>
+    <div class="sub"><div class="sl">NHẬN ĐỊNH 5</div><div class="st">Robot ngã nhiều hơn không phải do model hay ngưỡng</div><p>Lần chạy 73 % có 6 lần robot ngã, so với 2 ở hai lần chạy kia. Cả 6 lần đều xảy ra ngay đầu episode, trong 0,02–0,78 s (tối đa 39/300 bước), khi tay chưa chạm tới búa: búa vẫn nằm nguyên trên kệ, cách tâm thùng 25,6 cm. Lúc đó model gần như chưa kịp điều khiển, còn ngưỡng đứng yên chỉ dùng để chấm điểm cuối episode nên không ảnh hưởng tới việc ngã. Dấu hiệu này khớp với lỗi reset đã ghi nhận trong nb12: khi episode trước kết thúc với tay và thân ở xa tư thế mặc định, reset chưa xoá hết trạng thái cũ (hông còn gập, khớp còn vận tốc), và robot bước hoặc ngã ngay ở tick đầu. Ngay cả khi reset hai lần, phát lại 20 demo vẫn có 2/20 lần khởi đầu hỏng. Chênh lệch 6 so với 2 chưa có ý nghĩa thống kê (Fisher p = 0,28); tính chung ba lần chạy là 10/300 episode (≈ 3 %). Nếu bỏ các lần ngã này, lần chạy 73 % đạt 73/94 ≈ 78 %. Cần sửa khâu reset (ví dụ kiểm tra tư thế và vận tốc khớp trước khi bắt đầu episode) để loại nhiễu này khỏi đánh giá.</p></div>
+    <div class="callout warn"><b>Lưu ý:</b> lần chạy với ngưỡng 0,02 là một đợt 100 episode mới, không phải chấm lại đợt cũ, nên còn chịu biến động ngẫu nhiên.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>Kết luận kịch bản</h3></div>
+    <div class="panel"><div class="pl">KẾT LUẬN</div><p>Dự án đã <b>tự dạy G1 một tác vụ hoàn toàn mới</b>: từ 0 % khi chưa tune lên <b>66 %</b> chỉ với 200 episode (100 teleop + 100 sinh thêm) và ~1 giờ fine-tune trên một H100, trọn chu trình trong khoảng 6 ngày. Pha nắm và nhấc đã ổn; phần còn hao hụt nằm ở pha thả búa vào thùng và ở cách chấm điểm.</p></div>
+    <ul>
+      <li>Đi hết chu trình bằng công cụ tự xây dựng: dựng môi trường, teleop thu demo, <b>sinh thêm dữ liệu</b>, fine-tune, đánh giá.</li>
+      <li>Sinh thêm demo giúp nhân dữ liệu mà không tốn thêm giờ teleop (133 lượt sinh → 100 demo đạt điều kiện chặt).</li>
+      <li>Gấp đôi dữ liệu (mix400) giúp đặt búa chính xác hơn (ngoài lòng thùng 19 → 5 lần) nhưng tỉ lệ chung chưa tăng (63 %); với ngưỡng đứng yên 0,02 đạt <b>73 %</b>.</li>
+      <li>Chưa xử lý: đổi cách chấm "đứng yên" sang xét dịch chuyển của búa trong một khoảng thời gian thay vì vận tốc tức thời; sửa khâu reset gây ngã đầu episode (≈ 3 % số episode).</li>
+    </ul>
+  </div>
+
+</section>

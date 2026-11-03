@@ -1,0 +1,174 @@
+<section class="section" id="tong-quan" data-hue="blue" data-kicker="I.01 · 概要" data-title="概要と成果">
+  <div class="hero">
+    <span class="pill">プロジェクト報告書 · <span data-cfg="date">06/11/2026</span></span>
+    <h1>NVIDIA GR00T によるヒューマノイドロボット G1 のピック&amp;プレース制御<span class="dot">。</span></h1>
+    <p class="lead">2 か月余りの研究・実験（24/08 – 06/11/2026）の成果です。基盤モデル GR00T を読み解き、NVIDIA Isaac Lab Arena のパイプラインを<b>独自に再現</b>し、実機 G1 から <b>real2sim</b> データを作成しました。さらに<b>新しいタスク</b>について、テレオペによるデータ収集からファインチューニング、評価までの全サイクルを完了しました。</p>
+    <div class="meta">
+      <div><span class="ml">顧客</span><span class="mv" data-cfg="client">Shimizu Corporation</span></div>
+      <div><span class="ml">実施</span><span class="mv" data-cfg="author">FPT Software</span></div>
+      <div><span class="ml">期間</span><span class="mv" data-cfg="period">24/08/2026 – 06/11/2026</span></div>
+      <div><span class="ml">環境</span><span class="mv">Isaac Sim / Isaac Lab シミュレーション</span></div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>研究問い</h3></div>
+    <p>ヒューマノイドロボット <b>Unitree G1</b> は、動作を一つずつ事前にプログラムすることなく、<b>カメラ画像</b>と<b>言語指示</b>だけから自ら物体をつかみ、正しい場所に置く必要があります。本プロジェクトでは、この作業を基盤モデル <b>NVIDIA GR00T</b> に任せる方法を研究しました。モデルは画像、指示、関節状態を受け取り、上半身の動作を生成します。すべて Isaac Sim / Isaac Lab のシミュレーション上で実施しています。</p>
+    <div class="prob-flow">
+      <div class="pf-col"><div class="pf-h">入力 · ロボットが見て聞くもの</div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>頭部カメラ画像</b><span>640×480、意思決定ごと</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></span><div><b>自然言語の指示</b><span>"put the hammer in the bin"</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="11" cy="9" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 16.3l3-5.6M12.9 8.3l4.2-1.6"/></svg></span><div><b>関節角度</b><span>腕、手、腰の現在の状態（31 値）</span></div></div>
+      </div>
+      <div class="pf-link" aria-hidden="true"></div>
+      <div class="pf-col model">
+        <div class="pf-model-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></div>
+        <div class="pf-h">基盤モデル</div>
+        <div class="t">NVIDIA GR00T N1.7</div>
+        <p>多種のロボットのデータで事前学習された Vision-Language-Action モデルです。既成のチェックポイントをそのまま使用する（シナリオ 1）か、新しいタスクごとにファインチューニングします（シナリオ 2、3）。</p>
+        <div class="tags"><span>約 30 億パラメータ</span><span>H100 GPU</span></div>
+      </div>
+      <div class="pf-link" aria-hidden="true"></div>
+      <div class="pf-col"><div class="pf-h">出力 · ロボットが行うこと</div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V6a1.5 1.5 0 013 0v5M11 11V4.5a1.5 1.5 0 013 0V11M14 11V6a1.5 1.5 0 013 0v7a6 6 0 01-6 6h-1a5 5 0 01-4.2-2.3L4 13.5a1.5 1.5 0 012.4-1.8L8 13"/></svg></span><div><b>上半身の動作</b><span>今後 0.8 s 間の腕、3 指ハンド、腰の目標関節角度列</span></div></div>
+        <div class="pf-item"><span class="pf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v7l-3 5v6M14 3v7l3 5v6M6 21h3M15 21h3"/></svg></span><div><b>バランス保持</b><span>脚は AGILE コントローラが担当し、GR00T は生成しない</span></div></div>
+      </div>
+    </div>
+
+    <p>3 つの実験シナリオで答えるべき<b>4 つの研究問い</b>：</p>
+    <div class="prob-qs">
+      <button type="button" class="prob-q" data-jump="ket-qua-dat-duoc-ja"><span class="qn"><b>1</b>問い</span><span class="qt">GR00T は G1 を制御して物体のピック&amp;プレースができるか？</span><span class="qa">できる：92 % · 66 % · 73 %<em>3 シナリオ →</em></span></button>
+      <a class="prob-q" href="#hm3"><span class="qn"><b>2</b>問い</span><span class="qt">新しいタスクを教えるのに、どれだけのデータと工数が必要か？</span><span class="qa">200 デモ、約 1 時間のファインチューニング<em>シナリオ 3 →</em></span></a>
+      <a class="prob-q" href="#hm1"><span class="qn"><b>3</b>問い</span><span class="qt">環境がデータ記録時と異なると、結果はどう変わるか？</span><span class="qa">92 % → 56 % → 0 %<em>シナリオ 1 →</em></span></a>
+      <a class="prob-q" href="#hm2"><span class="qn"><b>4</b>問い</span><span class="qt">実機ロボットのデータをシミュレーション経由で再び実機に戻せるか（real2sim2real）？</span><span class="qa">Real2sim：66 % · sim2real：フェーズ 2<em>シナリオ 2 →</em></span></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>実験シナリオ</h3></div>
+    <p>難易度が段階的に上がる 3 つのシナリオです。NVIDIA の既存パイプラインの<b>再現</b>から、シミュレーションに取り込んだ<b>実機ロボットのデータ</b>、そして最後に本プロジェクトが独自に構築した<b>まったく新しいタスク</b>へと進みます。</p>
+    <div class="tasks">
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_apple.mp4" poster="images/task_apple.jpg" aria-label="リンゴ → 皿：Galileo シーンでのロボット頭部カメラ映像" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">シナリオ 1</span><span class="task-t">リンゴ → 皿</span>
+          <div class="task-cmd">"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</div>
+          <dl><dt>目的</dt><dd>NVIDIA のサンプルパイプラインを独自に再現</dd><dt>データ</dt><dd>NVIDIA のデモ 208 件、既成モデル</dd><dt>成功条件</dt><dd>リンゴが皿の上にあり、中心から &lt; 8 cm、静止</dd></dl>
+        </div>
+      </div>
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_fruits.mp4" poster="images/task_fruits.jpg" aria-label="4 種の果物：real2sim シーンでのロボット頭部カメラ映像" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">シナリオ 2</span><span class="task-t">4 種の果物</span>
+          <div class="task-cmd">"Pick up the green grapes and place it on the plate"</div>
+          <dl><dt>目的</dt><dd>妨害用の果物の中から指示どおりの果物を選ぶ</dd><dt>データ</dt><dd>実機 G1 データから作成した real2sim 790 エピソード</dd><dt>成功条件</dt><dd>果物が持ち上げられ、皿の上にあり、他の果物を動かしていない</dd></dl>
+        </div>
+      </div>
+      <div class="task" data-hue="blue">
+        <video src="assets/videos/task_hammer.mp4" poster="images/task_hammer.jpg" aria-label="ハンマー → 箱：リセット後のロボット頭部カメラ映像" autoplay muted loop playsinline preload="auto"></video>
+        <div class="task-body"><span class="task-k">シナリオ 3</span><span class="task-t">ハンマー → 箱</span>
+          <div class="task-cmd">"put the hammer in the bin"</div>
+          <dl><dt>目的</dt><dd>まったく新しいタスクを最初から最後まで教える</dd><dt>データ</dt><dd>Meta Quest テレオペで自前収集：200–400 エピソード</dd><dt>成功条件</dt><dd>ハンマーが箱の中で静止し、手が離れている</dd></dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>研究目標</h3></div>
+    <div class="panel"><div class="pl">全体目標</div><p><b>GR00T</b> でロボット <b>G1</b> のピック&amp;プレースを制御できるかを評価し（問い 1）、モデルを新しいタスクに適用するのに必要なデータ量と工数を明らかにします。全体目標は以下の 6 つの具体的目標に分かれます。</p></div>
+    <div class="goals">
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">1</span><span class="sl">基盤</span></div><div class="st">GR00T と制御パイプラインの習得</div><p>GR00T N1 から N1.7 までのアーキテクチャとファインチューニング手順を理解し、NVIDIA の既成フレームワークに依存せず GR00T ↔ G1 の処理フロー（クライアント、安全レイヤー、AGILE によるバランス保持、Isaac Lab バックエンド）を自ら再構築します。</p><div class="goal-tags"><span>II.01–II.03</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">2</span><span class="sl">シナリオ 1</span></div><div class="st">NVIDIA の結果の再現</div><p>自作パイプライン上でリンゴ → 皿のチェックポイントを実行し、元の環境と比較して、新しいタスクに使う前にパイプラインを検証します。</p><div class="goal-tags"><span>III.01</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">3</span><span class="sl">シナリオ 2</span></div><div class="st">実機ロボットデータの活用</div><p>実機 G1 のテレオペデータ（関節角度と動画のみ）を real2sim でシミュレーション用データセットに変換し、指示どおりの果物を選ぶようモデルをファインチューニングします。</p><div class="goal-tags"><span>III.02</span><span>問い 4</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">4</span><span class="sl">シナリオ 3</span></div><div class="st">まったく新しいタスクを教える</div><p>「ハンマー → 箱」の全サイクル：環境構築、VR ヘッドセットによるテレオペ、データの追加生成、ファインチューニング、評価を行い、必要なデモ数と時間を記録します。</p><div class="goal-tags"><span>III.03</span><span>問い 2</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">5</span><span class="sl">VISUAL GAP</span></div><div class="st">画像の差異の実験と分析</div><p>モデルが受け取る画像がデータ記録時と異なる場合（シミュレーションのシーン間、実画像とレンダリング画像の間）に成功率がどう変わるかを測定し、低下の要因を特定して、domain randomization などの差を縮める方法を提案します。</p><div class="goal-tags"><span>シナリオ 1、2</span><span>問い 3、4</span></div></div>
+      <div class="sub goal"><div class="goal-h"><span class="goal-n">6</span><span class="sl">横断</span></div><div class="st">定量的で再現可能な評価</div><p>明確な成功条件による閉ループ評価、構成ごとに ≥ 50 エピソード、Wilson 95 % 信頼区間、フェーズ別の失敗分析を行います。各実行で変更する要因は 1 つだけとします。</p><div class="goal-tags"><span>V.01</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>研究範囲</h3></div>
+    <p>すべての実験はシミュレーション内で行います。パイプラインは、後のフェーズで実機ロボットのバックエンドに差し替えられるよう設計しています。</p>
+    <div class="scope">
+      <div class="scope-col in"><div class="scope-h">対象範囲</div><ul><li>Isaac Sim 6.0 / Isaac Lab 3.0 シミュレーション、Isaac Lab Arena 0.2.1</li><li>その場で立つ G1、両腕 + Dex3 ハンド</li><li>GR00T N1.7-3B：NVIDIA のチェックポイントと自前ファインチューニング</li><li>データ：NVIDIA のデモ、公開されている実機 G1 データセット（real2sim）、シミュレーション内で自前収集したテレオペ</li><li>H100 GPU 1 枚でのファインチューニング</li></ul></div>
+      <div class="scope-col out"><div class="scope-h">対象外 · 後のフェーズ</div><ul><li>実機 G1 ロボットへの展開</li><li>移動と操作の組み合わせ</li><li>モデルのゼロからの学習</li><li>実機ロボットでのデータ収集</li><li>大規模マルチ GPU 学習</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card" id="ket-qua-dat-duoc-ja">
+    <div class="card-head"><span class="num">5</span><h3>研究データ</h3></div>
+    <p>各シナリオの最良結果と、その数値に至るまでの実行結果です。各シナリオをクリックすると詳細を表示します。</p>
+    <div class="res-tiles">
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">シナリオ 1</div><div class="res-t">リンゴ → 皿</div></div>
+          <div class="res-best"><span>92<small>%</small></span><em>NVIDIA の元の環境</em></div></div>
+        <ul class="res-steps"><li class="top"><span class="rl">NVIDIA Arena クライアント</span><span class="rb"><i style="width:92%"></i></span><span class="rv">92<small>%</small></span></li><li><span class="rl">照明のみ相違</span><span class="rb"><i style="width:56%"></i></span><span class="rv">56<small>%</small></span></li><li><span class="rl">環境全体が相違</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li></ul>
+        <p class="res-take">モデルは画像に非常に敏感です。同じチェックポイントでも、環境を変えるだけで結果は 92 % から 0 % まで変化します。</p>
+        <a class="res-more" href="#hm1">シナリオの詳細を見る →</a>
+      </div>
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">シナリオ 2</div><div class="res-t">4 種の果物</div></div>
+          <div class="res-best"><span>66<small>%</small></span><em>33/50 · 95 %: 52–78 %</em></div></div>
+        <ul class="res-steps"><li><span class="rl">リンゴのチェックポイント、未調整</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li class="top"><span class="rl">Real2sim ファインチューニング</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li></ul>
+        <p class="res-take">real2sim データでのファインチューニングは必須です。モデルはすべての試行で指示どおりの果物を選びました。</p>
+        <a class="res-more" href="#hm2">シナリオの詳細を見る →</a>
+      </div>
+      <div class="res-tile" data-hue="blue">
+        <div class="res-top"><div><div class="res-k">シナリオ 3</div><div class="res-t">ハンマー → 箱</div></div>
+          <div class="res-best"><span>73<small>%</small></span><em>73/100 · 95 %: 64–81 %</em></div></div>
+        <ul class="res-steps"><li><span class="rl">ファインチューニングなし</span><span class="rb"><i style="width:0%"></i></span><span class="rv">0<small>%</small></span></li><li><span class="rl">200 エピソードでファインチューニング</span><span class="rb"><i style="width:66%"></i></span><span class="rv">66<small>%</small></span></li><li><span class="rl">400 エピソードでファインチューニング</span><span class="rb"><i style="width:63%"></i></span><span class="rv">63<small>%</small></span></li><li class="top"><span class="rl">静止しきい値を緩和</span><span class="rb"><i style="width:73%"></i></span><span class="rv">73<small>%</small></span></li></ul>
+        <p class="res-take">自前収集データと 1 回あたり約 1 時間の学習だけで、新しいタスクが 0 % から 73 % に向上しました。</p>
+        <a class="res-more" href="#hm3">シナリオの詳細を見る →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>実施プロセス</h3></div>
+    <p>プロジェクトは 3 つのステップで進めます。<b>共通基盤</b>を構築し、その上で<b>3 つのシナリオ</b>を実行し、評価結果を使って<b>改善</b>します。各シナリオは同じ 4 段階（データ源 → 中心作業 → モデル → 閉ループ評価）を経ますが、中心作業が異なります。シナリオ 1 は NVIDIA のデータとモデルを再利用し、GR00T ↔ G1 の<b>処理フローの研究と書き直し</b>が中心です。シナリオ 2 は実機ロボットのデータからシミュレーションデータを自作し、<b>real2sim</b> が中心です。シナリオ 3 は新しいタスクをゼロから作り、テレオペデモからの<b>データ拡張</b>が中心です。図中の濃い背景のセルがその中心作業を示します。</p>
+    <div class="dg-lanes">
+      <div class="dg-bar top"><span class="bk">共通基盤</span><span>GR00T N1 → N1.7 の研究 · Isaac Lab Arena · 独立した GR00T ↔ G1 パイプライン（クライアント、安全レイヤー、AGILE、Isaac Lab バックエンド）</span></div>
+
+      <div class="dg-head"><span></span><span>データ源</span><span>中心作業</span><span>GR00T N1.7 モデル</span><span>閉ループ結果</span></div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">シナリオ 1</span><span class="lt">処理フローの研究と書き直し · リンゴ → 皿</span></div>
+        <div class="dg-node"><div class="nk">NVIDIA</div><div class="nt">Static apple データセット</div><div class="nd">シミュレーション内の XR テレオペ 208 エピソード</div></div>
+        <div class="dg-node focus"><div class="nk">処理フローの書き直し</div><div class="nt">12 ノートブック → 独立パイプライン</div><div class="nd">オープンループ検証、デモ再生</div></div>
+        <div class="dg-node soft"><div class="nk">既成</div><div class="nt">NVIDIA のチェックポイント</div><div class="nd">リンゴ → 皿向けにファインチューニング済み</div></div>
+        <div class="dg-node"><div class="nk">ARENA の元の環境</div><div class="dg-result">92<small>%</small></div><div class="nd">再構築した Galileo 56 % · 自作シーン 0 %</div></div>
+      </div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">シナリオ 2</span><span class="lt">Real2sim · 4 種の果物</span></div>
+        <div class="dg-node"><div class="nk">実機 G1 ロボット</div><div class="nt">テレオペ軌跡 1,095 本</div><div class="nd">関節角度 + 動画のみ</div></div>
+        <div class="dg-node focus"><div class="nk">REAL2SIM</div><div class="nt">シミュレーション 790 エピソード</div><div class="nd">FK → シーン、妨害物体、再生、フィルタリング</div></div>
+        <div class="dg-node soft"><div class="nk">FINE-TUNE · H100</div><div class="nt">4 種の果物のマルチタスクモデル</div><div class="nd">20,000 ステップ · 2 時間 34 分</div></div>
+        <div class="dg-node"><div class="nk">50 エピソード</div><div class="dg-result">66<small>%</small></div><div class="nd">リンゴのチェックポイント 0 % · 取り違え 0 回</div></div>
+      </div>
+
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">シナリオ 3</span><span class="lt">データ拡張 · ハンマー → 箱</span></div>
+        <div class="dg-node"><div class="nk">META QUEST テレオペ</div><div class="nt">テレオペデモ 100 件</div><div class="nd">Isaac Lab 内、自作環境で収集</div></div>
+        <div class="dg-node focus"><div class="nk">データ拡張</div><div class="nt">mix200 · mix400</div><div class="nd">テレオペ 100 + 生成 100。mix400 はテレオペ 200 を追加</div></div>
+        <div class="dg-node soft"><div class="nk">FINE-TUNE · H100</div><div class="nt">ハンマー → 箱モデル</div><div class="nd">mix200 約 1 時間 · mix400 約 2 時間 15 分</div></div>
+        <div class="dg-node"><div class="nk">100 エピソード</div><div class="dg-result">73<small>%</small></div><div class="nd">未調整 0 % → 66 % → 73 %</div></div>
+      </div>
+
+      <div class="dg-bar feedback"><span class="ico">↺</span><span class="bk">改善ループ</span><span>フェーズ別の失敗分析 → 環境または評価方法の修正、データの追加 → 再学習と再評価。例：Galileo シーンの再構築（シナリオ 1）、カメラが毎ステップレンダリングされない不具合の修正（シナリオ 2）、mix200 → mix400 および静止しきい値 0.01 → 0.02（シナリオ 3）。</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>実施計画</h3></div>
+    <p>プロジェクトは同じ基盤の上で<b>3 つのシナリオを順に</b>実施し、各シナリオは約 2 週間です。下図は実施期間と結果が得られたマイルストーンを示します。各シナリオの詳細は III 章の各節にあります。</p>
+    <div class="gantt">
+      <div class="gantt-axis"><span></span><div class="ticks"><span style="left:0.00%">24/08</span><span style="left:22.22%">07/09</span><span style="left:44.44%">21/09</span><span style="left:66.67%">05/10</span><span style="left:88.89%">19/10</span></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">基盤</span><span class="t">GR00T と Arena の研究</span></div><div class="track"><div class="bar " style="left:0.00%;width:31.75%"><span>24/08 – 12/09</span></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">シナリオ 1</span><span class="t">パイプライン · リンゴ → 皿</span></div><div class="track"><div class="bar lbl-l" style="left:31.75%;width:19.05%"><span>13/09 – 24/09</span></div><div class="ms" style="left:46.83%"><b>0 %</b></div><div class="ms" style="left:50.00%"><b>56 %</b></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">シナリオ 2</span><span class="t">Real2sim · 4 種の果物</span></div><div class="track"><div class="bar lbl-l" style="left:53.97%;width:20.63%"><span>27/09 – 09/10</span></div><div class="ms" style="left:73.81%"><b>66 %</b></div></div></div>
+        <div class="gantt-row" data-hue="blue"><div class="gl"><span class="k">シナリオ 3</span><span class="t">ハンマー → 箱</span></div><div class="track"><div class="bar lbl-l" style="left:69.84%;width:9.52%"><span>07 – 12/10</span></div><div class="bar soft" style="left:88.89%;width:4.76%"></div><div class="ms" style="left:78.58%"><b>tune</b></div><div class="ms" style="left:92.85%"><b>73 %</b></div></div></div>
+      <div class="gantt-legend"><span><i class="sw-bar"></i>実施期間</span><span><i class="sw-ms"></i>評価結果が得られたマイルストーン</span><span>縦線：24/08 から毎週</span></div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,200 @@
+<section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · PIPELINE RESEARCH" data-title="Pipeline research: reproducing the GR00T ↔ G1 flow">
+  <div class="hero">
+    <span class="pill">SECTION II.02 · PIPELINE RESEARCH</span>
+    <h2>Reproducing each step of the GR00T ↔ G1 flow across 12 notebooks<span class="dot">.</span></h2>
+    <p class="lead">To avoid depending on NVIDIA's ready-made framework, the project <b>rebuilt the entire flow itself</b>, from camera image to joint command. Each step was studied in its own <b>notebook</b> — written by hand, inspecting the data, checking against a reference — before being packaged into tested source code.</p>
+    <div class="meta">
+      <div><span class="ml">NOTEBOOKS</span><span class="mv">12 research notebooks</span></div>
+      <div><span class="ml">SOURCE CODE</span><span class="mv">Package g1gr00t · 84 unit tests</span></div>
+      <div><span class="ml">KEYWORDS</span><span class="mv">notebook → package · layer-by-layer verification</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-tong-the-en">
+    <div class="card-head"><span class="num">1</span><h3>Overall flow</h3></div>
+    <p>Before running, the client builds the simulation environment and connects to the server once. After that, every control loop passes through two machines. The <b>client</b> on the workstation runs the simulation and every data-processing step: reading sensors, packaging, decoding, safety checks, sending commands to the joints. The <b>policy server</b> on an H100 GPU only runs the model. The client runs every 20 ms but calls the server only when it needs a new chunk, i.e. about once every 40 ticks. The card label shows which card presents that step.</p>
+    <div class="cs-flow">
+      <div class="cs-head" style="grid-column:2"><b>CLIENT · WORKSTATION</b><small>50 Hz loop · 20 ms per tick</small></div>
+      <div class="cs-head mid" style="grid-column:3"><b>TRANSPORT</b><small>ZeroMQ · msgpack · SSH tunnel</small></div>
+      <div class="cs-head" style="grid-column:4"><b>POLICY SERVER · H100</b><small>each new chunk · ~40 ticks</small></div>
+      <div class="cs-phase" style="grid-row:2"><span>INITIALISATION · RUNS ONCE BEFORE THE LOOP</span></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:2"><div class="nk">A · ENVIRONMENT INITIALISATION</div><div class="nt">Build simulation, load AGILE</div><div class="nd">43-joint G1 robot, apple–plate scene, head camera; run 10 steps so the robot stands stably</div><div class="nb-tags"><span>card 2</span></div></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:4"><div class="nk">STARTUP</div><div class="nt">Policy server ready</div><div class="nd">Load the GR00T N1.7 checkpoint onto the H100, open a ZeroMQ port and wait for the client</div></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:2"><div class="nk">B · CONNECTION</div><div class="nt">Open connection, read contract</div><div class="nd">ZeroMQ over SSH tunnel, ping the server, compare the contract with the client configuration</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-msg both" style="grid-row:4"><span class="mk">PING · get contract</span><span class="ml"></span><span class="mt">Server returns the key list, dimensions of each group, chunk length</span></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:4"><div class="nk">RETURN CONTRACT</div><div class="nt">Data description</div><div class="nd">5 state groups sent, 7 action groups returned, 40-step chunk</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-phase loop" style="grid-row:5"><span>CONTROL LOOP · REPEATS UNTIL THE EPISODE ENDS</span></div>
+      <div class="cs-loop" style="grid-row:6 / 13"><span>repeats every 20 ms tick</span></div>
+      <div class="cs-node " style="grid-row:6;grid-column:2"><div class="nk">1 · READ SENSORS</div><div class="nt">G1 robot in simulation</div><div class="nd">640×480 head camera image, 43 joint angles, torso IMU</div><div class="nb-tags"><span>card 4</span></div></div>
+      <div class="cs-node " style="grid-row:7;grid-column:2"><div class="nk">2 · PACKAGE</div><div class="nt">Build observation</div><div class="nd">43 → 31 upper-body joints by joint name, add the instruction, check dimensions</div><div class="nb-tags"><span>card 5</span></div></div>
+      <div class="cs-msg right" style="grid-row:7"><span class="mk">SEND · get_action</span><span class="ml"></span><span class="mt">0.92 MB image + 31 joint angles + instruction</span></div>
+      <div class="cs-node " style="grid-row:7;grid-column:4"><div class="nk">RECEIVE</div><div class="nt">Contract check</div><div class="nd">Match the name and dimensions of each group against the checkpoint configuration</div><div class="nb-tags"><span>card 3</span></div></div>
+      <div class="cs-node ghost" style="grid-row:8;grid-column:2"><div class="nk">3 · WAIT</div><div class="nt">Wait for a new chunk</div><div class="nd">The simulation pauses and waits; on a real robot the call must be made in advance to avoid stalling</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node focus" style="grid-row:8;grid-column:4"><div class="nk">INFERENCE</div><div class="nt">GR00T N1.7</div><div class="nd">The understanding part reads image + instruction; DiT denoises in 4 steps into a motion chunk</div><div class="nb-tags"><span>~100 ms</span></div></div>
+      <div class="cs-node " style="grid-row:9;grid-column:2"><div class="nk">4 · DECODE &amp; SAFETY</div><div class="nt">Check the chunk</div><div class="nd">Split joint groups, block NaN/Inf, clamp to joint, locomotion and height limits</div><div class="nb-tags"><span>card 6</span><span>card 7</span></div></div>
+      <div class="cs-msg left" style="grid-row:9"><span class="mk">RECEIVE · action chunk</span><span class="ml"></span><span class="mt">40 steps × 35 values, 6.8 KB; full call round trip ~1.05–1.3 s</span></div>
+      <div class="cs-node noarr" style="grid-row:9;grid-column:4"><div class="nk">RETURN</div><div class="nt">40-step chunk</div><div class="nd">31 upper-body joints + 3 locomotion + 1 height for each step</div></div>
+      <div class="cs-node " style="grid-row:10;grid-column:2"><div class="nk">5 · SCHEDULING</div><div class="nt">Take one step per tick</div><div class="nd">40 steps = 0.8 s of motion; prefetch the next chunk when the current one is about to run out</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node " style="grid-row:11;grid-column:2"><div class="nk">6 · RATE LIMITING</div><div class="nt">Smooth the command</div><div class="nd">Each tick the arm changes by at most 0.2 rad, especially at the boundary between two chunks</div><div class="nb-tags"><span>card 7</span></div></div>
+      <div class="cs-node noarr" style="grid-row:12;grid-column:2"><div class="nk">7 · ACTUATION</div><div class="nt">Send commands to the joints</div><div class="nd">31 upper-body joints from GR00T, 12 leg joints from AGILE, then 4 physics steps</div><div class="nb-tags"><span>card 8</span></div></div>
+      <div class="cs-note" style="grid-row:10 / 13;grid-column:4"><span class="bk">WHILE THE ROBOT RUNS 40 STEPS</span><p>The server is idle. The client only calls again when the chunk is about to run out; with prefetching (card 7), the observation is sent early so the new chunk arrives in time and the robot does not have to stop.</p><p>For each call, most of the time is spent in transport: the model computes for ~100 ms while the full call round trip takes ~1.05–1.3 s.</p></div>
+    </div>
+    <div class="cs-foot">
+      <div><span class="bk">BEFOREHAND · OFFLINE</span><p>Demos → LeRobot dataset → fine-tune on H100 → checkpoint loaded into the policy server.</p></div>
+      <div><span class="bk">AFTER EACH EPISODE</span><p>Reset, then run the next episode; results of N episodes are aggregated into a success rate (card 9).</p></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-init-en">
+    <div class="card-head"><span class="num">2</span><h3>Environment initialisation</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st cur first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st next" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>G1 robot (USD, 43 joints)</li><li>Scene, apple, plate</li><li>AGILE policy (ONNX)</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb05</em><em>nb04</em></span><ul><li>Build the simulation: ground, lighting → robot → head camera → objects → finger friction</li><li>Record the initial state, run 10 steps to settle</li><li>Load AGILE, reset the LSTM state</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>Robot standing in the default pose</li><li>5 ms physics step, 20 ms control tick</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>ROBOT STABLE</small><b>0.786<i>m</i></b><span>pelvis height after 10 steps, then held steady</span></div>
+      <div><small>JOINT ORDER</small><b>43<i>/ 43</i></b><span>simulation joints match the order table we built</span></div>
+      <div><small>SCENE BUILD</small><b>~4<i>s</i></b><span>after pre-downloading 1.3 GB of assets (first time > 15 minutes)</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-connect-en">
+    <div class="card-head"><span class="num">3</span><h3>Connection</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st cur" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>Policy server address (via SSH tunnel)</li><li>Checkpoint loaded on the H100</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb01</em></span><ul><li>Open a ZeroMQ connection, ping the server</li><li>Read the data contract from the server</li><li>Compare with the client configuration before running</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>Connection ready</li><li>Key list, dimensions of each group, chunk length</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>CONTRACT READ FROM SERVER</small><b>5 → 7<i>groups</i></b><span>5 state groups sent, 7 action groups returned</span></div>
+      <div><small>CHUNK LENGTH</small><b>40<i>steps</i></b><span>= 0.8 s of motion at 50 Hz</span></div>
+      <div><small>UNRESPONSIVE PORT</small><b>0.5<i>s</i></b><span>returns a clean error, re-creates the connection</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-observe-en">
+    <div class="card-head"><span class="num">4</span><h3>Getting the observation</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st cur" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>Simulation state after the tick just run</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb05</em><em>nb02</em></span><ul><li>Render the head camera</li><li>Read 43 joint angles and velocities, torso IMU</li><li>Reorder joints by name across 4 ordering systems</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>640×480 image</li><li>43 joint angles + IMU (for AGILE)</li><li>31 upper-body joint angles (for GR00T)</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>JOINT ORDERING SYSTEMS</small><b>4<i>systems</i></b><span>simulation, WBC, model, dataset</span></div>
+      <div><small>ROUND-TRIP CONVERSION</small><b>0<i>error</i></b><span>simulation → WBC → simulation loses no values</span></div>
+      <div><small>FRESH IMAGE</small><b>1<i>per tick</i></b><span>rendered at the last physics step; without this step the model sees a frozen image</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-send-en">
+    <div class="card-head"><span class="num">5</span><h3>Sending the observation</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st cur" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>480×640 image</li><li>31 upper-body joint angles</li><li>Instruction</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb02</em><em>nb01</em></span><ul><li>Package according to the contract, check dimensions</li><li>Send get_action over ZeroMQ (msgpack)</li><li>Server runs GR00T N1.7</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>0.92 MB request to the server</li><li>Server generates a 40-step chunk</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>LATENCY PER CALL</small><b>~1.05<i>s</i></b><span>1 robot · p95 1.39 s</span></div>
+      <div><small>MODEL COMPUTE</small><b>~100<i>ms</i></b><span>compute time on the server; most of the rest is in transport</span></div>
+      <div><small>4 ROBOTS AT ONCE</small><b>~3.6<i>s</i></b><span>sent together as one batch · p95 4.2 s</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>The instruction sent affects the returned chunk</b><span>left-arm error, rad</span></div>
+      <div class="cb"><span class="l">Dataset instruction</span><span class="t"><i class="" style="width:52%"></i></span><span class="v">0.025</span></div>
+      <div class="cb"><span class="l">Nonsense instruction</span><span class="t"><i class="soft" style="width:83%"></i></span><span class="v">0.039</span></div>
+      <div class="cb"><span class="l">Arena default instruction</span><span class="t"><i class="soft" style="width:100%"></i></span><span class="v">0.047</span></div>
+      <p class="cb-note">The Arena default instruction gives a larger error than even the nonsense instruction, so the client sends the dataset instruction verbatim.</p>
+    </div>
+  </div>
+
+  <div class="card" id="pp-receive-en">
+    <div class="card-head"><span class="num">6</span><h3>Receiving the action chunk</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st cur" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>Server response: 7 keys, 6.8 KB</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb01</em><em>nb02</em></span><ul><li>Decode msgpack</li><li>Split 31 joint angles (40×31), locomotion (40×3), height (40×1)</li><li>Reorder into the client joint order by name</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>40-step × 35-value chunk in the client</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>PER RECEIPT</small><b>40 × 35<i>values</i></b><span>40 steps, 35 values per step</span></div>
+      <div><small>SIZE</small><b>6.8<i>KB</i></b><span>~135 times smaller than the outgoing request</span></div>
+      <div><small>RETURNED GROUPS</small><b>7<i>keys</i></b><span>2 arms, 2 hands, waist, locomotion, height</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-process-en">
+    <div class="card-head"><span class="num">7</span><h3>Processing the action chunk</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st cur" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>The 40 × 35 chunk just received</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb08</em><em>nb02</em></span><ul><li>Block NaN/Inf, clamp to joint, locomotion and height limits</li><li>Scheduling: take one step per tick, call ahead before running out</li><li>Limit the change per tick</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>Safe command for the current tick: 31 joint angles + 4 leg commands</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>OUT OF LIMITS</small><b>0<i>/ 1,240</i></b><span>model-returned values exceeding joint limits, in one test chunk</span></div>
+      <div><small>DELIBERATE TEST</small><b>81<i>values clamped</i></b><span>1 joint angle, 40 locomotion commands, 40 height commands</span></div>
+      <div><small>WAIT TIME</small><b>0.28<i>s</i></b><span>with prefetching, versus 0.84 s with sequential calls</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-run-en">
+    <div class="card-head"><span class="num">8</span><h3>Running the robot</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st cur" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>31 target joint angles</li><li>Locomotion + height commands</li><li>Current observation (for AGILE)</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb04</em><em>nb05</em></span><ul><li>AGILE computes 12 leg joint angles from an 80-value vector</li><li>Write 43 target angles to the simulation</li><li>Run 4 physics steps of 5 ms</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>Robot moves for one tick (20 ms)</li><li>New state for the next tick</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="perf">
+      <div><small>AGILE VS REFERENCE</small><b>50<i>ticks</i></b><span>bit-identical, same LSTM state</span></div>
+      <div><small>STANDING STABLY</small><b>10<i>s</i></b><span>500 ticks, maximum tilt 9.8°</span></div>
+      <div><small>DEMO REPLAY</small><b>121<i>ticks</i></b><span>without the model: success, apple 2.9 cm from the plate centre</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-loop-en">
+    <div class="card-head"><span class="num">9</span><h3>Running the closed loop</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">SETUP</span><span class="pp-tgk loop" style="grid-column:3/8">EACH CONTROL LOOP</span><span class="pp-tgk" style="grid-column:8/9">REPEAT</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>Initialise</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>Connect</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>Observe</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>Send</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>Receive</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>Process</em></span><span class="pp-st done" style="grid-column:7"><i>8</i><em>Run</em></span><span class="pp-st cur last" style="grid-column:8"><i>9</i><em>Closed loop</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">INPUT</span><ul><li>Checkpoint, scene, instruction</li><li>The steps in cards 4–8</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">PROCESSING<em>nb06</em><em>nb07</em><em>nb08</em></span><ul><li>Each tick: get observation → process → run robot</li><li>Once every ~40 ticks: send observation, receive a new chunk</li><li>Ends on success, fall or timeout; reset, then run the next episode</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">OUTPUT</span><ul><li>Per-episode results</li><li>Logs, videos, statistics</li></ul></div>
+    </div>
+    <div class="pp-res-h">RESULTS ACHIEVED</div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Success rate: same model, only the scene changes</b><span>50 episodes</span></div>
+      <div class="cb"><span class="l">Self-built scene</span><span class="t"><i class="soft" style="width:1%"></i></span><span class="v">0 / 50</span></div>
+      <div class="cb"><span class="l">Galileo scene (as during data recording)</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
+      <p class="cb-note">120 ticks call the server exactly 3 times. In the self-built scene the robot still lifted the apple 11/50 times but did not place it on the plate; the minimum apple–plate distance (median) dropped from 20.6 cm to 3.8 cm when the Galileo scene was rebuilt.</p>
+    </div>
+  </div>
+
+</section>

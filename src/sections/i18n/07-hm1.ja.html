@@ -1,0 +1,213 @@
+<section class="section" id="hm1" data-hue="blue" data-kicker="III.01 · シナリオ 1" data-title="シナリオ Apple &amp; Plate">
+  <div class="hero">
+    <span class="pill">シナリオ 1 · APPLE &amp; PLATE</span>
+    <h2>G1 が棚の上のリンゴをつかみ、皿に置く<span class="dot">。</span></h2>
+    <p class="lead">NVIDIA Isaac Lab Arena のサンプルシナリオを、<b>プロジェクトが独自に構築した制御パイプライン</b>で再実行しました。パイプラインを層ごとに検証（データセットとの open-loop 比較、デモ再生）したうえで、NVIDIA のチェックポイントを 3 つのシーンで評価しました。結果：元の環境で <b>92 %</b>、照明のみ異なる場合 <b>56 %</b>、シーン全体が異なる場合 <b>0 %</b> — モデルは画像に非常に敏感であり、パイプラインは正しく動作しています。</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">208<small>エピソード</small></div><ul class="fact-list"><li><span>データ源</span><b>NVIDIA · XR テレオペ</b></li><li><span>フレーム</span><b>35,066</b></li><li><span>周波数</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">なし<small>再学習なし</small></div><ul class="fact-list"><li><span>使用</span><b>NVIDIA チェックポイント</b></li><li><span>調整対象</span><b>リンゴ → 皿</b></li><li><span>指示文</span><b>データセット準拠</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>チェックポイント</span><b>GN1x-Tuned-Arena</b></li><li><span>Embodiment</span><b>G1 + Dex3</b></li><li><span>アクション列</span><b>40 ステップ · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">92<small>% 成功</small></div><div class="fact-steps"><span class="best"><b>92 %</b><em>元の環境</em></span><i>→</i><span class=""><b>56 %</b><em>照明</em></span><i>→</i><span class=""><b>0 %</b><em>シーン</em></span></div><div class="fact-note">同じモデル、実行環境のみ変更</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 27 · 成功</span>
+        <video src="assets/videos/kich-ban-1-tao-dia.mp4" poster="assets/videos/kich-ban-1-tao-dia-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">ロボットがリンゴを拾って皿に置く様子（頭部カメラ視点）</div>
+        <div class="cv-cmd"><small>モデルへの指示文</small>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</div>
+        <div class="cv-stats"><div><b>2.9<small>s</small></b><span>成功までの時間</span></div><div><b>1.0<small>cm</small></b><span>リンゴ中心と皿中心の距離</span></div><div><b>4</b><span>モデル呼び出し回数（各 40 ステップ）</span></div><div><b>1.1<small>s</small></b><span>呼び出し 1 回あたりの平均遅延</span></div></div>
+        <div class="cv-note">再構築した Galileo シーンでの 50 エピソード評価（28/50 成功）、NVIDIA チェックポイントから抜粋。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>シナリオの状況</h3></div>
+    <p>G1 ロボットは Arena の Galileo ラボの棚の前に立っています。リンゴと皿は棚の面に並べて置かれています。下の画像は、Video Showcase のエピソードの<b>最初のフレーム</b>（ステップ 0 でモデルが受け取る画像）と、斜めからの全景を組み合わせたものです。</p>
+    <figure class="fig"><img src="images/kich-ban-1-tao-dia-frame0-2view.jpg" alt="Apple &amp; Plate シナリオの最初のフレーム" loading="lazy"><figcaption><b>フレーム 0</b> · 左：ロボット頭部カメラ（モデルへの入力画像） · 右：外部カメラからの斜め視点（Isaac Sim で再構築した Galileo シーン、Hammer &amp; Bin シナリオと同じカメラ角度）、説明用のみ。</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>シーンと物体</th><th>詳細</th></tr></thead>
+        <tbody>
+          <tr><td>背景</td><td>Galileo ラボ（<code>galileo_locomanip.usd</code>）。手の届く範囲をふさぐ機器の箱 3 個を非表示（jetson_orin_06、jetson_orin_03、hesai_box_06）</td></tr>
+          <tr><td>棚の面</td><td>非表示の支持板 0.8 × 1.5 × 0.04 m、上面の高さ 0.765 m</td></tr>
+          <tr><td>リンゴ</td><td>位置 (0.58, 0.27) m</td></tr>
+          <tr><td>皿</td><td>位置 (0.58, 0.06) m — リンゴからロボットの右側へ約 21 cm</td></tr>
+          <tr><td>摩擦</td><td>リンゴをしっかり保持するため Dex3 の指の摩擦を増加</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>ロボット・カメラ・制御</th><th>詳細</th></tr></thead>
+        <tbody>
+          <tr><td>ロボット</td><td>Unitree G1 + Dex3 ハンド、位置 (0.25, 0.08) m、+x 軸方向を向く。脚は AGILE コントローラーでバランスを保持、腰の高さ約 0.73–0.75 m</td></tr>
+          <tr><td>カメラ</td><td><code>head_link</code> に取り付け、640×480、焦点距離 15 mm、下向き約 35°</td></tr>
+          <tr><td>周波数</td><td>物理 200 Hz、制御 50 Hz（1 指令あたり物理 4 ステップ）</td></tr>
+          <tr><td>エピソード</td><td>最大 300 ステップ = 6 s。モデル呼び出し 1 回につき 40 ステップのアクション列を返す</td></tr>
+          <tr><td>指示文</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+          <tr><td>成功条件</td><td>リンゴ中心が皿中心から 8 cm 未満、皿より 0–4 cm 高く、速度 &lt; 0.1 m/s</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>シナリオの目標</h3></div>
+    <p>NVIDIA のサンプルシナリオを<b>比較基準</b>として使用します。モデルとデータは既に揃っているため、差異はすべてプロジェクトのパイプラインまたは環境に起因します。</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">目標 1</div><div class="st">データ経路の理解</div><p>カメラと関節角からモデルへ、モデルから G1 のモーターへの流れを完全に把握します。</p></div>
+      <div class="sub"><div class="sl">目標 2</div><div class="st">パイプラインの再実装</div><p>実行時に Arena に依存しない独立パッケージを構築します。Arena はシミュレーション内でしか動作しないため、実機へ移行する前に必須の工程です。</p></div>
+      <div class="sub"><div class="sl">目標 3</div><div class="st">検証と測定</div><p>パイプラインの正しさを層ごとに証明し、NVIDIA チェックポイントの成功率を測定して、失敗の原因を特定します。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>シナリオのデータ</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>データセット Arena-G1-Static-PickNPlace</th><th>値</th></tr></thead>
+      <tbody>
+        <tr><td>データ源</td><td>Isaac Lab 上の XR ヘッドセットによるテレオペ、50 Hz — NVIDIA チェックポイントのファインチューニングに使われたデータ</td></tr>
+        <tr><td>エピソード数</td><td>208 ファイル（カードの記載は 200、メタデータのインデックスは 251 まで）</td></tr>
+        <tr><td>総フレーム数</td><td>35,066（11.7 分）。各エピソード 2.3–5.3 s</td></tr>
+        <tr><td>指示文</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+        <tr><td>観察</td><td>リンゴをつかむのは左手のみ。腰と右手はほぼ静止。ロボットは立ったまま、胴体の高さ約 0.72 m</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>直面した課題</h3></div>
+    <p>Arena のパイプラインを独自パッケージで再現したところ、制御の各工程はすべて正しく動作しましたが、成功率はモデルが受け取る<b>カメラ画像</b>に強く依存していました。</p>
+    <div class="callout warn"><b>Visual gap：</b>同じチェックポイント、同じ指示文、同じパイプラインで、シミュレーションのシーンを変えただけで成功率が <b>92 %</b> から <b>56 %</b>、さらに <b>0 %</b> へ低下しました。</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">課題 1</div><div class="st">データセットと異なるシーンではモデルがタスクを実行できない</div><p>独自に構築したシーン（箱型テーブル、グリッド床、dome ライト）では成功 <b>0/50</b>、リンゴを持ち上げられたのは 11/50 のみでした。モデルはデモと同様に手を伸ばすものの、把持の指令を一度も出しません。</p></div>
+      <div class="sub"><div class="sl">課題 2</div><div class="st">シーンを正確に再構築しても不十分</div><p>再構築した Galileo シーンは配置とカメラ角度がデータセットと一致していますが、元の Arena の 92 % に対し <b>56 %</b> にとどまります。残る差は主に照明とレンダリング方式です。</p></div>
+      <div class="sub"><div class="sl">課題 3</div><div class="st">モデルは 1 つのシーンからしか学習していない</div><p>チェックポイントはただ 1 つのシーン、1 つの照明条件で記録したデータでファインチューニングされているため、操作対象の物体ではなくその画像に強く結びついています。</p></div>
+      <div class="sub"><div class="sl">課題 4</div><div class="st">実環境への移行が難しい</div><p>実機はシミュレーションとまったく異なる照明・背景・材質に直面します。現在の画像への敏感さでは、チェックポイントをそのまま使うことはできません。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>提案手法</h3></div>
+    <p><b>domain randomization</b> の採用を提案します。学習データを生成する際、タスクに関係のない視覚的要素をランダムに変化させ、モデルが背景や照明ではなく物体と手の姿勢に頼らざるを得ないようにします。</p>
+    <p>domain randomization は <b>sim2real</b> でも一般的な手法です。ここではまずシミュレーションのシーン間の差に適用し、実機へ移行する前の前段階とします。</p>
+    <div class="callout"><b>状況：</b>未実施。本カードでは手法と既存パイプラインへの適用方法のみを示します。</div>
+    <h4>ランダム化する要素</h4>
+    <p><b>外観</b> — モデルには見えるが、タスクの実行方法には影響しないもの：</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">照明</div><div class="st">強度・色・方向</div><p>dome/rect ライトの強度と色温度、照射方向を変化させ、ベイク済みライトのオン／オフを切り替えます。92 % を 56 % に下げたのはまさにこの要因です。</p></div>
+      <div class="sub"><div class="sl">材質</div><div class="st">色とテクスチャ</div><p>棚／テーブルの面、皿、部屋の背景の色・光沢・テクスチャを変更します。物体の形状は変えません。</p></div>
+      <div class="sub"><div class="sl">シーン</div><div class="st">背景と周囲の物体</div><p>背景を変更し、操作領域外の箱や装飾物を追加／削除します。</p></div>
+    </div>
+    <p><b>幾何</b> — モデルが固定の配置を暗記しないよう、視点と物体の位置を変える：</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">カメラ</div><div class="st">姿勢とパラメーター</div><p>頭部カメラの位置・俯角・焦点距離をわずかに変動させ、学習時にノイズ、露出、color jitter を加えます。</p></div>
+      <div class="sub"><div class="sl">物体</div><div class="st">位置と向き</div><p>手の届く範囲内でリンゴと皿の位置・向きをシャッフルします。</p></div>
+    </div>
+    <h4>適用方法</h4>
+    <div class="flow">
+      <div class="step"><div class="sk">ステップ 1</div><div class="sv">ランダムなシーン</div><div class="sd">Isaac Lab / Replicator のリセットイベントで上記の要素をエピソードごとに変更</div></div>
+      <div class="step"><div class="sk">ステップ 2</div><div class="sv">デモ再生</div><div class="sd">208 件のデモのアクションを各シーンで再生し、新しい画像を記録</div></div>
+      <div class="step"><div class="sk">ステップ 3</div><div class="sv">フィルタリング</div><div class="sd">成功条件を満たし続けるエピソードを残す</div></div>
+      <div class="step"><div class="sk">ステップ 4</div><div class="sv">再ファインチューニング</div><div class="sd">多様化したデータで NVIDIA チェックポイントから</div></div>
+      <div class="step"><div class="sk">ステップ 5</div><div class="sv">交差評価</div><div class="sd">Galileo、独自構築シーン、未見のシーン</div></div>
+    </div>
+    <p><b>期待される効果：</b>シーン間の 92&nbsp;% → 56&nbsp;% → 0&nbsp;% の差を縮めることです。指標は独自構築シーン（現在 0&nbsp;%）と再構築した Galileo（現在 56&nbsp;%）での成功率で、各構成 ≥ 50 エピソードとします。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>実施プロセス</h3></div>
+    <p>Isaac Lab Arena の実行フローを独自パッケージ <code>standalone_g1_gr00t</code> で再現しました。Arena の各工程を切り出し、書き直して notebook で個別に検証し、最後に Arena に依存しない閉ループとして統合しました。</p>
+    <div class="flow">
+      <div class="step"><div class="sk">ステップ 1 · ARENA</div><div class="sv">元の Arena を実行</div><div class="sd">元の環境での NVIDIA チェックポイント — 比較基準 92 %</div></div>
+      <div class="step"><div class="sk">ステップ 2 · NB01–02</div><div class="sv">モデルとの通信</div><div class="sd">ZMQ サーバー、観測とアクションの変換</div></div>
+      <div class="step"><div class="sk">ステップ 3 · NB03–04</div><div class="sv">ブロックごとの検証</div><div class="sd">データセットとの open-loop 比較、AGILE 脚制御</div></div>
+      <div class="step"><div class="sk">ステップ 4 · NB05–06</div><div class="sv">Isaac Sim バックエンド</div><div class="sd">ロボット、カメラ、リンゴ／皿、デモ再生</div></div>
+      <div class="step"><div class="sk">ステップ 5 · NB07–08</div><div class="sv">閉ループとパッケージ化</div><div class="sd">Galileo シーン、runner、安全層</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ステップ</th><th>作業内容</th><th>Notebook / ツール</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>NVIDIA のクライアントとチェックポイントで Arena パイプラインを実行し、比較基準を得る</td><td>Isaac Lab Arena</td><td>元の環境で 92 %</td></tr>
+        <tr><td>2</td><td>ZMQ + msgpack プロトコル、modality 契約。関節順序 4 種の対応表、<code>build_observation</code>、<code>decode_action</code>、<code>ChunkScheduler</code></td><td>nb01_server_wire, nb02_joints_obs_action</td><td>40 ステップのアクション列を正しく送受信</td></tr>
+        <tr><td>3</td><td>データセットの実画像と状態 → サーバー → 記録済みアクションと比較。ONNX 脚ポリシーの 80 次元観測ベクトルを再構成</td><td>nb03_open_loop_dataset, nb04_agile_onnx</td><td>誤差は振幅の 1/10–1/70。AGILE はビット単位で一致</td></tr>
+        <tr><td>4</td><td>バックエンドを手作業で構築：SimulationContext → ロボット → 頭部カメラ → リンゴ／皿 → 指の摩擦 → observe/apply。データ経路全体を接続</td><td>nb05_backend_anatomy, nb06_full_pipeline</td><td>10 s 安定して直立。デモ再生に成功</td></tr>
+        <tr><td>5</td><td>Arena の Galileo シーンを再構築し、GR00T で 50 エピソード実行。runner、policy、<code>sanitize_chunk</code>、<code>RateLimiter</code> をパッケージ化</td><td>nb07_full_pipeline_loop, nb08_runner_policy_safety</td><td>56 %（照明の差）、0 %（独自構築シーン）</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>達成した結果</h3></div>
+    <p>ブロックごとの検証から閉ループ実行まで、プロセスの各ステップで測定した数値です。すべての実行で同じ NVIDIA チェックポイントと同じ指示文を使用しています。</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">元の Arena</div><div class="kv">92<small>%</small></div><div class="kd">NVIDIA クライアント · 元の環境</div></div>
+      <div class="kpi"><div class="kl">再構築 Galileo</div><div class="kv">56<small>%</small></div><div class="kd">28/50 · Wilson 42–69 %</div></div>
+      <div class="kpi"><div class="kl">独自構築シーン</div><div class="kv">0<small>%</small></div><div class="kd">0/50 · 持ち上げ 22 %</div></div>
+      <div class="kpi"><div class="kl">Open-loop 誤差</div><div class="kv">≤ 0.032<small>rad</small></div><div class="kd">MAE 0.008–0.032 · 振幅の 1/10–1/70</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm1-results-ja">
+      <div class="chart-head"><div><div class="ct">成功率と Wilson 95 % 信頼区間</div><div class="cs">同じチェックポイントで、シーンのみ変更。デモ再生はモデルを使わず、バックエンドの検証のみ。</div></div><button class="btn" type="button" data-table-toggle data-l-table="表で表示" data-l-chart="グラフで表示">表で表示</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ステップ</th><th>測定値</th></tr></thead>
+      <tbody>
+        <tr><td>モデルとの通信</td><td>呼び出しごとに 40 ステップのアクション列。平均遅延 約 1.1 s/回（シミュレーションはモデルを待つため結果に影響しない）</td></tr>
+        <tr><td>データセットとの open-loop 比較</td><td>MAE 左腕 0.032 · 右腕 0.019 · 左手 0.008 rad（3 エピソード、11 chunk）</td></tr>
+        <tr><td>指示文</td><td>データセットの文 0.025 rad、Arena 既定の文 0.047 rad、無意味な文 0.039 rad</td></tr>
+        <tr><td>AGILE 脚制御</td><td>参照実装とビット単位で一致。500 tick 安定して直立、胴体 0.73–0.75 m、最大傾き約 10°</td></tr>
+        <tr><td>デモ再生</td><td>3 回中 2 回成功。リンゴと皿中心の距離 3 cm。関節追従誤差 0.04 rad</td></tr>
+        <tr class="hl"><td>閉ループ · Galileo</td><td>28/50 成功。持ち上げ 72 %。リンゴ–皿距離の中央値 3.8 cm。成功までの時間の中央値 2.7 s</td></tr>
+        <tr><td>閉ループ · 独自構築</td><td>0/50 成功。持ち上げ 22 %。リンゴ–皿距離の中央値 20.6 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>結果の分析</h3></div>
+    <p>タスクの段階ごとに各実行を比較し、失敗の原因がどこにあるかを特定します。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>段階（50 エピソード）</th><th class="num">独自構築</th><th class="num">Galileo</th></tr></thead>
+      <tbody>
+        <tr><td>リンゴを持ち上げた</td><td class="num">11 (22 %)</td><td class="num">36 (72 %)</td></tr>
+        <tr><td>皿に置けた / 持ち上げた数</td><td class="num">0 / 11</td><td class="num">28 / 36 (78 %)</td></tr>
+        <tr class="hl"><td>成功</td><td class="num">0 %</td><td class="num">56 %</td></tr>
+        <tr><td>転倒</td><td class="num">3</td><td class="num">2</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">所見 1</div><div class="st">視覚が結果を決める</div><p>チェックポイント、指示文、パイプラインは同じで、シーンを変えただけで 92 % → 56 % → 0 % となりました。2 つの信頼区間 0–7 % と 42–69 % は重なりません。</p></div>
+      <div class="sub"><div class="sl">所見 2</div><div class="st">失敗は認識と接近の段階にある</div><p>独自構築シーンではモデルはほとんどリンゴを持ち上げられません（22 %）。Galileo では、持ち上げた後は 78 % が皿に置けています — 操作スキルは保たれています。</p></div>
+      <div class="sub"><div class="sl">所見 3</div><div class="st">独自パイプラインは正しく動作</div><p>最終距離 1–6 cm での 28 回の成功と、open-loop および再生による検証により、データ変換の誤りは否定されます。</p></div>
+      <div class="sub"><div class="sl">所見 4</div><div class="st">展開への示唆</div><p>1 つのシーンでファインチューニングしたモデルは汎化しません。作業環境でデータを収集するか、学習時に画像の多様性を高める必要があります。</p></div>
+    </div>
+    <h4>失敗 22 回の詳細（Galileo シーン）</h4>
+    <details class="acc"><summary><span class="n">12</span>リンゴを持ち上げられない</summary><div class="acc-body"><p>9 回はリンゴがほぼ動かず、2 回はリンゴが押されて 4–9 cm 滑り、1 回はリンゴが棚から弾き落とされました。</p><p>考えられる原因：把持の滑り、または接近の誤り。初期位置は同一 ⇒ 差はモデルのサンプリングのランダム性に起因します。</p></div></details>
+    <details class="acc"><summary><span class="n">8</span>持ち上げたが置く位置がずれた</summary><div class="acc-body"><p>6 回は皿から 9–20 cm の位置で離しました（最も近いもので 9.1 cm、8 cm のしきい値をわずかに超過）。2 回はリンゴを棚から落としました。</p></div></details>
+    <details class="acc"><summary><span class="n">2</span>エピソード開始直後に転倒</summary><div class="acc-body"><p>リンゴに触れる前の tick 7 と tick 30 で転倒しました。最初の腕の chunk が、リセット後に AGILE がまだ安定化している期間と重なっています。モデルに制御を渡す前に、ロボットを数十 tick「ウォームアップ」させることを提案します。</p></div></details>
+    <h4>除外した要因</h4>
+    <div class="grid">
+      <div class="sub"><div class="sl">遅延</div><p>シミュレーションはサーバーを待ちます。成功エピソードと失敗エピソードの遅延は同等です。</p></div>
+      <div class="sub"><div class="sl">安全層</div><p>chunk の境界で腕の関節をクリップするのみで、手や腰をクリップしたことは一度もありません。</p></div>
+      <div class="sub"><div class="sl">パイプラインの不具合</div><p>最終距離 1–6 cm での 28 回の成功 ⇒ データの連鎖は正しく動作しています。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>シナリオの結論</h3></div>
+    <div class="panel"><div class="pl">結論</div><p>1 つのシーンでファインチューニングしたモデルは<b>画像に非常に敏感</b>です：データ記録時と似たシーンでは 56 %、異なるシーンでは 0 % です。実運用では、作業環境で直接データを収集するか、学習時に画像の多様性を高める必要があります。</p></div>
+    <ul>
+      <li>パイプラインを<b>習得し、独自に再現</b>しました。ソースコードは実機バックエンドへの差し替えに対応済みです。</li>
+      <li>データ記録時と同じ指示文を使う必要があります。結論を出すには各構成で ≥ 50 エピソードが必要です。</li>
+      <li>未対応：元の Docker Arena での対照実行、±2 cm シャッフルを加えた Galileo シーン、リセット後のウォームアップ段階。</li>
+    </ul>
+  </div>
+</section>

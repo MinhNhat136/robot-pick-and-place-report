@@ -1,0 +1,65 @@
+<section class="section" id="phu-luc" data-hue="blue" data-kicker="V.02 · PHỤ LỤC" data-title="Phụ lục">
+  <div class="hero">
+    <span class="pill">MỤC V.02 · PHỤ LỤC</span>
+    <h2>Thuật ngữ &amp; tham khảo<span class="dot">.</span></h2>
+    <p class="lead">Danh sách sản phẩm bàn giao xem mục I.03.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">A</span><h3>Thuật ngữ</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody>
+        <tr><td><b>VLA</b></td><td>Mô hình nhận ảnh và ngôn ngữ, xuất trực tiếp lệnh điều khiển robot</td></tr>
+        <tr><td><b>Foundation model</b></td><td>Mô hình pre-train trên dữ liệu lớn; fine-tune cho tác vụ cụ thể với ít dữ liệu</td></tr>
+        <tr><td><b>Embodiment</b></td><td>Một loại thân robot cụ thể (khớp, camera, bàn tay)</td></tr>
+        <tr><td><b>Action chunk</b></td><td>Chuỗi action model trả về trong một lần suy luận (40 bước = 0,8 s ở 50 Hz)</td></tr>
+        <tr><td><b>Flow matching / DiT</b></td><td>Kỹ thuật sinh dữ liệu liên tục bằng khử nhiễu dần, dùng để sinh chuỗi action</td></tr>
+        <tr><td><b>Teleop</b></td><td>Người điều khiển robot từ xa (kính VR) để tạo dữ liệu mẫu</td></tr>
+        <tr><td><b>Open-loop / closed-loop</b></td><td>Đánh giá trên dữ liệu ghi sẵn / model tự điều khiển liên tục</td></tr>
+        <tr><td><b>Real2sim</b></td><td>Chuyển dữ liệu từ thế giới thật vào mô phỏng</td></tr>
+        <tr><td><b>Domain gap</b></td><td>Khác biệt giữa môi trường huấn luyện và môi trường chạy</td></tr>
+        <tr><td><b>Visual gap</b></td><td>Model sụt tỉ lệ thành công khi hình ảnh khung cảnh lúc chạy khác lúc ghi dữ liệu (bài táo 92 → 56 → 0 %)</td></tr>
+        <tr><td><b>Domain randomization</b></td><td>Đổi ngẫu nhiên ánh sáng, vật liệu, nền, góc camera trong mô phỏng để model không học thuộc một khung cảnh</td></tr>
+        <tr><td><b>Demo generation</b></td><td>Biến đổi demo teleop có sẵn (thời gian, điểm xuất phát, gắp, thả) rồi chạy lại trong mô phỏng, chỉ giữ demo thành công (cách của MimicGen)</td></tr>
+        <tr><td><b>FK / IK</b></td><td>Động học thuận: từ góc khớp tính vị trí bàn tay; động học ngược: từ vị trí mong muốn tính ra góc khớp</td></tr>
+        <tr><td><b>Bộ điều khiển PD</b></td><td>Tỉ lệ – vi phân: mô-men = Kp × (góc mục tiêu − góc hiện tại) − Kd × vận tốc khớp; kéo khớp về mục tiêu như lò xo có giảm chấn</td></tr>
+        <tr><td><b>Rate limiter</b></td><td>Giới hạn mỗi bước điều khiển (20 ms) lệnh khớp chỉ được đổi tối đa một ngưỡng so với lệnh trước (tay 0,2 rad, eo 0,1 rad, bàn tay 1,5 rad)</td></tr>
+        <tr><td><b>WBC / AGILE</b></td><td>Bộ điều khiển toàn thân; AGILE giữ thăng bằng chân G1</td></tr>
+        <tr><td><b>Wilson 95 %</b></td><td>Khoảng tin cậy cho tỉ lệ thành công, phù hợp số lần thử nhỏ</td></tr>
+        <tr><td><b>MAE</b></td><td>Sai số tuyệt đối trung bình</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">B</span><h3>Tài liệu tham khảo</h3></div>
+    <ol>
+      <li>NVIDIA. <i>GR00T N1: An Open Foundation Model for Generalist Humanoid Robots.</i> <a href="https://arxiv.org/abs/2503.14734" target="_blank" rel="noopener">arXiv:2503.14734</a>, 2025.</li>
+      <li>NVIDIA. Model card GR00T N1.7-3B và GN1x-Tuned-Arena-G1-Static-PickNPlace (Hugging Face).</li>
+      <li>Isaac Lab Arena — <a href="https://github.com/isaac-sim/IsaacLab-Arena" target="_blank" rel="noopener">github.com/isaac-sim/IsaacLab-Arena</a></li>
+      <li>Isaac-GR00T — <a href="https://github.com/NVIDIA/Isaac-GR00T" target="_blank" rel="noopener">github.com/NVIDIA/Isaac-GR00T</a></li>
+      <li>NVIDIA. GR00T end-to-end workflow: fine-tuning on sim data, sim evaluation (docs.nvidia.com).</li>
+      <li>Dataset nvidia/Arena-G1-Static-PickNPlace-Task và nvidia/PhysicalAI-Robotics-GR00T-Teleop-G1 (CC-BY-4.0).</li>
+      <li>Black, K. et al. <i>π0: A Vision-Language-Action Flow Model for General Robot Control.</i> arXiv:2410.24164, 2024.</li>
+      <li>Liu, X., Gong, C. <i>Flow Straight and Fast: Rectified Flow.</i> ICLR 2023.</li>
+    </ol>
+  </div>
+
+  <div class="card internal">
+    <div class="card-head"><span class="num">C</span><h3>Chỉ dẫn nội bộ</h3><span class="tag badge todo">ẨN Ở BẢN KHÁCH HÀNG</span></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody>
+        <tr><td>Package độc lập</td><td><code>codes/standalone_g1_gr00t</code> (README, report/, notebooks/, data/)</td></tr>
+        <tr><td>Real2sim</td><td><code>codes/g1_real2sim</code>; script sinh dữ liệu trên máy Windows</td></tr>
+        <tr><td>Bài búa</td><td><code>hammer_to_bin/</code> (REPORT, PLAN, TELEOP_GUIDE, TRAINING_PLAN, FINETUNE_RESULTS)</td></tr>
+        <tr><td>Repo Arena đã sửa</td><td><code>~/IsaacLab-Arena</code>, nhánh <code>nhathm12/hammer-to-bin</code></td></tr>
+        <tr><td>Video đánh giá búa</td><td><code>codes/standalone_g1_gr00t/data/arena_eval_hammer_ckpt10000/</code></td></tr>
+        <tr><td>Bản markdown</td><td><code>bao_cao_khach_hang/</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="footer">
+    <span data-cfg="project">Dự án</span><span>·</span><span data-cfg="version">v1.0</span><span>·</span><span data-cfg="date"></span>
+  </div>
+</section>

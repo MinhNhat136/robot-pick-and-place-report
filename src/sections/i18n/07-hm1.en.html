@@ -1,0 +1,213 @@
+<section class="section" id="hm1" data-hue="blue" data-kicker="III.01 · SCENARIO 1" data-title="Scenario Apple &amp; Plate">
+  <div class="hero">
+    <span class="pill">SCENARIO 1 · APPLE &amp; PLATE</span>
+    <h2>G1 picks an apple from the shelf and places it on a plate<span class="dot">.</span></h2>
+    <p class="lead">A sample scenario from NVIDIA Isaac Lab Arena, re-run with a <b>control pipeline built by the project</b>. The project verified the pipeline layer by layer (open-loop against the dataset, demo replay) and then evaluated NVIDIA's checkpoint in three scenes. Results: <b>92 %</b> in the original environment, <b>56 %</b> when only the lighting differs, <b>0 %</b> when the whole scene differs — the model is highly sensitive to visuals, and the pipeline works correctly.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">208<small>episodes</small></div><ul class="fact-list"><li><span>Source</span><b>NVIDIA · XR teleop</b></li><li><span>Frames</span><b>35,066</b></li><li><span>Rate</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">None<small>no retraining</small></div><ul class="fact-list"><li><span>Uses</span><b>NVIDIA checkpoint</b></li><li><span>Tuned for</span><b>Apple → plate</b></li><li><span>Instruction</span><b>From the dataset</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>Checkpoint</span><b>GN1x-Tuned-Arena</b></li><li><span>Embodiment</span><b>G1 + Dex3</b></li><li><span>Action chunk</span><b>40 steps · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">92<small>% success</small></div><div class="fact-steps"><span class="best"><b>92 %</b><em>ORIGINAL</em></span><i>→</i><span class=""><b>56 %</b><em>LIGHTING</em></span><i>→</i><span class=""><b>0 %</b><em>SCENE</em></span></div><div class="fact-note">Same model; only the runtime environment changes</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 27 · SUCCESS</span>
+        <video src="assets/videos/kich-ban-1-tao-dia.mp4" poster="assets/videos/kich-ban-1-tao-dia-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">The robot picks up the apple and places it on the plate, seen from the head camera</div>
+        <div class="cv-cmd"><small>INSTRUCTION SENT TO THE MODEL</small>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</div>
+        <div class="cv-stats"><div><b>2.9<small>s</small></b><span>Time to success</span></div><div><b>1.0<small>cm</small></b><span>Apple centre to plate centre</span></div><div><b>4</b><span>Model calls, 40 steps each</span></div><div><b>1.1<small>s</small></b><span>Average latency per call</span></div></div>
+        <div class="cv-note">Taken from the 50-episode run in the reconstructed Galileo scene (28/50 successes), NVIDIA checkpoint.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Scenario setting</h3></div>
+    <p>The G1 robot stands in front of a shelf in Arena's Galileo lab; the apple and the plate sit next to each other on the shelf surface. The image below combines the <b>first frame</b> of the episode in the Video Showcase (the image the model receives at step 0) with an oblique overview.</p>
+    <figure class="fig"><img src="images/kich-ban-1-tao-dia-frame0-2view.jpg" alt="First frame of the Apple &amp; Plate scenario" loading="lazy"><figcaption><b>Frame 0</b> · left: robot head camera, the image the model receives · right: oblique view from an external camera (Galileo scene reconstructed in Isaac Sim, same camera angle as the Hammer &amp; Bin scenario), for illustration only.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Scene &amp; objects</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Background</td><td>Galileo lab (<code>galileo_locomanip.usd</code>); 3 equipment boxes blocking the hand's reach are hidden (jetson_orin_06, jetson_orin_03, hesai_box_06)</td></tr>
+          <tr><td>Shelf surface</td><td>Hidden support slab 0.8 × 1.5 × 0.04 m; top surface at 0.765 m</td></tr>
+          <tr><td>Apple</td><td>Placed at (0.58, 0.27) m</td></tr>
+          <tr><td>Plate</td><td>Placed at (0.58, 0.06) m — ~21 cm from the apple, to the robot's right</td></tr>
+          <tr><td>Friction</td><td>Dex3 finger friction increased to hold the apple firmly</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Robot, camera &amp; control</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>Robot</td><td>Unitree G1 + Dex3 hands, standing at (0.25, 0.08) m, facing the +x axis; legs balanced by the AGILE controller, pelvis height ~0.73–0.75 m</td></tr>
+          <tr><td>Camera</td><td>Mounted on <code>head_link</code>, 640×480, 15 mm focal length, tilted down ~35°</td></tr>
+          <tr><td>Rate</td><td>Physics 200 Hz, control 50 Hz (4 physics steps / command)</td></tr>
+          <tr><td>Episode</td><td>At most 300 steps = 6 s; each model call returns a chunk of 40 steps</td></tr>
+          <tr><td>Instruction</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+          <tr><td>Success</td><td>Apple centre &lt; 8 cm from the plate centre, 0–4 cm above the plate and velocity &lt; 0.1 m/s</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Scenario goals</h3></div>
+    <p>NVIDIA's sample scenario serves as a <b>reference baseline</b>: the model and data already exist, so any discrepancy comes from the project's pipeline or environment.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">GOAL 1</div><div class="st">Understand the data path</div><p>Fully understand the flow from camera and joint angles to the model, and from the model to the G1's motors.</p></div>
+      <div class="sub"><div class="sl">GOAL 2</div><div class="st">Rewrite the pipeline</div><p>Build a standalone package that does not depend on Arena at runtime — a mandatory step before moving to the real robot, since Arena runs only in simulation.</p></div>
+      <div class="sub"><div class="sl">GOAL 3</div><div class="st">Verify and measure</div><p>Prove the pipeline correct layer by layer, then measure the success rate of NVIDIA's checkpoint and find the causes of failure.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Scenario data</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Dataset Arena-G1-Static-PickNPlace</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Source</td><td>XR headset teleop in Isaac Lab, 50 Hz — the data used to fine-tune NVIDIA's checkpoint</td></tr>
+        <tr><td>Episodes</td><td>208 files (the card states 200; metadata indexes up to 251)</td></tr>
+        <tr><td>Total frames</td><td>35,066 (11.7 minutes); each episode 2.3–5.3 s</td></tr>
+        <tr><td>Instruction</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+        <tr><td>Observations</td><td>Only the left hand grasps the apple; waist and right hand almost motionless; robot stands still, torso height ~0.72 m</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Problems encountered</h3></div>
+    <p>When Arena's pipeline was recreated with the project's own package, every control stage worked correctly, but the success rate depended strongly on the <b>camera images</b> the model received.</p>
+    <div class="callout warn"><b>Visual gap:</b> same checkpoint, same instruction, same pipeline; changing only the simulated scene takes the success rate from <b>92 %</b> down to <b>56 %</b> and then <b>0 %</b>.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">PROBLEM 1</div><div class="st">The model fails in scenes that differ from the dataset</div><p>The project-built scene (box table, grid floor, dome light) gives <b>0/50</b> successes, with only 11/50 lifting the apple. The model reaches out like in the demos but never commands a grasp.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 2</div><div class="st">Rebuilding the exact scene is still not enough</div><p>The reconstructed Galileo scene matches the dataset's layout and camera angle but reaches only <b>56 %</b>, versus 92 % in the original Arena. The remaining difference is mainly lighting and rendering.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 3</div><div class="st">The model learned from a single scene</div><p>The checkpoint was fine-tuned on data recorded in exactly one scene under one lighting condition, so it is tied to those images rather than to the objects to be manipulated.</p></div>
+      <div class="sub"><div class="sl">PROBLEM 4</div><div class="st">Hard to transfer to the real environment</div><p>The real robot will face lighting, backgrounds and materials very different from simulation; with the current visual sensitivity, the checkpoint cannot be used directly.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Proposed method</h3></div>
+    <p>We propose <b>domain randomization</b>: when generating training data, randomly vary the visual factors unrelated to the task, so the model is forced to rely on the objects and hand pose rather than the background and lighting.</p>
+    <p>Domain randomization is also a common technique for <b>sim2real</b>; here it is applied first to the gap between simulated scenes, as a prerequisite step before moving to the real robot.</p>
+    <div class="callout"><b>Status:</b> not yet carried out. This card only describes the method and how to apply it to the existing pipeline.</div>
+    <h4>Randomized factors</h4>
+    <p><b>Appearance</b> — what the model sees but which does not affect how the task is done:</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">LIGHTING</div><div class="st">Intensity, colour, direction</div><p>Vary the intensity and colour temperature of dome/rect lights, light direction, and toggle baked lights — exactly the factor that dropped 92 % to 56 %.</p></div>
+      <div class="sub"><div class="sl">MATERIALS</div><div class="st">Colour and texture</div><p>Change the colour, glossiness and texture of the shelf/table surface, the plate and the room background; keep object shapes unchanged.</p></div>
+      <div class="sub"><div class="sl">SCENE</div><div class="st">Background and surrounding objects</div><p>Change the backdrop, add/remove boxes and decorative objects outside the manipulation area.</p></div>
+    </div>
+    <p><b>Geometry</b> — viewpoint and object positions, so the model does not memorise a fixed layout:</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">CAMERA</div><div class="st">Pose and parameters</div><p>Small perturbations of the head camera's position, tilt and focal length; add noise, exposure and color jitter during training.</p></div>
+      <div class="sub"><div class="sl">OBJECTS</div><div class="st">Position and orientation</div><p>Shuffle the position and orientation of the apple and plate within the hand's reach.</p></div>
+    </div>
+    <h4>How to apply</h4>
+    <div class="flow">
+      <div class="step"><div class="sk">STEP 1</div><div class="sv">Randomized scene</div><div class="sd">Isaac Lab / Replicator reset events change the factors above every episode</div></div>
+      <div class="step"><div class="sk">STEP 2</div><div class="sv">Demo replay</div><div class="sd">Replay the actions of the 208 demos in each scene, recording new images</div></div>
+      <div class="step"><div class="sk">STEP 3</div><div class="sv">Filter</div><div class="sd">Keep episodes that still meet the success condition</div></div>
+      <div class="step"><div class="sk">STEP 4</div><div class="sv">Fine-tune again</div><div class="sd">From the NVIDIA checkpoint on the diversified data</div></div>
+      <div class="step"><div class="sk">STEP 5</div><div class="sv">Cross-evaluation</div><div class="sd">Galileo, the project-built scene and unseen scenes</div></div>
+    </div>
+    <p><b>Expected outcome:</b> narrow the 92&nbsp;% → 56&nbsp;% → 0&nbsp;% gap between scenes. The metric is the success rate in the project-built scene (currently 0&nbsp;%) and the reconstructed Galileo scene (currently 56&nbsp;%), with ≥ 50 episodes per configuration.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Implementation process</h3></div>
+    <p>Isaac Lab Arena's execution flow was reproduced with the project's own package <code>standalone_g1_gr00t</code>: each Arena stage was separated out, rewritten and verified individually in a notebook, then assembled into a closed loop with no remaining dependency on Arena.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">STEP 1 · ARENA</div><div class="sv">Run the original Arena</div><div class="sd">NVIDIA checkpoint in the original environment — 92 % reference point</div></div>
+      <div class="step"><div class="sk">STEP 2 · NB01–02</div><div class="sv">Model communication</div><div class="sd">ZMQ server, observation and action translation</div></div>
+      <div class="step"><div class="sk">STEP 3 · NB03–04</div><div class="sv">Verify each block</div><div class="sd">Open-loop against the dataset, AGILE legs</div></div>
+      <div class="step"><div class="sk">STEP 4 · NB05–06</div><div class="sv">Isaac Sim backend</div><div class="sd">Robot, camera, apple/plate, demo replay</div></div>
+      <div class="step"><div class="sk">STEP 5 · NB07–08</div><div class="sv">Closed loop &amp; packaging</div><div class="sd">Galileo scene, runner, safety layer</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>Work</th><th>Notebook / tool</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Run the Arena pipeline with NVIDIA's client and checkpoint to obtain a baseline</td><td>Isaac Lab Arena</td><td>92 % in the original environment</td></tr>
+        <tr><td>2</td><td>ZMQ + msgpack protocol, modality contract; table of 4 joint orderings, <code>build_observation</code>, <code>decode_action</code>, <code>ChunkScheduler</code></td><td>nb01_server_wire, nb02_joints_obs_action</td><td>Correctly sends/receives 40-step chunks</td></tr>
+        <tr><td>3</td><td>Real images and states from the dataset → server → compared with recorded actions; reconstruct the 80-dimensional observation vector of the ONNX leg policy</td><td>nb03_open_loop_dataset, nb04_agile_onnx</td><td>Error 10–70× smaller than the amplitude; AGILE bit-exact</td></tr>
+        <tr><td>4</td><td>Build the backend by hand: SimulationContext → robot → head camera → apple/plate → finger friction → observe/apply; assemble the full data path</td><td>nb05_backend_anatomy, nb06_full_pipeline</td><td>Stands stably for 10 s; demo replay succeeds</td></tr>
+        <tr><td>5</td><td>Reconstruct Arena's Galileo scene, run 50 GR00T episodes; package runner, policy, <code>sanitize_chunk</code>, <code>RateLimiter</code></td><td>nb07_full_pipeline_loop, nb08_runner_policy_safety</td><td>56 % (lighting mismatch), 0 % (project-built scene)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Results achieved</h3></div>
+    <p>Figures measured at each step of the process, from block-by-block verification to closed-loop runs. The same NVIDIA checkpoint and the same instruction for every run.</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Original Arena</div><div class="kv">92<small>%</small></div><div class="kd">NVIDIA client · original environment</div></div>
+      <div class="kpi"><div class="kl">Reconstructed Galileo</div><div class="kv">56<small>%</small></div><div class="kd">28/50 · Wilson 42–69 %</div></div>
+      <div class="kpi"><div class="kl">Project-built scene</div><div class="kv">0<small>%</small></div><div class="kd">0/50 · lifted 22 %</div></div>
+      <div class="kpi"><div class="kl">Open-loop error</div><div class="kv">≤ 0.032<small>rad</small></div><div class="kd">MAE 0.008–0.032 · 10–70× smaller than the amplitude</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm1-results-en">
+      <div class="chart-head"><div><div class="ct">Success rate with Wilson 95 % confidence interval</div><div class="cs">Same checkpoint, only the scene changes. Demo replay uses no model; it only verifies the backend.</div></div><button class="btn" type="button" data-table-toggle data-l-table="Show as table" data-l-chart="Show chart">Show as table</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>Measured figures</th></tr></thead>
+      <tbody>
+        <tr><td>Model communication</td><td>40-step chunk per call; average latency ~1.1 s/call (the simulation waits for the model, so results are unaffected)</td></tr>
+        <tr><td>Open-loop against the dataset</td><td>MAE left arm 0.032 · right arm 0.019 · left hand 0.008 rad (3 episodes, 11 chunks)</td></tr>
+        <tr><td>Instruction</td><td>Dataset instruction 0.025 rad; Arena default instruction 0.047 rad; nonsense instruction 0.039 rad</td></tr>
+        <tr><td>AGILE legs</td><td>Bit-exact with the reference implementation; stands stably for 500 ticks, torso 0.73–0.75 m, maximum tilt ~10°</td></tr>
+        <tr><td>Demo replay</td><td>2/3 successes; apple 3 cm from the plate centre; joint tracking error 0.04 rad</td></tr>
+        <tr class="hl"><td>Closed loop · Galileo</td><td>28/50 successes; lifted 72 %; median apple–plate distance 3.8 cm; median time to success 2.7 s</td></tr>
+        <tr><td>Closed loop · project-built</td><td>0/50 successes; lifted 22 %; median apple–plate distance 20.6 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Results analysis</h3></div>
+    <p>The runs are compared phase by phase to determine where failures come from.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Phase (50 episodes)</th><th class="num">Project-built</th><th class="num">Galileo</th></tr></thead>
+      <tbody>
+        <tr><td>Apple lifted</td><td class="num">11 (22 %)</td><td class="num">36 (72 %)</td></tr>
+        <tr><td>Placed on the plate / lifted</td><td class="num">0 / 11</td><td class="num">28 / 36 (78 %)</td></tr>
+        <tr class="hl"><td>Success</td><td class="num">0 %</td><td class="num">56 %</td></tr>
+        <tr><td>Falls</td><td class="num">3</td><td class="num">2</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">FINDING 1</div><div class="st">Vision determines the outcome</div><p>Same checkpoint, instruction and pipeline: 92 % → 56 % → 0 % solely from changing the scene. The two confidence intervals 0–7 % and 42–69 % do not overlap.</p></div>
+      <div class="sub"><div class="sl">FINDING 2</div><div class="st">Failures lie in the perception and approach phase</div><p>In the project-built scene the model almost never lifts the apple (22 %). In Galileo, once lifted, 78 % are placed on the plate — the manipulation skill is still there.</p></div>
+      <div class="sub"><div class="sl">FINDING 3</div><div class="st">The project's own pipeline works correctly</div><p>28 successes with final distances of 1–6 cm, together with the open-loop and replay checks, rule out data translation errors.</p></div>
+      <div class="sub"><div class="sl">FINDING 4</div><div class="st">Implications for deployment</div><p>A model fine-tuned on a single scene does not generalise; data must be collected in the working environment, or visual diversity must be increased during training.</p></div>
+    </div>
+    <h4>Details of the 22 failures (Galileo scene)</h4>
+    <details class="acc"><summary><span class="n">12</span>Apple not lifted</summary><div class="acc-body"><p>9 times the apple barely moved; 2 times the apple was pushed and slid 4–9 cm; 1 time the apple was knocked off the shelf.</p><p>Likely cause: grasp slipped or wrong approach. The initial positions are identical ⇒ the difference comes from randomness in model sampling.</p></div></details>
+    <details class="acc"><summary><span class="n">8</span>Lifted but placed off target</summary><div class="acc-body"><p>6 times released 9–20 cm from the plate (closest 9.1 cm, just above the 8 cm threshold); 2 times the apple was dropped off the shelf.</p></div></details>
+    <details class="acc"><summary><span class="n">2</span>Fell right at the start of the episode</summary><div class="acc-body"><p>Fell at tick 7 and tick 30, before touching the apple. The first arm chunk overlaps the period in which AGILE is still stabilising after reset. We propose letting the robot "warm up" for a few dozen ticks before handing control to the model.</p></div></details>
+    <h4>Factors ruled out</h4>
+    <div class="grid">
+      <div class="sub"><div class="sl">LATENCY</div><p>The simulation waits for the server; latency is the same for successful and failed episodes.</p></div>
+      <div class="sub"><div class="sl">SAFETY LAYER</div><p>Only clips arm joints at chunk boundaries; it never clipped the hands or waist.</p></div>
+      <div class="sub"><div class="sl">PIPELINE BUGS</div><p>28 successes with final distances of 1–6 cm ⇒ the data chain works correctly.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Scenario conclusion</h3></div>
+    <div class="panel"><div class="pl">CONCLUSION</div><p>A model fine-tuned on a single scene is <b>highly sensitive to visuals</b>: 56 % when the scene resembles the recording conditions, 0 % when it differs. Real-world deployment requires collecting data directly in the working environment or increasing visual diversity during training.</p></div>
+    <ul>
+      <li>The pipeline has been <b>mastered and independently reproduced</b>; the code is ready to swap in a real-robot backend.</li>
+      <li>The exact instruction used during data recording must be used; each configuration needs ≥ 50 episodes to draw conclusions.</li>
+      <li>Not yet done: control run in the original Docker Arena; Galileo scene with ±2 cm shuffling; warm-up phase after reset.</li>
+    </ul>
+  </div>
+</section>

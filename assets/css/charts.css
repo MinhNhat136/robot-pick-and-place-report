@@ -1,0 +1,19 @@
+/* Chart container, SVG marks and the shared tooltip. */
+/* ---------- charts ---------- */
+.chart{margin:14px 0;border:1px solid rgba(34,38,30,.12);border-radius:14px;background:#fff;padding:16px 18px 10px}
+.chart-head{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.chart-head .ct{font-size:14.5px;font-weight:700;color:var(--ink)}
+.chart-head .cs{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.chart-head .btn{margin-left:auto}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
+.chart svg .lbl{fill:var(--ink);font-weight:600}
+.chart svg .axis{stroke:rgba(34,38,30,.14);stroke-width:1}
+.chart svg .grid{stroke:rgba(34,38,30,.07);stroke-width:1}
+.chart .table-view{display:none}
+.chart.show-table .table-view{display:block}
+.chart.show-table .plot{display:none}
+.tip{position:fixed;z-index:40;pointer-events:none;background:#1f231b;color:#f2f4ec;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .12s;max-width:300px}
+.tip.show{opacity:1}
+.tip b{color:#fff}
+.tip .tk{font:600 9.5px var(--mono);letter-spacing:.1em;color:#b8c0a8;display:block;margin-bottom:3px}

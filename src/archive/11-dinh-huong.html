@@ -1,0 +1,91 @@
+<section class="section" id="dinh-huong" data-hue="blue" data-kicker="V.02 · ĐỊNH HƯỚNG" data-title="Định hướng phát triển">
+  <div class="hero">
+    <span class="pill">MỤC V.02 · ĐỊNH HƯỚNG PHÁT TRIỂN</span>
+    <h2>Từ mô phỏng tới robot thật<span class="dot">.</span></h2>
+    <p class="lead">Pipeline <b>dữ liệu → fine-tune → đánh giá</b> đã chạy trọn trong mô phỏng. Bước tiếp theo đi theo ba giai đoạn: <b>hoàn thiện trong mô phỏng</b>, <b>đưa lên robot G1 thật</b>, rồi <b>mở rộng tác vụ</b>.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Lộ trình tổng thể</h3></div>
+    <div class="flow">
+      <div class="step"><div class="sk">GIAI ĐOẠN 1</div><div class="sv">Hoàn thiện trong mô phỏng</div><div class="sd">Chuẩn hoá cách chấm điểm, ổn định reset, tăng đa dạng dữ liệu</div></div>
+      <div class="step"><div class="sk">GIAI ĐOẠN 2</div><div class="sv">Robot G1 thật</div><div class="sd">Backend phần cứng, độ trễ, an toàn, dữ liệu tại chỗ</div></div>
+      <div class="step"><div class="sk">GIAI ĐOẠN 3</div><div class="sv">Mở rộng</div><div class="sd">Co-training sim + real, thêm tác vụ theo nhu cầu</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Giai đoạn</th><th>Căn cứ từ kết quả hiện tại</th><th>Thước đo hoàn thành</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Mô phỏng</td><td>22/100 lần búa nằm yên trong thùng vẫn bị chấm thất bại; 10/300 episode ngã ngay sau reset; bài táo 56 % → 0 % khi đổi khung cảnh</td><td>Cùng một bộ điều kiện chấm cho mọi lần chạy; 0 lần ngã do reset; tỉ lệ thành công giữ được khi đổi khung cảnh</td></tr>
+        <tr><td>2 · Robot thật</td><td>Toàn bộ kết quả đều trong mô phỏng; độ trễ server 1–2,7 s/chunk</td><td>Cùng pipeline chạy trên G1 thật, chuyển động liên tục, an toàn cho người và robot</td></tr>
+        <tr class="hl"><td>3 · Mở rộng</td><td>Fine-tune một tác vụ mới chỉ mất ~1 giờ trên 1 H100 với 200 episode</td><td>Danh mục tác vụ có số liệu đánh giá, theo nhu cầu khách hàng</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Giai đoạn 1 · Hoàn thiện trong mô phỏng</h3></div>
+    <div class="tabs">
+      <div class="tab-list">
+        <button type="button"><span class="n">A</span>Bài búa</button>
+        <button type="button"><span class="n">B</span>Bài táo &amp; real2sim</button>
+        <button type="button"><span class="n">C</span>Đánh giá</button>
+      </div>
+      <div class="tab-panel"><ol>
+        <li><b>Chấm "đứng yên" theo dịch chuyển:</b> xét búa dịch bao nhiêu trong một khoảng thời gian thay vì vận tốc tức thời, để búa nằm yên trong thùng không bị chấm thất bại.</li>
+        <li><b>Giai đoạn khởi động sau reset:</b> giữ robot đứng vững vài bước trước khi giao quyền cho model, loại các lần ngã đầu episode.</li>
+        <li><b>Bổ sung dữ liệu pha thả:</b> demo thả búa vào giữa thùng và rút tay dứt khoát, vì nắm và nhấc đã ổn (91–95/100 lần).</li>
+        <li><b>Ngẫu nhiên hoá vị trí, góc của búa và thùng</b> khi thu dữ liệu và đánh giá, để đo khả năng tổng quát.</li>
+        <li><b>Đánh giá các checkpoint trung gian</b> và episode dài hơn 6 s, để tách "chậm" khỏi "sai".</li>
+      </ol></div>
+      <div class="tab-panel"><ol>
+        <li><b>Đa dạng hoá hình ảnh khi huấn luyện:</b> nền, ánh sáng, chất liệu, color jitter, nhằm giảm khoảng cách 56 % → 0 % giữa các khung cảnh.</li>
+        <li><b>Real2sim:</b> sinh thêm bố cục vật nhiễu, ánh sáng, chất liệu; tập trung dữ liệu pha nắm, vì 11/17 thất bại là không nhấc được quả.</li>
+        <li>Đánh giá trên 100 khung cảnh giữ lại để thu hẹp khoảng tin cậy theo từng loại quả.</li>
+      </ol></div>
+      <div class="tab-panel"><ol>
+        <li><b>Thống nhất điều kiện thành công</b> và ngưỡng chấm trước khi so sánh các cấu hình.</li>
+        <li><b>100 lần thử mỗi cấu hình</b>, luôn báo kèm khoảng tin cậy Wilson 95 %.</li>
+        <li>Câu lệnh lấy tự động từ cấu hình môi trường, tránh lệch với câu lúc ghi dữ liệu.</li>
+      </ol></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Giai đoạn 2 · Hướng tới robot thật</h3></div>
+    <div class="flow">
+      <div class="step"><div class="sk">01</div><div class="sv">Backend Unitree G1</div><div class="sd">Unitree SDK2; dùng chung client, an toàn, runner</div></div>
+      <div class="step"><div class="sk">02</div><div class="sv">Giảm độ trễ</div><div class="sd">Server gần robot, prefetch, chunk ngắn hơn</div></div>
+      <div class="step"><div class="sk">03</div><div class="sv">An toàn phần cứng</div><div class="sd">Giới hạn mô-men, watchdog, dừng khẩn cấp, chế độ chậm</div></div>
+      <div class="step"><div class="sk">04</div><div class="sv">Dữ liệu thật tại chỗ</div><div class="sd">Teleop robot thật + real2sim nhân dữ liệu</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Hạng mục</th><th>Kết quả kỳ vọng</th></tr></thead>
+      <tbody>
+        <tr><td>Backend Unitree G1</td><td>Chạy được cùng pipeline trên robot thật</td></tr>
+        <tr><td>Giảm độ trễ</td><td>Robot chuyển động liên tục, không khựng giữa các chunk</td></tr>
+        <tr><td>An toàn phần cứng</td><td>Thử nghiệm an toàn cho người và robot</td></tr>
+        <tr><td>Dữ liệu tại môi trường thật</td><td>Giảm khoảng cách hình ảnh và vật lý giữa mô phỏng và thực tế</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Giai đoạn 3 · Mở rộng</h3></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">01 · CO-TRAINING</div><div class="st">Kết hợp dữ liệu mô phỏng và thật</div><p>Tận dụng dữ liệu mô phỏng rẻ, giữ độ chính xác của dữ liệu thật.</p></div>
+      <div class="sub"><div class="sl">02 · TÁC VỤ MỚI</div><div class="st">Quy trình lặp lại được</div><p>Dựng môi trường → teleop → sinh thêm dữ liệu → fine-tune → đánh giá, như đã làm với bài búa.</p></div>
+      <div class="sub"><div class="sl">03 · DANH MỤC</div><div class="st">Tác vụ có số liệu đánh giá</div><p>Mỗi tác vụ đi kèm điều kiện thành công, tỉ lệ thành công và khoảng tin cậy.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Nội dung cần thống nhất</h3></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">01</div><div class="st">Tác vụ ưu tiên</div><p>Và môi trường làm việc mục tiêu.</p></div>
+      <div class="sub"><div class="sl">02</div><div class="st">KPI chấp nhận</div><p>Tỉ lệ thành công tối thiểu, thời gian chu kỳ, điều kiện an toàn.</p></div>
+      <div class="sub"><div class="sl">03</div><div class="st">Lịch tiếp cận phần cứng</div><p>Robot G1 thật và GPU tại chỗ.</p></div>
+      <div class="sub"><div class="sl">04</div><div class="st">Giấy phép</div><p>Checkpoint NVIDIA dùng giấy phép "non-commercial"; cần xem xét trước khi dùng thương mại.</p></div>
+    </div>
+    <p class="todo">[TODO: điều chỉnh theo trao đổi thực tế với khách hàng.]</p>
+  </div>
+</section>

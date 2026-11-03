@@ -1,0 +1,184 @@
+<section class="section" id="nghien-cuu" data-hue="blue" data-kicker="II.01 · NGHIÊN CỨU MÔ HÌNH" data-title="Nghiên cứu mô hình NVIDIA Isaac GR00T">
+  <div class="hero">
+    <span class="pill">MỤC II.01 · NGHIÊN CỨU MÔ HÌNH</span>
+    <h2>GR00T N1 và phiên bản N1.7 dùng trong dự án<span class="dot">.</span></h2>
+    <p class="lead">GR00T N1 là mô hình VLA mở cho robot hình người, gồm một mô hình thị giác–ngôn ngữ để <b>hiểu</b> và một Diffusion Transformer để <b>hành động</b>. Dự án dùng bản kế nhiệm <b>GR00T N1.7-3B</b>. Mục này đi lần lượt: model làm gì, gồm những gì, có hiệu quả không, rồi dự án áp dụng thế nào.</p>
+    <div class="meta">
+      <div><span class="ml">BÀI BÁO</span><span class="mv">arXiv:2503.14734 (03/2025)</span></div>
+      <div><span class="ml">MODEL DỰ ÁN</span><span class="mv">GR00T N1.7-3B</span></div>
+      <div><span class="ml">TỪ KHÓA</span><span class="mv">VLA · flow matching · data pyramid</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-thuat-ngu">
+    <div class="card-head"><span class="num">1</span><h3>Thuật ngữ nhanh</h3></div>
+    <div class="gloss"><div><b>Token</b><span>Mảnh nhỏ của ảnh hoặc câu chữ sau khi mã hoá; model đọc chuỗi token thay vì ảnh, chữ gốc.</span></div><div><b>VLA (Vision-Language-Action)</b><span>Model nhìn ảnh, đọc câu lệnh và xuất ra hành động cho robot.</span></div><div><b>System 2 / System 1</b><span>Phần hiểu (chậm) và phần hành động (nhanh) của GR00T.</span></div><div><b>Action / chuỗi action</b><span>Một action là bộ góc khớp mục tiêu cho một bước; chuỗi action là đoạn chuyển động sắp tới.</span></div><div><b>Flow matching</b><span>Cách sinh chuỗi action: bắt đầu từ nhiễu ngẫu nhiên rồi chỉnh dần thành chuyển động.</span></div><div><b>Embodiment</b><span>Một loại thân robot (G1, GR-1…); mỗi loại có bộ mã hoá riêng.</span></div><div><b>Pre-train / fine-tune</b><span>Học trước trên dữ liệu lớn chung / tinh chỉnh thêm cho một robot, một tác vụ cụ thể.</span></div><div><b>Checkpoint</b><span>Bộ trọng số của model đã huấn luyện, lưu thành file để dùng lại.</span></div><div><b>Teleop</b><span>Người điều khiển robot từ xa (ở đây bằng kính thực tế ảo) để ghi demo.</span></div></div>
+  </div>
+
+  <div class="card" id="nc-video">
+    <div class="card-head"><span class="num">2</span><h3>Cơ chế vận hành</h3></div>
+    <p>Video dưới đây minh hoạ cách một mô hình <b>Vision-Language-Action</b> như GR00T biến ảnh camera và câu lệnh thành chuyển động. Bấm vào từng bước bên phải để tua video tới đoạn tương ứng; mỗi bước có ghi chú cách dự án áp dụng.</p>
+    <div class="vchap" data-hue="blue">
+      <figure class="vchap-video">
+        <video src="assets/videos/pipeline.mp4" poster="assets/videos/pipeline-poster.jpg" controls preload="metadata" playsinline></video>
+        <div class="vchap-progress"><span></span></div>
+      </figure>
+      <div class="vchap-side">
+        <div class="vchap-head"><span class="vk">7 BƯỚC · BẤM ĐỂ TUA VIDEO</span><span class="vh">Từ ảnh và câu lệnh tới chuyển động</span></div>
+        <ol class="vchap-list">
+            <li><button type="button" data-seek="0"><span class="ts">0:00</span><span><span class="vt"><small>IMAGE TOKENS</small>Ảnh camera thành token hình ảnh</span><span class="vd">Ảnh được chia thành các ô nhỏ, qua bộ mã hoá thị giác (học từ cặp ảnh–chú thích) rồi chiếu sang không gian của mô hình ngôn ngữ.</span><span class="vp"><b>Dự án:</b> ảnh camera đầu G1 640×480; GR00T N1.7 dùng bộ mã hoá SigLip2.</span></span></button></li>
+            <li><button type="button" data-seek="12"><span class="ts">0:12</span><span><span class="vt"><small>TEXT TOKENS</small>Câu lệnh thành token văn bản</span><span class="vd">Câu lệnh như "pick up the dessert item" được tách thành từng mảnh từ.</span><span class="vp"><b>Dự án:</b> ví dụ "put the hammer in the bin"; câu lệnh phải trùng nguyên văn lúc ghi dữ liệu.</span></span></button></li>
+            <li><button type="button" data-seek="18"><span class="ts">0:18</span><span><span class="vt"><small>VISION-LANGUAGE MODEL</small>Mô hình thị giác–ngôn ngữ đọc cả hai</span><span class="vd">Một mô hình ngôn ngữ đã pre-train trên internet đọc đồng thời token ảnh và token văn bản.</span><span class="vp"><b>Dự án:</b> GR00T N1.7 dùng Cosmos-Reason2-2B ("System 2").</span></span></button></li>
+            <li><button type="button" data-seek="23"><span class="ts">0:23</span><span><span class="vt"><small>ACTION EXPERT</small>Action expert đọc thêm góc khớp</span><span class="vd">Một transformer nhỏ hơn đọc các token trên cùng góc khớp hiện tại của robot.</span><span class="vp"><b>Dự án:</b> 31 khớp thân trên (tay, bàn tay, eo); chân do AGILE lo.</span></span></button></li>
+            <li><button type="button" data-seek="29"><span class="ts">0:29</span><span><span class="vt"><small>ACTION CHUNK · FLOW MATCHING</small>Sinh cả chuỗi chuyển động bằng flow matching</span><span class="vd">Mô hình viết ra một chuỗi lệnh khớp cho tương lai. Chuỗi bắt đầu từ nhiễu và được khử dần theo hướng đã học tới chuyển động thật.</span><span class="vp"><b>Dự án:</b> 40 bước = 0,8 s (táo, búa); 16 bước (real2sim).</span></span></button></li>
+            <li><button type="button" data-seek="40"><span class="ts">0:40</span><span><span class="vt"><small>CLOSED-LOOP CONTROL</small>Thực thi rồi nhìn lại: vòng kín</span><span class="vd">Robot thực hiện phần đầu của chuỗi, chụp ảnh mới và lặp lại.</span><span class="vp"><b>Dự án:</b> táo và búa chạy hết 40 bước rồi mới hỏi lại; real2sim chạy 8/16 bước như trong video.</span></span></button></li>
+            <li><button type="button" data-seek="48"><span class="ts">0:48</span><span><span class="vt"><small>VISION-LANGUAGE-ACTION</small>Huấn luyện trên demo của nhiều loại robot</span><span class="vd">Toàn bộ mô hình được huấn luyện trên demo của nhiều loại robot, tạo thành mô hình VLA.</span><span class="vp"><b>Dự án:</b> fine-tune GR00T cho G1 với 200–790 demo mỗi tác vụ.</span></span></button></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-dau-vao">
+    <div class="card-head"><span class="num">3</span><h3>Dữ liệu đầu vào</h3></div>
+    <p>Mỗi lần gọi, model nhận ba loại dữ liệu của <b>đúng thời điểm hiện tại</b>: một ảnh camera, góc các khớp thân trên và câu lệnh. Model không nhận lịch sử các khung hình trước, cũng không thấy 12 khớp chân (phần chân do AGILE lo).</p>
+    <div class="io-sumrow">
+      <div><b>1</b><span>ảnh camera đầu<br><small>480×640, khung hình hiện tại</small></span></div>
+      <div><b>31</b><span>góc khớp thân trên<br><small>tay, ngón tay, eo</small></span></div>
+      <div><b>1</b><span>câu lệnh<br><small>giữ nguyên suốt episode</small></span></div>
+    </div>
+    <div class="io-grid">
+      <figure class="io-robot" data-md="body"><svg viewBox="40 4 440 440" role="img" aria-label="Robot G1: các khớp thân trên gửi lên model" data-body-svg></svg><figcaption><span class="io-k">TRẠNG THÁI · ROBOT G1</span>Chấm xanh: 31 khớp được gửi lên model · chấm trắng: 12 khớp chân do AGILE điều khiển</figcaption></figure>
+      <div class="io-side">
+        <figure class="io-img"><img src="images/kich-ban-1-tao-dia-frame0.jpg" alt="Ảnh camera đầu G1, khung đầu tiên của kịch bản táo → đĩa" loading="lazy"><figcaption><span class="io-k">GÓC NHÌN CỦA ROBOT · CAMERA ĐẦU</span>Khung đầu tiên của kịch bản 1</figcaption></figure>
+        <div class="io-blk"><span class="io-k">CÂU LỆNH GỬI ĐI</span><p class="io-cmd">"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</p></div>
+      </div>
+    </div>
+    <p class="proj"><b>Trong dự án:</b> kịch bản 1 và 3 dùng camera <code>ego_view</code> như trên; kịch bản 2 (real2sim) dùng camera <code>rs_view</code> với cùng 31 khớp.</p>
+  </div>
+
+  <div class="card" id="nc-dau-ra">
+    <div class="card-head"><span class="num">4</span><h3>Dữ liệu đầu ra</h3></div>
+    <p>Mỗi lần gọi, model trả về <b>một chuỗi 40 bước</b> cho tương lai gần, mỗi bước 35 giá trị. Robot thực hiện một bước mỗi tick 20 ms, nên một chuỗi đủ cho 0,8 s chuyển động trước khi cần chuỗi mới.</p>
+    <div class="io-sumrow">
+      <div><b>40</b><span>bước mỗi chuỗi<br><small>20 ms mỗi bước = 0,8 s chuyển động</small></span></div>
+      <div><b>35</b><span>giá trị mỗi bước<br><small>31 góc khớp + 4 lệnh cho chân</small></span></div>
+      <div><b>1</b><span>chuỗi mỗi lần gọi<br><small>gọi lại khi chuỗi sắp hết</small></span></div>
+    </div>
+    <div class="io-blk io-chunkviz" data-md="chunk">
+      <span class="io-k">VÍ DỤ · MỘT CHUỖI 40 BƯỚC TRONG DEMO TÁO → ĐĨA (EPISODE 0, TỪ GIÂY 0,4)</span>
+      <svg viewBox="0 0 640 260" role="img" aria-label="Một chuỗi 40 bước: 7 góc khớp tay trái và độ nắm bàn tay trái theo thời gian" data-chunk-svg></svg>
+      <div class="io-leg" data-chunk-leg></div>
+      <div class="io-frames">
+        <figure><img src="images/chunk-buoc01.jpg" alt="Camera đầu ở bước 1" loading="lazy"><figcaption>Bước 1 · tay tiến tới quả táo</figcaption></figure>
+        <figure><img src="images/chunk-buoc21.jpg" alt="Camera đầu ở bước 21" loading="lazy"><figcaption>Bước 21 · tay tới sát quả</figcaption></figure>
+        <figure><img src="images/chunk-buoc40.jpg" alt="Camera đầu ở bước 40" loading="lazy"><figcaption>Bước 40 · đã nắm quả</figcaption></figure>
+      </div>
+      <p>Đây là chuỗi action ghi sẵn trong dữ liệu demo, cùng dạng với chuỗi model trả về. Khi kiểm chứng open-loop, chuỗi model dự đoán cho cùng thời điểm lệch so với chuỗi này nhỏ hơn biên độ chuyển động 10–70 lần.</p>
+    </div>
+    <div class="io-blk"><span class="io-k">MỘT BƯỚC · 35 GIÁ TRỊ</span><div class="io-seg">
+        <span style="flex:7"><b>Tay trái</b>7</span><span style="flex:7"><b>Tay phải</b>7</span><span style="flex:7"><b>Bàn tay trái</b>7</span><span style="flex:7"><b>Bàn tay phải</b>7</span><span style="flex:3"><b>Eo</b>3</span><span class="cmd" style="flex:3"><b>Di chuyển</b>3</span><span class="cmd" style="flex:3"><b>Độ cao</b>1</span>
+      </div><div class="io-leg"><span><i></i>31 góc khớp mục tiêu → đưa thẳng xuống khớp</span><span><i class="cmd"></i>4 lệnh → chuyển cho AGILE</span></div></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">GÓC TUYỆT ĐỐI</div><p>31 giá trị khớp là góc mục tiêu, không phải độ thay đổi so với bước trước. Trước khi dùng, client vẫn kẹp theo giới hạn khớp và giới hạn tốc độ mỗi tick (II.02, card 7).</p></div>
+      <div class="sub"><div class="sl">LỆNH CHO CHÂN</div><p>Model không điều khiển trực tiếp 12 khớp chân. Nó chỉ đưa lệnh di chuyển và chiều cao hông (~0,72 m); AGILE dựa vào đó để giữ thăng bằng. Ba kịch bản của dự án đều đứng yên tại chỗ.</p></div>
+    </div>
+    <p class="proj"><b>Trong dự án:</b> kịch bản 1 và 3 dùng đúng chuỗi 40 bước ở 50 Hz như trên. Kịch bản 2 cố định hông nên không có lệnh cho chân: chuỗi 16 bước ở 20 Hz (cũng 0,8 s), mỗi bước 31 giá trị, mỗi lần gọi thực thi 8 bước.</p>
+  </div>
+
+  <div class="card" id="nc-kien-truc">
+    <div class="card-head"><span class="num">5</span><h3>Kiến trúc mô hình</h3></div>
+    <p>Phần hiểu (bài báo gọi là <b>System 2</b>) là một mô hình thị giác–ngôn ngữ, chạy chậm, khoảng 10 lần mỗi giây. Phần hành động (<b>System 1</b>, trong video gọi là "action expert") nhận kết quả của phần hiểu cùng góc khớp hiện tại của robot, và chạy nhanh hơn nhiều. Bấm vào từng khối trong sơ đồ để xem nó làm gì.</p>
+    <div class="vref"><span class="vref-k">XEM TRONG VIDEO</span><button type="button" data-vseek="0"><b>0:00</b>Ảnh</button><button type="button" data-vseek="12"><b>0:12</b>Câu lệnh</button><button type="button" data-vseek="18"><b>0:18</b>Phần hiểu</button><button type="button" data-vseek="23"><b>0:23</b>Phần hành động</button></div>
+    <div class="ds-lab single" data-md="arch">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">LUỒNG DỮ LIỆU TRONG GR00T N1</span><span class="ds-tag">SƠ ĐỒ · SỐ LIỆU TỪ BÀI BÁO</span></div>
+        <div class="mo-arm wide">
+          <svg viewBox="0 0 760 330" role="img" aria-label="Kiến trúc hai hệ thống của GR00T" data-arch-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-arch-out></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="proj"><b>Trong dự án:</b> GR00T N1.7 giữ nguyên cấu trúc hai phần này; phần hiểu được thay bằng model mới hơn (card 7). Đầu vào là ảnh camera đầu G1 và 31 góc khớp thân trên. Ba khối MLP (state encoder, action encoder, action decoder) là riêng cho từng loại robot: đây là phần phải học khi đưa G1 vào model.</p>
+    <div class="perf">
+      <div><small>TỔNG THAM SỐ</small><b>2,2<i>tỷ</i></b><span>GR00T N1, bản trong bài báo</span></div>
+      <div><small>PHẦN HIỂU</small><b>1,34<i>tỷ</i></b><span>Phần lớn tham số nằm ở mô hình thị giác–ngôn ngữ</span></div>
+      <div><small>TỐC ĐỘ</small><b>10 · 120<i>Hz</i></b><span>Phần hiểu ~10 Hz, vòng điều khiển ~120 Hz</span></div>
+    </div>
+    <details class="acc"><summary>Chi tiết kỹ thuật · bài báo</summary><div class="acc-body"><ul><li>Phần hiểu: Eagle-2, gồm bộ mã hoá ảnh SigLIP-2 và mô hình ngôn ngữ SmolLM2. Ảnh 224×224 được nén còn 64 token (pixel shuffle).</li><li>Đặc trưng lấy ở lớp 12 của mô hình ngôn ngữ thay vì lớp cuối: bài báo ghi nhận vừa nhanh hơn vừa thành công cao hơn.</li><li>Phần hành động: Diffusion Transformer (DiT), xen kẽ cross-attention (nhìn token của phần hiểu) và self-attention (giữa token trạng thái và token action).</li><li>Trạng thái và action đi qua bộ mã hoá/giải mã MLP riêng cho từng loại robot (embodiment).</li></ul></div></details>
+  </div>
+
+  <div class="card" id="nc-ket-qua">
+    <div class="card-head"><span class="num">6</span><h3>Kết quả công bố</h3></div>
+    <p>Bài báo so GR00T N1 với Diffusion Policy, một model chỉ học từ dữ liệu của chính tác vụ, không học trước. GR00T N1 tốt hơn ở mọi cấu hình, cách biệt lớn nhất khi ít dữ liệu.</p>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Tỉ lệ thành công: Diffusion Policy so với GR00T N1</b><span>số liệu bài báo</span></div>
+      <div class="cb-group">Mô phỏng · trung bình 3 benchmark (100 demo / tác vụ)</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:33.4%"></i></span><span class="v">33,4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:45%"></i></span><span class="v">45,0 %</span></div>
+      <div class="cb-group">Robot GR-1 thật · đủ dữ liệu</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:46.4%"></i></span><span class="v">46,4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:76.8%"></i></span><span class="v">76,8 %</span></div>
+      <div class="cb-group">Robot GR-1 thật · chỉ 10 % dữ liệu</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:10.2%"></i></span><span class="v">10,2 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:42.6%"></i></span><span class="v">42,6 %</span></div>
+    </div>
+    <p class="proj"><b>Trong dự án:</b> đây là lý do vài trăm demo đủ để fine-tune một tác vụ mới cho G1, và dữ liệu real2sim, dữ liệu sinh thêm là đủ dùng.</p>
+    <details class="acc"><summary>Bảng chi tiết theo benchmark mô phỏng · bảng 4 bài báo</summary><div class="acc-body"><div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Benchmark</th><th class="num">Diffusion Policy<br>30 / 100 / 300 demo</th><th class="num">GR00T-N1-2B<br>30 / 100 / 300 demo</th></tr></thead>
+      <tbody>
+        <tr><td>RoboCasa (24 tác vụ)</td><td class="num">14,7 / 25,6 / 43,2</td><td class="num"><b>17,4 / 32,1 / 49,6</b></td></tr>
+        <tr><td>DexMimicGen (9 tác vụ)</td><td class="num">23,7 / 46,9 / 68,4</td><td class="num"><b>29,6 / 58,5 / 74,2</b></td></tr>
+        <tr><td>GR-1 Tabletop (24 tác vụ)</td><td class="num">21,3 / 32,7 / 40,4</td><td class="num"><b>43,2 / 50,0 / 49,3</b></td></tr>
+      </tbody>
+    </table></div><p>Tỉ lệ thành công trung bình (%). GR00T N1 dẫn ở mọi ô; riêng GR-1 Tabletop gần như không tăng thêm từ 100 lên 300 demo.</p></div></details>
+  </div>
+
+  <div class="card" id="nc-n17">
+    <div class="card-head"><span class="num">7</span><h3>Đối chiếu phiên bản</h3></div>
+    <p>Các số liệu ở card 6 là của N1 trên robot Fourier GR-1. Mọi thí nghiệm của dự án dùng N1.7 trên Unitree G1.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Khía cạnh</th><th>GR00T N1 (bài báo)</th><th>GR00T N1.7 (dự án)</th></tr></thead>
+      <tbody>
+        <tr><td>Quy mô</td><td>~2,2 tỷ tham số</td><td>~3 tỷ tham số</td></tr>
+        <tr><td>Phần hiểu (System 2)</td><td>NVIDIA Eagle-2</td><td>Cosmos-Reason2-2B (kiến trúc Qwen3-VL), ảnh theo tỉ lệ gốc</td></tr>
+        <tr><td>Phần hành động (System 1)</td><td>DiT + flow matching</td><td>Giữ nguyên</td></tr>
+        <tr><td>Dùng cho nhiều robot</td><td>MLP riêng cho từng robot</td><td>Giữ nguyên; trạng thái được đệm tới độ dài cố định</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card" id="nc-checkpoint">
+    <div class="card-head"><span class="num">8</span><h3>Checkpoint thực nghiệm</h3></div>
+    <p>Ba checkpoint dùng trong ba kịch bản đều xuất phát từ GR00T N1.7-3B; điểm khác nhau nằm ở ai fine-tune và fine-tune bằng dữ liệu gì.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Checkpoint</th><th>Tác vụ</th><th>Nguồn</th><th>Dữ liệu fine-tune</th><th class="num">Thành công</th></tr></thead>
+      <tbody>
+        <tr><td><b>Kịch bản 1</b><br><code class="ck">GN1x-Tuned-Arena-G1-Static-PickNPlace</code></td><td>Táo → đĩa</td><td>NVIDIA, dùng lại</td><td>208 demo teleop trong mô phỏng</td><td class="num">92 % Arena gốc<br>56 % khung cảnh tự dựng</td></tr>
+        <tr><td><b>Kịch bản 2</b><br><code class="ck">g1_fruits_n17</code></td><td>Chọn đúng 1 trong 4 loại quả</td><td>Dự án fine-tune</td><td>790 episode real2sim từ dữ liệu G1 thật</td><td class="num">66 % (33/50)</td></tr>
+        <tr><td><b>Kịch bản 3</b><br><code class="ck">hammer_mix200_n17</code></td><td>Búa → thùng</td><td>Dự án fine-tune</td><td>200 episode: teleop + sinh thêm</td><td class="num">66 % (66/100)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="proj"><b>Giấy phép:</b> N1.7 theo NVIDIA Open Model Agreement; checkpoint Arena ghi "non-commercial use".</p>
+  </div>
+
+  <div class="card" id="nc-nhan-dinh">
+    <div class="card-head"><span class="num">9</span><h3>Kết luận nghiên cứu</h3></div>
+    <p>Những gì dự án rút ra sau khi dùng GR00T N1.7 trên cả ba kịch bản.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">ĐIỂM MẠNH</div><div class="st">Dạy tác vụ mới nhanh, ít dữ liệu</div><ul>
+        <li>Vài trăm demo là đủ: bài búa từ 0 % lên 66–73 % với 200–400 episode (mục III.03).</li>
+        <li>Fine-tune ~1 giờ trên một H100, chạy được trên một GPU.</li>
+        <li>Hiểu câu lệnh tự nhiên: model 4 loại quả chọn đúng quả theo lệnh, không lần nào gắp nhầm (mục III.02).</li>
+        <li>Một model điều khiển cùng lúc tay, bàn tay và eo.</li>
+      </ul></div>
+      <div class="sub"><div class="sl warn">GIỚI HẠN</div><div class="st">Nhạy với hình ảnh, phải tune từng tác vụ</div><ul>
+        <li>Phụ thuộc khung cảnh: bài táo từ 92 % xuống 56 % khi lệch ánh sáng, 0 % khi lệch cả khung cảnh (mục II.04).</li>
+        <li>Không dùng lại được cho tác vụ khác: checkpoint táo đạt 0 % trên bài 4 loại quả.</li>
+        <li>Mỗi lần gọi ~1,3 s qua mạng (model tính ~100 ms), lâu hơn một chuỗi chuyển động 0,8 s (mục I.02).</li>
+        <li>Checkpoint Arena của NVIDIA ghi "non-commercial use".</li>
+      </ul></div>
+    </div>
+    <div class="callout"><b>Kết luận:</b> GR00T phù hợp làm nền cho các tác vụ gắp–đặt của G1. Yếu tố quyết định kết quả không phải model mà là dữ liệu: thu đúng môi trường làm việc, hoặc đủ đa dạng về hình ảnh.</div>
+  </div>
+
+</section>

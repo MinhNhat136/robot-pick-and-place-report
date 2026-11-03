@@ -1,0 +1,127 @@
+<section class="section" id="dong-hoc" data-hue="blue" data-kicker="II.03 · NGHIÊN CỨU CHUYỂN ĐỘNG" data-title="Nghiên cứu chuyển động của robot G1">
+  <div class="hero">
+    <span class="pill">MỤC II.03 · NGHIÊN CỨU CHUYỂN ĐỘNG</span>
+    <h2>Từ góc khớp tới chuyển động và lực<span class="dot">.</span></h2>
+    <p class="lead">GR00T chỉ xuất ra <b>góc khớp mục tiêu</b>. Biến các con số đó thành chuyển động thật cần hiểu <b>động học</b> (góc khớp ↔ vị trí tay, camera) và <b>động lực học</b> (mô-men, quán tính, tiếp xúc, thăng bằng). Phần này tổng hợp các kiến thức đó và nơi chúng xuất hiện trong dự án; mỗi khái niệm có một khung minh hoạ để thử.</p>
+    <div class="meta">
+      <div><span class="ml">ROBOT</span><span class="mv">Unitree G1 · 43 khớp</span></div>
+      <div><span class="ml">ÁP DỤNG</span><span class="mv">Real2sim · teleop · điều khiển khớp · thăng bằng</span></div>
+      <div><span class="ml">TỪ KHÓA</span><span class="mv">FK · IK · PD · tiếp xúc</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Cấu trúc khớp G1</h3></div>
+    <p>G1 là một cây gồm các khâu nối với nhau bằng khớp quay, gốc là xương chậu (pelvis). Mỗi nhóm khớp do một thành phần khác nhau điều khiển. Bấm vào từng nhóm để xem.</p>
+    <div class="ds-lab single" data-mo="body">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">43 KHỚP CỦA G1 · NHÌN TỪ PHÍA TRƯỚC</span><span class="ds-tag">SƠ ĐỒ MINH HOẠ</span></div>
+        <div class="mo-body">
+          <svg viewBox="0 0 260 330" role="img" aria-label="Sơ đồ khớp của robot G1" data-body-svg></svg>
+          <div class="mo-groups" data-body-list>
+            <button type="button" data-g="leg" aria-pressed="false"><span class="mg-n">12</span><span><b>Chân</b><small>Hông (3), gối, cổ chân (2) mỗi bên</small></span><em>AGILE</em></button>
+            <button type="button" data-g="waist" aria-pressed="false"><span class="mg-n">3</span><span><b>Eo</b><small>Xoay, nghiêng ngang, gập</small></span><em>GR00T</em></button>
+            <button type="button" data-g="arm" aria-pressed="false"><span class="mg-n">14</span><span><b>Tay</b><small>Vai (3), khuỷu, cổ tay (3) mỗi bên</small></span><em>GR00T</em></button>
+            <button type="button" data-g="hand" aria-pressed="false"><span class="mg-n">14</span><span><b>Bàn tay Dex3</b><small>Ngón trỏ (2), giữa (2), cái (3) mỗi bên</small></span><em>GR00T</em></button>
+            <p class="ds-note">GR00T điều khiển 31 khớp thân trên (eo gần như cố định trong các tác vụ); AGILE lo 12 khớp chân.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><b>Bốn thứ tự khớp khác nhau</b> cùng tồn tại: thứ tự trong mô phỏng (duyệt cây USD), thứ tự của bộ điều khiển toàn thân, thứ tự nhóm của GR00T và thứ tự đầu vào của AGILE. Chỉ cần lệch một cột là robot ngã hoặc model "mù", nên dự án ánh xạ mọi thứ theo <b>tên khớp</b> và kiểm thử tự động.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Động học thuận</h3></div>
+    <p><b>Động học thuận (FK)</b> tính vị trí của từng khâu (bàn tay, đầu ngón, camera) từ các góc khớp, bằng cách nhân lần lượt các phép biến đổi dọc cây khớp mô tả trong file URDF. Kéo các thanh trượt để thấy: biết góc khớp là biết chính xác bàn tay ở đâu.</p>
+    <div class="ds-lab single" data-mo="fk">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">CÁNH TAY NHÌN NGANG · 3 KHỚP</span><span class="ds-tag">MINH HOẠ · ĐỘ DÀI KHÂU GẦN ĐÚNG</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="Cánh tay 3 khớp, động học thuận" data-fk-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>Vai <b data-fk-v="0"></b></span><input type="range" min="-60" max="120" value="40" data-fk-q="0"></label>
+              <label><span>Khuỷu <b data-fk-v="1"></b></span><input type="range" min="0" max="140" value="60" data-fk-q="1"></label>
+              <label><span>Cổ tay <b data-fk-v="2"></b></span><input type="range" min="-60" max="60" value="0" data-fk-q="2"></label>
+            </div>
+            <div class="mo-out" data-fk-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout"><b>Ứng dụng trong real2sim:</b> dataset G1 thật không có vị trí đồ vật. Bộ FK tự viết (chỉ dùng numpy) tính quỹ đạo lòng bàn tay từ góc khớp; tay khép ở đâu thì quả ở đó, tay mở ở đâu thì đĩa ở đó. Tư thế thân suy ra từ giả định hai bàn chân đặt phẳng trên sàn. Xem khung minh hoạ đầy đủ ở mục II.04.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Động học ngược</h3></div>
+    <p><b>Động học ngược (IK)</b> làm ngược lại: cho trước vị trí mong muốn của cổ tay, tìm góc khớp đạt được nó. Khi teleop bằng kính Meta Quest, tư thế tay cầm thành đích cổ tay robot, rồi bộ giải IK <b>Pink</b> tính góc khớp ở mỗi khung hình. Bấm hoặc kéo trong khung để đặt đích; thử đặt ngoài tầm với.</p>
+    <div class="ds-lab single" data-mo="ik">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">BẤM / KÉO ĐỂ ĐẶT ĐÍCH CỔ TAY</span><span class="ds-tag">MINH HOẠ · IK 2 KHỚP</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="Cánh tay 2 khớp, động học ngược" data-ik-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-ik-out></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Động lực học</h3></div>
+    <p>Động học chỉ nói <b>tay ở đâu</b> khi biết góc khớp. <b>Động lực học</b> trả lời câu hỏi tiếp theo: làm sao để khớp <b>thực sự quay tới</b> góc đó. GR00T chỉ gửi <b>góc mục tiêu</b>, không gửi lực; motor ở mỗi khớp phải tự tạo ra mô-men xoắn đủ để kéo khâu (có khối lượng, quán tính) tới đích mà không rung.</p>
+    <div class="pd-flow">
+      <div><span class="k">1 · MỤC TIÊU</span><b>Góc khớp cần đạt</b><small>từ GR00T, mỗi 20 ms</small></div>
+      <div class="hl"><span class="k">2 · BỘ PD</span><b>Tính mô-men xoắn</b><small>dựa trên sai lệch góc và vận tốc</small></div>
+      <div><span class="k">3 · VẬT LÝ</span><b>Khớp quay</b><small>mô-men ÷ quán tính = gia tốc góc</small></div>
+      <div><span class="k">4 · ĐO LẠI</span><b>Góc mới</b><small>lặp lại mỗi bước vật lý 5 ms</small></div>
+    </div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">P · ĐỘ CỨNG (K<sub>p</sub>)</div><div class="st">Như một lò xo</div><p>Lệch đích càng xa, lực kéo về càng mạnh. Lò xo càng cứng thì khớp bám đích càng nhanh, nhưng dễ vọt quá rồi rung qua lại.</p></div>
+      <div class="sub"><div class="sl">D · GIẢM CHẤN (K<sub>d</sub>)</div><div class="st">Như một bộ giảm xóc</div><p>Khớp quay càng nhanh, lực hãm càng lớn. Đủ giảm chấn thì khớp tới đích êm, không vọt lố; quá nhiều thì tới đích chậm.</p></div>
+    </div>
+    <pre class="diagram">mô-men = K<sub>p</sub> × (góc mục tiêu − góc hiện tại)  −  K<sub>d</sub> × vận tốc khớp
+         (lò xo kéo về đích)                   (giảm xóc hãm lại)</pre>
+    <p class="proj"><b>Trong dự án:</b> K<sub>p</sub>, K<sub>d</sub> không chọn tay mà suy ra từ quán tính motor theo hai thông số dễ hiểu: <b>tần số riêng 10 Hz</b> (độ nhanh) và <b>hệ số giảm chấn ζ = 2</b> (độ êm). Kết quả: khớp tới 90 % đích sau ~140 ms và không vọt lố. Kéo thanh trượt bên dưới để so sánh.</p>
+    <div class="ds-lab single" data-mo="pd">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">KHỚP NHẬN LỆNH NHẢY GÓC · GÓC THỰC TẾ THEO THỜI GIAN</span><span class="ds-tag">MINH HOẠ · HỆ BẬC HAI LÝ TƯỞNG</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 230" role="img" aria-label="Đáp ứng của khớp với bộ PD" data-pd-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>Độ nhanh · tần số riêng <b data-pd-v="w"></b></span><input type="range" min="2" max="20" step="0.5" value="10" data-pd="w"></label>
+              <label><span>Độ êm · hệ số giảm chấn ζ <b data-pd-v="z"></b></span><input type="range" min="0.1" max="3" step="0.05" value="2" data-pd="z"></label>
+            </div>
+            <div class="gen-btns"><button type="button" class="chip" data-pd-preset="10,2">Dự án: êm</button><button type="button" class="chip" data-pd-preset="10,0.3">Ít giảm xóc: rung</button><button type="button" class="chip" data-pd-preset="3,2">Lò xo mềm: chậm</button></div>
+            <div class="mo-out" data-pd-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h4>Ai tính mô-men PD trong mô phỏng?</h4>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">CÁCH 1 · PD ẨN (IMPLICIT)</div><div class="st">Bộ giải vật lý tự tính</div><p>PhysX tính lực PD ngay trong bước giải. Rất ổn định kể cả khi khớp cứng; là mặc định của Isaac Lab.</p></div>
+      <div class="sub"><div class="sl">CÁCH 2 · PD TƯỜNG MINH (IDEAL PD)</div><div class="st">Code tính rồi đặt mô-men vào</div><p>Dùng đúng công thức trên ở mỗi bước, giống driver của robot thật hơn. Arena dùng cách này cho G1.</p></div>
+    </div>
+    <p class="proj"><b>Vì sao cần để ý:</b> cùng một chuỗi góc mục tiêu, hai cách cho chuyển động tay hơi khác nhau. Model học từ demo ghi ở cách nào thì khi đánh giá cũng nên dùng đúng cách đó.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Giới hạn tốc độ khớp</h3></div>
+    <p>Lớp an toàn chặn bước nhảy góc khớp: mỗi tick (20 ms) góc tay đổi tối đa 0,2 rad, eo 0,1 rad, bàn tay 1,5 rad. Ngưỡng lấy từ dữ liệu thật (tay: 0,15 rad/tick ở phân vị 99,9 %). Thử một lệnh nhảy lớn:</p>
+    <div class="ds-lab single" data-mo="rate">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">LỆNH NHẢY GÓC VÀ GÓC SAU GIỚI HẠN · KHỚP TAY</span><span class="ds-tag">MINH HOẠ</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 210" role="img" aria-label="Bộ giới hạn tốc độ khớp" data-rate-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one"><label><span>Độ lớn bước nhảy <b data-rate-v></b></span><input type="range" min="0.1" max="1.2" step="0.05" value="0.8" data-rate-q></label></div>
+            <div class="mo-out" data-rate-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figure class="fig"><img src="images/nb08_rate_limiter.png" alt="Lệnh khớp vai trước và sau bộ giới hạn tốc độ" loading="lazy"><figcaption><b>Số liệu thật</b>: lệnh khớp vai trái qua 80 tick (2 chuỗi 40 bước ghép lại). Với chuyển động bình thường, đường sau bộ giới hạn (nét đứt) trùng với lệnh gốc: lớp an toàn chỉ can thiệp khi có bước nhảy bất thường.</figcaption></figure>
+  </div>
+</section>

@@ -1,0 +1,200 @@
+<section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · パイプラインの調査" data-title="パイプラインの調査：GR00T ↔ G1 フローの再現">
+  <div class="hero">
+    <span class="pill">II.02 節 · パイプラインの調査</span>
+    <h2>12 本のノートブックで GR00T ↔ G1 フローの各ステップを再現<span class="dot">。</span></h2>
+    <p class="lead">NVIDIA の既存フレームワークに依存しないよう、本プロジェクトではカメラ画像から関節指令までの<b>フロー全体を独自に再構築</b>しました。各ステップは個別の<b>ノートブック</b>で調査し（手作業で実装、データを観察、リファレンスと照合）、その後テスト付きのソースコードとしてパッケージ化しています。</p>
+    <div class="meta">
+      <div><span class="ml">ノートブック</span><span class="mv">調査用ノートブック 12 本</span></div>
+      <div><span class="ml">ソースコード</span><span class="mv">Package g1gr00t · unit test 84 件</span></div>
+      <div><span class="ml">キーワード</span><span class="mv">notebook → package · 階層ごとの検証</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-tong-the-ja">
+    <div class="card-head"><span class="num">1</span><h3>全体フロー</h3></div>
+    <p>実行前に、クライアントはシミュレーション環境を構築し、サーバーに一度だけ接続します。その後、各制御ループは 2 台のマシンを経由します。ワークステーション上の<b>クライアント</b>はシミュレーションとすべてのデータ処理ステップ（センサー読み取り、パッケージ化、デコード、安全チェック、関節への指令送出）を担います。H100 GPU 上の<b>ポリシーサーバー</b>はモデルの実行のみを担います。クライアントは 20 ms ごとに動作するが、サーバーを呼び出すのは新しいチャンクが必要なときのみ、つまり約 40 tick に 1 回です。カードラベルは、そのステップを説明しているカードを示します。</p>
+    <div class="cs-flow">
+      <div class="cs-head" style="grid-column:2"><b>クライアント · ワークステーション</b><small>50 Hz ループ · 1 tick 20 ms</small></div>
+      <div class="cs-head mid" style="grid-column:3"><b>通信経路</b><small>ZeroMQ · msgpack · SSH tunnel</small></div>
+      <div class="cs-head" style="grid-column:4"><b>ポリシーサーバー · H100</b><small>新しいチャンクごと · 約 40 tick</small></div>
+      <div class="cs-phase" style="grid-row:2"><span>初期化 · ループ開始前に一度だけ実行</span></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:2"><div class="nk">A · 環境の初期化</div><div class="nt">シミュレーション構築、AGILE 読み込み</div><div class="nd">43 関節の G1 ロボット、リンゴ–皿のシーン、頭部カメラ。ロボットが安定して立つよう 10 ステップ実行</div><div class="nb-tags"><span>カード 2</span></div></div>
+      <div class="cs-node init" style="grid-row:3;grid-column:4"><div class="nk">起動</div><div class="nt">ポリシーサーバー準備完了</div><div class="nd">GR00T N1.7 の checkpoint を H100 に読み込み、ZeroMQ ポートを開いてクライアントを待機</div></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:2"><div class="nk">B · 接続の確立</div><div class="nt">接続を開き、契約を読む</div><div class="nd">SSH tunnel 経由の ZeroMQ、サーバーに ping、契約をクライアント設定と照合</div><div class="nb-tags"><span>カード 3</span></div></div>
+      <div class="cs-msg both" style="grid-row:4"><span class="mk">PING · 契約の取得</span><span class="ml"></span><span class="mt">サーバーが key 一覧、各グループの次元数、チャンク長を返す</span></div>
+      <div class="cs-node init noarr" style="grid-row:4;grid-column:4"><div class="nk">契約を返す</div><div class="nt">データ記述</div><div class="nd">送信する状態 5 グループ、返す action 7 グループ、チャンク 40 ステップ</div><div class="nb-tags"><span>カード 3</span></div></div>
+      <div class="cs-phase loop" style="grid-row:5"><span>制御ループ · エピソード終了まで繰り返し</span></div>
+      <div class="cs-loop" style="grid-row:6 / 13"><span>20 ms の tick ごとに繰り返し</span></div>
+      <div class="cs-node " style="grid-row:6;grid-column:2"><div class="nk">1 · センサー読み取り</div><div class="nt">シミュレーション内の G1 ロボット</div><div class="nd">頭部カメラ画像 640×480、関節角 43、胴体 IMU</div><div class="nb-tags"><span>カード 4</span></div></div>
+      <div class="cs-node " style="grid-row:7;grid-column:2"><div class="nk">2 · パッケージ化</div><div class="nt">観測の作成</div><div class="nd">関節名に基づき 43 → 上半身 31 関節、指示文を追加、次元数をチェック</div><div class="nb-tags"><span>カード 5</span></div></div>
+      <div class="cs-msg right" style="grid-row:7"><span class="mk">送信 · get_action</span><span class="ml"></span><span class="mt">画像 0.92 MB + 関節角 31 + 指示文</span></div>
+      <div class="cs-node " style="grid-row:7;grid-column:4"><div class="nk">受信</div><div class="nt">契約チェック</div><div class="nd">各グループの名前と次元数を checkpoint の設定と照合</div><div class="nb-tags"><span>カード 3</span></div></div>
+      <div class="cs-node ghost" style="grid-row:8;grid-column:2"><div class="nk">3 · 待機</div><div class="nt">新しいチャンクを待つ</div><div class="nd">シミュレーションは停止して待機。実機では停滞しないよう事前に呼び出す必要がある</div><div class="nb-tags"><span>カード 7</span></div></div>
+      <div class="cs-node focus" style="grid-row:8;grid-column:4"><div class="nk">推論</div><div class="nt">GR00T N1.7</div><div class="nd">理解部が画像 + 指示文を読み取り、DiT が 4 ステップでノイズ除去して動作チャンクを生成</div><div class="nb-tags"><span>~100 ms</span></div></div>
+      <div class="cs-node " style="grid-row:9;grid-column:2"><div class="nk">4 · デコード &amp; 安全</div><div class="nt">チャンクのチェック</div><div class="nd">関節グループを分割、NaN/Inf を遮断、関節・移動・高さの制限内にクランプ</div><div class="nb-tags"><span>カード 6</span><span>カード 7</span></div></div>
+      <div class="cs-msg left" style="grid-row:9"><span class="mk">受信 · action チャンク</span><span class="ml"></span><span class="mt">40 ステップ × 35 値、6.8 KB。呼び出し 1 回全体で約 1.05–1.3 s</span></div>
+      <div class="cs-node noarr" style="grid-row:9;grid-column:4"><div class="nk">返却</div><div class="nt">40 ステップのチャンク</div><div class="nd">各ステップに上半身 31 関節 + 移動 3 + 高さ 1</div></div>
+      <div class="cs-node " style="grid-row:10;grid-column:2"><div class="nk">5 · スケジューリング</div><div class="nt">tick ごとに 1 ステップを取り出す</div><div class="nd">40 ステップ = 0.8 s の動作。残りが少なくなったら次のチャンクを事前に呼び出す</div><div class="nb-tags"><span>カード 7</span></div></div>
+      <div class="cs-node " style="grid-row:11;grid-column:2"><div class="nk">6 · 速度制限</div><div class="nt">指令の平滑化</div><div class="nd">各 tick で腕の変化は最大 0.2 rad、特に 2 つのチャンクの境界で有効</div><div class="nb-tags"><span>カード 7</span></div></div>
+      <div class="cs-node noarr" style="grid-row:12;grid-column:2"><div class="nk">7 · 実行</div><div class="nt">関節へ指令を送出</div><div class="nd">上半身 31 関節は GR00T、脚 12 関節は AGILE に従い、その後物理ステップを 4 回</div><div class="nb-tags"><span>カード 8</span></div></div>
+      <div class="cs-note" style="grid-row:10 / 13;grid-column:4"><span class="bk">ロボットが 40 ステップを実行している間</span><p>サーバーは空き状態です。クライアントはチャンクの残りが少なくなったときのみ再度呼び出します。事前呼び出し（カード 7）では観測を早めに送り、新しいチャンクが間に合うため、ロボットは停止せずに済みます。</p><p>各呼び出しでは時間の大部分が通信経路で費やされます。モデルの計算は約 100 ms ですが、呼び出し 1 回全体では約 1.05–1.3 s かかります。</p></div>
+    </div>
+    <div class="cs-foot">
+      <div><span class="bk">事前 · オフライン</span><p>デモ → LeRobot dataset → H100 でファインチューニング → checkpoint をポリシーサーバーに読み込み。</p></div>
+      <div><span class="bk">各エピソードの後</span><p>リセットして次のエピソードを実行します。N エピソードの結果を集計して成功率とします（カード 9）。</p></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-init-ja">
+    <div class="card-head"><span class="num">2</span><h3>環境の初期化</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st cur first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st next" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>G1 ロボット（USD、43 関節）</li><li>シーン、リンゴ、皿</li><li>AGILE ポリシー（ONNX）</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb05</em><em>nb04</em></span><ul><li>シミュレーション構築：地面、照明 → ロボット → 頭部カメラ → 物体 → 指の摩擦</li><li>初期状態を記録し、安定させるため 10 ステップ実行</li><li>AGILE を読み込み、LSTM 状態をリセット</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>デフォルト姿勢で立つロボット</li><li>物理ステップ 5 ms、制御 tick 20 ms</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>ロボットの安定</small><b>0.786<i>m</i></b><span>10 ステップ後の腰の高さ、その後静止を維持</span></div>
+      <div><small>関節の順序</small><b>43<i>/ 43</i></b><span>シミュレーションの関節が作成済みの順序表と一致</span></div>
+      <div><small>シーンの構築</small><b>~4<i>s</i></b><span>1.3 GB の asset を事前ダウンロードした後（初回は 15 分超）</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-connect-ja">
+    <div class="card-head"><span class="num">3</span><h3>接続の確立</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st cur" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st next" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>ポリシーサーバーのアドレス（SSH tunnel 経由）</li><li>H100 に読み込み済みの checkpoint</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb01</em></span><ul><li>ZeroMQ 接続を開き、サーバーに ping</li><li>サーバーからデータ契約を読み取る</li><li>実行前にクライアント設定と照合</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>接続準備完了</li><li>key 一覧、各グループの次元数、チャンク長</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>サーバーから読んだ契約</small><b>5 → 7<i>グループ</i></b><span>送信する状態 5 グループ、返す action 7 グループ</span></div>
+      <div><small>チャンク長</small><b>40<i>ステップ</i></b><span>= 50 Hz で 0.8 s の動作</span></div>
+      <div><small>応答しないポート</small><b>0.5<i>s</i></b><span>正常にエラーを返し、接続を再作成</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-observe-ja">
+    <div class="card-head"><span class="num">4</span><h3>観測の取得</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st cur" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st next" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>直前の tick 実行後のシミュレーション状態</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb05</em><em>nb02</em></span><ul><li>頭部カメラをレンダリング</li><li>関節角と関節速度 43、胴体 IMU を読み取る</li><li>4 つの順序体系の間で関節名に基づき並べ替え</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>画像 640×480</li><li>関節角 43 + IMU（AGILE 用）</li><li>上半身の関節角 31（GR00T 用）</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>関節の順序体系</small><b>4<i>体系</i></b><span>シミュレーション、WBC、モデル、dataset</span></div>
+      <div><small>相互変換</small><b>0<i>誤差</i></b><span>シミュレーション → WBC → シミュレーションで値の欠落なし</span></div>
+      <div><small>新しい画像</small><b>1<i>tick ごと</i></b><span>最後の物理ステップでレンダリング。このステップがないとモデルには静止画像しか見えない</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-send-ja">
+    <div class="card-head"><span class="num">5</span><h3>観測の送信</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st cur" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st next" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>画像 480×640</li><li>上半身の関節角 31</li><li>指示文</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb02</em><em>nb01</em></span><ul><li>契約に従ってパッケージ化し、次元数をチェック</li><li>ZeroMQ（msgpack）で get_action を送信</li><li>サーバーが GR00T N1.7 を実行</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>サーバーへの 0.92 MB のリクエスト</li><li>サーバーが 40 ステップのチャンクを生成</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>呼び出し 1 回の遅延</small><b>~1.05<i>s</i></b><span>ロボット 1 台 · p95 1.39 s</span></div>
+      <div><small>モデルの計算</small><b>~100<i>ms</i></b><span>サーバー上の計算時間。残りの大部分は通信経路</span></div>
+      <div><small>ロボット 4 台同時</small><b>~3.6<i>s</i></b><span>1 つのバッチでまとめて送信 · p95 4.2 s</span></div>
+    </div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>送信する指示文が返却チャンクに影響する</b><span>左腕の誤差、rad</span></div>
+      <div class="cb"><span class="l">dataset の指示文</span><span class="t"><i class="" style="width:52%"></i></span><span class="v">0.025</span></div>
+      <div class="cb"><span class="l">無意味な指示文</span><span class="t"><i class="soft" style="width:83%"></i></span><span class="v">0.039</span></div>
+      <div class="cb"><span class="l">Arena のデフォルト指示文</span><span class="t"><i class="soft" style="width:100%"></i></span><span class="v">0.047</span></div>
+      <p class="cb-note">Arena のデフォルト指示文は無意味な指示文よりも誤差が大きいため、クライアントは dataset の指示文をそのまま送信します。</p>
+    </div>
+  </div>
+
+  <div class="card" id="pp-receive-ja">
+    <div class="card-head"><span class="num">6</span><h3>action チャンクの受信</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st cur" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st next" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>サーバーの応答：7 key、6.8 KB</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb01</em><em>nb02</em></span><ul><li>msgpack をデコード</li><li>関節角 31（40×31）、移動（40×3）、高さ（40×1）に分割</li><li>関節名に基づきクライアントの関節順序に並べ替え</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>クライアント内の 40 ステップ × 35 値のチャンク</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>1 回の受信</small><b>40 × 35<i>値</i></b><span>40 ステップ、各ステップ 35 値</span></div>
+      <div><small>サイズ</small><b>6.8<i>KB</i></b><span>送信リクエストの約 1/135</span></div>
+      <div><small>返却グループ</small><b>7<i>key</i></b><span>両腕、両手、腰、移動、高さ</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-process-ja">
+    <div class="card-head"><span class="num">7</span><h3>action チャンクの処理</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st cur" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st next" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>受信したばかりの 40 × 35 のチャンク</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb08</em><em>nb02</em></span><ul><li>NaN/Inf を遮断、関節・移動・高さの制限内にクランプ</li><li>スケジューリング：tick ごとに 1 ステップを取り出し、残りが少なくなる前に事前呼び出し</li><li>tick ごとの変化量を制限</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>現在の tick 用の安全な指令：関節角 31 + 脚への指令 4</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>制限外</small><b>0<i>/ 1,240</i></b><span>テスト用チャンク 1 つで、モデルの返した値が関節制限を超えた数</span></div>
+      <div><small>意図的なテスト</small><b>81<i>値をクランプ</i></b><span>関節角 1、移動指令 40、高さ指令 40</span></div>
+      <div><small>待ち時間</small><b>0.28<i>s</i></b><span>事前呼び出し時。逐次呼び出しでは 0.84 s</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-run-ja">
+    <div class="card-head"><span class="num">8</span><h3>ロボットの実行</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st cur" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st next last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>目標関節角 31</li><li>移動 + 高さの指令</li><li>現在の観測（AGILE 用）</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb04</em><em>nb05</em></span><ul><li>AGILE が 80 値のベクトルから脚の関節角 12 を計算</li><li>目標角 43 をシミュレーションに書き込む</li><li>5 ms の物理ステップを 4 回実行</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>ロボットが 1 tick（20 ms）分動作</li><li>次の tick 用の新しい状態</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="perf">
+      <div><small>AGILE とリファレンスの比較</small><b>50<i>tick</i></b><span>ビット単位で一致、LSTM 状態も同一</span></div>
+      <div><small>安定した直立</small><b>10<i>s</i></b><span>500 tick、最大傾斜 9.8°</span></div>
+      <div><small>デモの再生</small><b>121<i>tick</i></b><span>モデル不使用：成功、リンゴと皿の中心の距離 2.9 cm</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="pp-loop-ja">
+    <div class="card-head"><span class="num">9</span><h3>閉ループの実行</h3></div>
+    <div class="pp-track" aria-hidden="true"><span class="pp-tgk" style="grid-column:1/3">準備</span><span class="pp-tgk loop" style="grid-column:3/8">制御ループごと</span><span class="pp-tgk" style="grid-column:8/9">繰り返し</span><span class="pp-band" style="grid-column:3/8"></span><span class="pp-st done first" style="grid-column:1"><i>2</i><em>初期化</em></span><span class="pp-st done" style="grid-column:2"><i>3</i><em>接続</em></span><span class="pp-st done" style="grid-column:3"><i>4</i><em>観測</em></span><span class="pp-st done" style="grid-column:4"><i>5</i><em>送信</em></span><span class="pp-st done" style="grid-column:5"><i>6</i><em>受信</em></span><span class="pp-st done" style="grid-column:6"><i>7</i><em>処理</em></span><span class="pp-st done" style="grid-column:7"><i>8</i><em>実行</em></span><span class="pp-st cur last" style="grid-column:8"><i>9</i><em>閉ループ</em></span></div>
+    <div class="pp-io">
+      <div class="pp-box in"><span class="pp-k">入力</span><ul><li>checkpoint、シーン、指示文</li><li>カード 4–8 の各ステップ</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box step"><span class="pp-k">処理<em>nb06</em><em>nb07</em><em>nb08</em></span><ul><li>各 tick：観測の取得 → 処理 → ロボットの実行</li><li>約 40 tick に 1 回：観測を送信し、新しいチャンクを受信</li><li>成功、転倒、タイムアウトで終了。リセットして次のエピソードを実行</li></ul></div>
+      <span class="pp-ar"></span>
+      <div class="pp-box out"><span class="pp-k">出力</span><ul><li>エピソードごとの結果</li><li>ログ、動画、統計</li></ul></div>
+    </div>
+    <div class="pp-res-h">達成した結果</div>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>成功率：同じモデルでシーンのみ変更</b><span>50 エピソード</span></div>
+      <div class="cb"><span class="l">独自構築のシーン</span><span class="t"><i class="soft" style="width:1%"></i></span><span class="v">0 / 50</span></div>
+      <div class="cb"><span class="l">Galileo シーン（データ収録時と同じ）</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
+      <p class="cb-note">120 tick でサーバー呼び出しはちょうど 3 回です。独自構築のシーンでもロボットは 50 回中 11 回リンゴを持ち上げましたが、皿の上には置けませんでした。Galileo シーンを再構築すると、リンゴと皿の最小距離（中央値）は 20.6 cm から 3.8 cm に縮小しました。</p>
+    </div>
+  </div>
+
+</section>

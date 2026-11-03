@@ -1,0 +1,230 @@
+<section class="section" id="hm2" data-hue="blue" data-kicker="III.02 · シナリオ 2" data-title="シナリオ Multi Fruit">
+  <div class="hero">
+    <span class="pill">シナリオ 2 · MULTI FRUIT</span>
+    <h2>G1 が指示文どおりの果物を選び、皿に置く<span class="dot">。</span></h2>
+    <p class="lead">テーブルには 4 種類の果物（リンゴ、洋ナシ、スターフルーツ、ブドウ）があり、指示文によってつかむ果物が決まります。実機 G1 の 1,095 件のテレオペ軌道から、本プロジェクトは<b>関節データのみからシミュレーションシーンを再構築</b>し（real2sim）、790 件の学習エピソードを生成して GR00T をファインチューニングしました。結果：流用したリンゴ用チェックポイントは <b>0 %</b>、ファインチューニング後のモデルは妨害果物を含むランダムシーンで <b>66 %</b>、<b>誤った果物をつかんだ回数はゼロ</b>。</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">790<small>エピソード</small></div><ul class="fact-list"><li><span>データ源</span><b>Real2sim · 実機 G1</b></li><li><span>フレーム</span><b>86,822</b></li><li><span>テストセット</span><b>89 エピソード · 20 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">20,000<small>ステップ</small></div><ul class="fact-list"><li><span>学習時間</span><b>2 時間 34 分</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>Loss</span><b>1.50 → 0.019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>チェックポイント</span><b><code>g1_fruits_n17</code></b></li><li><span>指示文</span><b>果物 4 種類</b></li><li><span>アクション列</span><b>16 ステップ · 20 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">66<small>% 成功</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>未調整</em></span><i>→</i><span class="best"><b>66 %</b><em>FINE-TUNE</em></span></div><div class="fact-note">誤った果物をつかんだ回数はゼロ</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 0 · 成功</span>
+        <video src="assets/videos/kich-ban-2-4-loai-qua.mp4" poster="assets/videos/kich-ban-2-4-loai-qua-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">ロボットが他の果物の中からブドウの房を正しく選び、皿に置く</div>
+        <div class="cv-cmd"><small>モデルへの指示文</small>"Pick up the green grapes and place it on the plate"</div>
+        <div class="cv-stats"><div><b>1.4<small>cm</small></b><span>果物中心と皿中心の距離</span></div><div><b>16.5<small>cm</small></b><span>最大持ち上げ高さ</span></div><div><b>2</b><span>妨害果物、ずれなし</span></div><div><b>10<small>s</small></b><span>エピソード長（200 ステップ × 50 ms）</span></div></div>
+        <div class="cv-note">ランダム real2sim 50 エピソードの評価（33/50 成功）から抜粋。ブドウは緑のブロック。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>シナリオ設定</h3></div>
+    <p>G1 ロボットはテーブルの前に固定して立っています。テーブル上には皿 1 枚と果物 3 個があり、1 個が目標、残り 2 個が妨害物です。下の画像は Video Showcase のエピソード（エピソード 0：緑のブドウ）の<b>最初のフレーム</b>です。</p>
+    <figure class="fig"><img src="images/kich-ban-2-4-loai-qua-frame0.jpg" alt="Multi Fruit シナリオの最初のフレーム" loading="lazy"><figcaption><b>フレーム 0</b> · 左：ロボット頭部カメラ、モデルが受け取る画像 · 右：外部カメラ、動画撮影専用。目標はブドウ（緑のブロック）、妨害物はリンゴと洋ナシ。</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シーン &amp; 物体</th><th>詳細</th></tr></thead>
+      <tbody>
+        <tr><td>テーブル</td><td>グリッド床上のシンプルなテーブル。照明は dome 700 + sun 600</td></tr>
+        <tr><td>皿</td><td>kinematic の皿、半径 0.115 m。エピソード 0 では (0.40; 0.08) m に配置</td></tr>
+        <tr><td>果物</td><td>シンプルなブロック形状の 4 種類（リンゴ、洋ナシ、オレンジ、ブドウ = 緑のブロック）。摩擦 1.5</td></tr>
+        <tr><td>目標</td><td>エピソード 0：ブドウ、(0.41; −0.12) m</td></tr>
+        <tr><td>妨害物</td><td>手の掃引範囲外に置いた果物 2 個（エピソード 0：リンゴ、洋ナシ）</td></tr>
+        <tr><td>ランダム化</td><td>エピソードごとに目標果物、果物の位置と向き、皿の位置、妨害果物を変更。seed は個別</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ロボット、カメラ &amp; 制御</th><th>詳細</th></tr></thead>
+      <tbody>
+        <tr><td>ロボット</td><td>Unitree G1 29 自由度 + Dex3 ハンド、腰を (0; 0; ~0.74) m に固定</td></tr>
+        <tr><td>カメラ</td><td>頭部搭載 RealSense D435、640×480（fx 606）+ 撮影用外部カメラ 1 台</td></tr>
+        <tr><td>周波数</td><td>物理 200 Hz、10 サブステップ → 制御 20 Hz</td></tr>
+        <tr><td>エピソード</td><td>最大 200 ステップ = 10 s。16 ステップのアクション列を受け取り、8 ステップ実行して再度問い合わせ</td></tr>
+        <tr><td>指示文</td><td>目標果物に応じて決定。例："Pick up the green grapes and place it on the plate"</td></tr>
+        <tr><td>成功条件</td><td>果物を 3 cm 超持ち上げ、皿の上にある（半径 + 1 cm 以内、最下点がテーブル面より上）、妨害果物の移動 ≤ 1 cm</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>シナリオの目標</h3></div>
+    <p>実機 G1 のテレオペデータをシミュレーションに移し（<b>real2sim</b>）、指示文どおりの果物を選ぶモデルを学習・評価します。</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">目標 1</div><div class="st">閉ループ評価</div><p>実機データしかなかったタスクにシミュレーション環境を用意。</p></div>
+      <div class="sub"><div class="sl">目標 2</div><div class="st">データの増量</div><p>追加のテレオペなしで妨害物、位置、照明を変更。</p></div>
+      <div class="sub"><div class="sl">目標 3</div><div class="st">再現可能な測定</div><p>チェックポイントと学習構成を同一の尺度で比較。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>シナリオのデータ</h3></div>
+    <p>データセット <b>PhysicalAI-Robotics-GR00T-Teleop-G1</b>（NVIDIA GEAR、CC-BY-4.0）：実機 G1 のテレオペ、RealSense カメラ 640×480、20 Hz。ロボットが指示文どおりの果物を選び、皿に置きます。データは<b>関節角と動画のみ</b>で、物体の位置は含まれません。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>果物</th><th class="num">エピソード</th><th class="num">フレーム</th></tr></thead>
+      <tbody>
+        <tr><td>リンゴ</td><td class="num">311</td><td class="num">29,864</td></tr>
+        <tr><td>ブドウ</td><td class="num">233</td><td class="num">26,970</td></tr>
+        <tr><td>洋ナシ</td><td class="num">264</td><td class="num">32,319</td></tr>
+        <tr><td>スターフルーツ</td><td class="num">287</td><td class="num">34,640</td></tr>
+        <tr class="hl"><td>合計（データセットカードの記載は 1,000）</td><td class="num">1,095</td><td class="num">123,793</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>直面した課題</h3></div>
+    <p>目標は指示文どおりの果物をつかむモデルです。独自にデータを作る前に、既存のデータセットでのファインチューニングを試しました。</p>
+    <div class="callout warn"><b>適切なシミュレーションデータセットがない。</b> G1 ロボットかつピック&amp;プレースという条件に合う唯一のデータセットは<b>実機</b>で記録されたもので、Isaac Sim でそのまま使用できません。</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">課題 1</div><div class="st">既存チェックポイントは流用不可</div><p>シナリオ 1 のリンゴ用チェックポイントに果物 4 種類の指示文を与えると <b>0 %</b> でした：モデルは 1 つのシーンで 1 つのタスクしか学習していません。</p></div>
+      <div class="sub"><div class="sl">課題 2</div><div class="st">シミュレーションデータセットの不足</div><p>試験的なファインチューニング用に公開データセットを調査しましたが、G1 + Dex3 で指示文に応じて複数種類の果物をピック&amp;プレースするシミュレーションデータは存在しません。</p></div>
+      <div class="sub"><div class="sl">課題 3</div><div class="st">唯一適合するのは実機データ</div><p><b>PhysicalAI-Robotics-GR00T-Teleop-G1</b>：同じ G1 ロボット、同じく果物を皿にピック&amp;プレースしますが、実機で記録されています。</p></div>
+      <div class="sub"><div class="sl">課題 4</div><div class="st">実機データにはシミュレーションに必要な情報が不足</div><p>関節角と動画のみで<b>物体の位置がありません</b>。実画像はレンダリング画像と一致せず、実機とシミュレーションでは action の意味が異なります。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>提案手法</h3></div>
+    <p><b>real2sim</b> で解決します：実データの関節軌道から対応するシミュレーションシーンを再構築し、Isaac Lab で再生してシミュレーションデータセットとして記録します — テレオペ操作者の実際の動きを保ちつつ、画像と物理は評価環境と一致させます。</p>
+    <div class="flow">
+      <div class="step"><div class="sk">ステップ 1</div><div class="sv">順運動学（FK）</div><div class="sd">URDF G1 29-DoF + Dex3 → 胴体姿勢、手の軌道、把持/解放のタイミング</div></div>
+      <div class="step"><div class="sk">ステップ 2</div><div class="sv">物体位置の推定</div><div class="sd">果物 = 把持時の手のひら、皿 = 解放時の位置</div></div>
+      <div class="step"><div class="sk">ステップ 3</div><div class="sv">安全な妨害物</div><div class="sd">手の掃引範囲、果物の運搬経路、皿の外に配置</div></div>
+      <div class="step"><div class="sk">ステップ 4</div><div class="sv">再生 &amp; フィルタ</div><div class="sd">Isaac Lab。成功し、妨害物に触れないエピソードのみ保持</div></div>
+      <div class="step"><div class="sk">ステップ 5</div><div class="sv">LeRobot データセット</div><div class="sd">果物 4 種類のマルチタスク。元エピソード単位で train/test を分割</div></div>
+    </div>
+    <ul>
+      <li><b>視覚を使わない再構築：</b>両足が床に平らに接していると仮定して胴体の傾きを推定。指の閉じ具合から把持/解放を検出。FK は numpy のみで独自実装。</li>
+      <li><b>シミュレーション：</b>G1 + Dex3 で腰を固定、RealSense の仕様に合わせた D435 カメラ、物理 200 Hz / 制御 20 Hz、腕は剛な PD、果物の摩擦 1.5、皿は固定。</li>
+      <li><b>採点：</b>果物を 3 cm 超持ち上げる、最終的に皿の上にある、どの妨害物も 1 cm 超動かない。</li>
+      <li><b>データリーク防止：</b>テストシーンは train に一切含めない。再生に失敗したシーンも含めて評価シーン 100 件を保持し、容易なシーンへの偏りを避ける。</li>
+    </ul>
+    <p><b>実機 ↔ シミュレーションの動画 3 組。</b> ロボット頭部カメラ、20 Hz：左は元のテレオペ動画、右は同じ関節軌道から再生した real2sim エピソード。2 つのエピソードは長さが等しいためフレーム単位で同期して再生されます。各動画のポスター画像は 1 つのフェーズ（開始、把持、配置）の代表フレームです。</p>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-apple.mp4" poster="assets/videos/real2sim-pair-apple-poster.jpg" aria-label="real2sim リンゴの組：左は実機動画、右はシミュレーション" muted loop playsinline controls preload="metadata"></video><figcaption><b>組 1 · リンゴ</b> · 実エピソード 0 ↔ sim 0 · 111 フレーム（5.6 s）。視覚を使っていないにもかかわらず、最初のフレームからシミュレーション内のリンゴと皿の位置は実画像とほぼ一致する：リンゴは把持時の手のひらから、皿は解放時の位置から推定。実画像の隅にあるブドウの房は関節データに含まれないため再構築されず、シミュレーションでは新たな妨害物 2 個（スターフルーツ、ブドウ）を手の掃引範囲から離れた位置に置く。左：実機 · 右：シミュレーション。</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-grapes.mp4" poster="assets/videos/real2sim-pair-grapes-poster.jpg" aria-label="real2sim ブドウの組：左は実機動画、右はシミュレーション" muted loop playsinline controls preload="metadata"></video><figcaption><b>組 2 · ブドウ</b> · 実エピソード 1 ↔ sim 0 · 102 フレーム（5.1 s）。関節角が同じであるため、手を伸ばす、指を閉じる、持ち上げる際の腕と Dex3 ハンドの姿勢はいずれも実動画と一致する。柔らかいブドウの房は剛体の緑のブロックに置き換え。左側の実物の洋ナシは再構築されず、シミュレーションでは洋ナシとスターフルーツを別の位置に妨害物として置く。左：実機 · 右：シミュレーション。</figcaption></figure>
+    <figure class="fig"><video src="assets/videos/real2sim-pair-pear.mp4" poster="assets/videos/real2sim-pair-pear-poster.jpg" aria-label="real2sim 洋ナシの組：左は実機動画、右はシミュレーション" muted loop playsinline controls preload="metadata"></video><figcaption><b>組 3 · 洋ナシ</b> · 実エピソード 0 ↔ sim 0 · 131 フレーム（6.6 s）。果物は実動画と同じタイミングで皿の領域に運ばれる。実物の皿はピンク、シミュレーションの皿は常にターコイズの多角形。木製の天板は滑らかな平面になり、シミュレーションの視点ではテーブルの縁と背後の背景まで見える。左：実機 · 右：シミュレーション。</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">共通点</div><div class="st">動作とタスク配置</div><p>腕の軌道、指の閉じ具合、把持/解放のタイミングはテレオペのまま。目標果物と皿の位置は実画像と一致。左手は同じ姿勢で静止。指示文は原文のまま。</p></div>
+      <div class="sub"><div class="sl warn">相違点</div><div class="st">画像と妨害物</div><p>果物はシンプルな幾何ブロック。皿、天板、照明はシミュレーションのもの。実画像の妨害物は除外し、安全に配置したランダムな妨害物 2 個に置き換え。カメラ角度はわずかにずれる。このためモデルはレンダリング画像のみで学習し、実画像は使わない。</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>セット</th><th class="num">エピソード</th><th class="num">フレーム</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Train</td><td class="num">790</td><td class="num">86,822</td><td>果物 4 種類、20 Hz</td></tr>
+        <tr><td>Test</td><td class="num">89</td><td class="num">—</td><td>train に含まれないシーン</td></tr>
+        <tr><td>評価シーン</td><td class="num">100</td><td class="num">—</td><td>リンゴ 30、洋ナシ 24、スターフルーツ 26、ブドウ 20</td></tr>
+      </tbody>
+    </table></div>
+    <p class="todo">[TODO: 果物ごとの再生成功率（保持エピソード / 実エピソード）。]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>実施プロセス</h3></div>
+    <p>元データセットは実機 G1 のテレオペであり、シミュレーションでそのまま実行できません：<b>real2sim 変換</b>で対応するシーンとシミュレーションデータを得て、そのデータで GR00T を<b>ファインチューニング</b>し、その後に Isaac Sim で閉ループを実行します。</p>
+    <div class="flow">
+      <div class="step"><div class="sk">ステップ 1</div><div class="sv">実データ</div><div class="sd">G1 テレオペ軌道 1,095 件、関節角 + 動画のみ</div></div>
+      <div class="step"><div class="sk">ステップ 2</div><div class="sv">real2sim 変換</div><div class="sd">FK で果物と皿の位置を推定。Isaac Lab で再生 &amp; フィルタ</div></div>
+      <div class="step"><div class="sk">ステップ 3</div><div class="sv">シミュレーションデータセット</div><div class="sd">マルチタスク LeRobot · train 790 / test 89</div></div>
+      <div class="step"><div class="sk">ステップ 4</div><div class="sv">ファインチューニング</div><div class="sd">GR00T N1.7 · 20,000 ステップ · 1× H100</div></div>
+      <div class="step"><div class="sk">ステップ 5</div><div class="sv">実行 &amp; 評価</div><div class="sd">ランダムシーン、50 エピソード</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ステップ</th><th>作業内容</th><th>Notebook / ツール</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>果物 4 種類（リンゴ、洋ナシ、スターフルーツ、ブドウ）のテレオペデータセットを取得。シナリオ 1 のリンゴ用チェックポイントを試験</td><td>PhysicalAI-Robotics-GR00T-Teleop-G1</td><td>流用したリンゴ用チェックポイント：0 %</td></tr>
+        <tr><td>2</td><td>URDF 順運動学 → 手の軌道、把持/解放のタイミング → 果物と皿の位置。妨害物を手の掃引範囲外に配置。Isaac Lab で action を再生し、成功エピソードを保持</td><td><code>g1_real2sim</code>（urdf_fk、scene、distractors、isaac_scene）</td><td>実軌道ごとのシミュレーションシーン</td></tr>
+        <tr><td>3</td><td>果物 4 種類を 1 つのマルチタスクデータセットに統合。元エピソード単位で train/test を分割。評価シーン 100 件を保持</td><td>make_groot_dataset、lerobot_io</td><td>train 790 / 86,822 フレーム · test 89</td></tr>
+        <tr><td>4</td><td>GR00T N1.7-3B をファインチューニング、<code>NEW_EMBODIMENT</code>、state/action 31 次元、horizon 16 ステップ @ 20 Hz、batch 32</td><td>H100 サーバー上の launch_finetune.py</td><td><code>g1_fruits_n17</code> · 2 時間 34 分 · loss 1.50 → 0.019</td></tr>
+        <tr><td>5</td><td>データセットと同様のシーンを構築し、指示文を選択、モデルが自律的に把持。個別 seed で N エピソードを実行</td><td>nb09_multi_object_task_pipeline、nb10_eval_multi_object</td><td>66 %、誤った果物の把持はゼロ</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>ファインチューニング</h3></div>
+    <p>NVIDIA 公式ガイド（fine-tuning on sim data）に従いました：GR00T N1.7-3B、<code>NEW_EMBODIMENT</code>、カメラ <code>rs_view</code>、state/action 5 グループ（31 次元）、horizon 16 ステップ @ 20 Hz（0.8 s）。H100 で batch 32。LLM は凍結、視覚 + projector + diffusion を調整。color jitter（明るさ 0.3 · コントラスト 0.4 · 彩度 0.5 · 色相 0.08）。</p>
+    <p class="todo">[TODO: ステップ数、学習時間、loss 曲線、テストセットでの open-loop MAE、評価に使用したチェックポイント、ReplayPolicy の確認結果。]</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>得られた結果</h3></div>
+    <p>各エピソードで目標果物、果物の位置/向き、皿の位置、妨害果物をランダム化し、エピソードごとに個別の seed を使用します。指示文はデータセットの原文です（例："Pick up the green grapes and place it on the plate"）。16 ステップを受け取り、8 ステップ実行して再度問い合わせ、最大 10 s です。50 エピソード、技術的エラーは 0 件でした。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>モデル</th><th class="num">成功</th><th>Wilson 95 %</th><th class="num">持ち上げ</th><th class="num">皿の上</th><th class="num">誤把持</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>real2sim ファインチューニング</td><td class="num">33/50 (66 %)</td><td>52–78 %</td><td class="num">78 %</td><td class="num">76 %</td><td class="num">0 %</td></tr>
+        <tr><td>Arena のリンゴ用チェックポイント（対照）</td><td class="num">0/50 (0 %)</td><td>0–7 %</td><td class="num">0 %</td><td class="num">0 %</td><td class="num">0 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="bars" data-source="real2sim-groups-ja">
+      <div class="chart-head"><div><div class="ct">グループ別成功率 · real2sim モデル</div><div class="cs">バーにマウスを重ねると試行回数を表示。n が小さい（9–29）⇒ 信頼区間が広い。</div></div><button class="btn" type="button" data-table-toggle data-l-table="表で表示" data-l-chart="グラフで表示">表で表示</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>グループ</th><th class="num">n</th><th class="num">成功</th><th class="num">成功率</th></tr></thead><tbody>
+        <tr><td>リンゴ</td><td class="num">9</td><td class="num">8</td><td class="num">89 %</td></tr>
+        <tr><td>ブドウ</td><td class="num">13</td><td class="num">9</td><td class="num">69 %</td></tr>
+        <tr><td>スターフルーツ</td><td class="num">13</td><td class="num">8</td><td class="num">62 %</td></tr>
+        <tr><td>洋ナシ</td><td class="num">15</td><td class="num">8</td><td class="num">53 %</td></tr>
+        <tr><td>左側の果物</td><td class="num">21</td><td class="num">16</td><td class="num">76 %</td></tr>
+        <tr><td>右側の果物</td><td class="num">29</td><td class="num">17</td><td class="num">59 %</td></tr>
+        <tr class="hl"><td>合計</td><td class="num">50</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody></table></div></div>
+    </div>
+    <figure class="fig"><img src="images/nb10_eval_real2sim.png" alt="real2sim の結果" loading="lazy"><figcaption><b>結果別の目標果物の位置</b>（緑 = 成功、オレンジ = 持ち上げたが不成功、赤 = 持ち上げ失敗、灰色の円 = 皿の中心）と果物別の成功率。</figcaption></figure>
+    <div class="grid">
+      <div class="sub"><div class="sl">所見</div><div class="st">モデルは指示文を理解している</div><p>テーブル上に常に他の果物があるにもかかわらず、誤った果物をつかんだ回数はゼロでした。</p></div>
+      <div class="sub"><div class="sl">所見</div><div class="st">失敗は主に持ち上げフェーズ</div><p>11/50 が持ち上げ失敗でした。洋ナシの持ち上げ率が最も低くなっています（53 %）。</p></div>
+      <div class="sub"><div class="sl warn">注意</div><div class="st">対照は別タスクのモデル</div><p>ファインチューニング前の N1.7 そのものではありません。0 % は別タスクのモデルを流用できないことを示すにとどまります。</p></div>
+    </div>
+    <div class="callout"><b>技術的教訓：</b>最初の試験実行では、制御ステップごとにカメラをレンダリングしない構成（Isaac Lab 3.0 固有）を使っていました — モデルは静止した 1 枚の画像を見ていました。これを発見して修正し、その試験の結果は使用していません。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>結果の分析</h3></div>
+    <p>ファインチューニング後のモデルの 50 エピソードをフェーズごとに追跡し、どこで損失が生じるかを確認します。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>フェーズ（50 エピソード）</th><th class="num">エピソード数</th><th class="num">割合</th></tr></thead>
+      <tbody>
+        <tr><td>目標果物を持ち上げ</td><td class="num">39</td><td class="num">78 %</td></tr>
+        <tr><td>果物が皿の上（持ち上げたもののうち）</td><td class="num">34</td><td class="num">68 %</td></tr>
+        <tr class="hl"><td>成功（妨害物を動かさない）</td><td class="num">33</td><td class="num">66 %</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>失敗の種類（17 件）</th><th>件数</th><th>症状</th></tr></thead>
+      <tbody>
+        <tr><td>持ち上げ失敗</td><td>11</td><td>把持が滑る、または手が十分に閉じない。洋ナシの持ち上げ率が最も低い（53 %）</td></tr>
+        <tr><td>持ち上げたが皿に載らない</td><td>5</td><td>皿から外れて解放。スターフルーツは持ち上げ 85 % にもかかわらず皿に載る率が最も低い（62 %）</td></tr>
+        <tr><td>皿に載ったが妨害物が移動</td><td>1</td><td>手が妨害果物に触れ 1 cm 超移動</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">考察 1</div><div class="st">モデルは指示文を理解している</div><p>常に他の果物がある 50 エピソードで誤把持 0 件：言語部分は real2sim データからよく学習されています。</p></div>
+      <div class="sub"><div class="sl">考察 2</div><div class="st">ボトルネックは把持フェーズ</div><p>失敗 17 件中 11 件は果物を持ち上げられなかったものです。今後の改善は把持データ（果物ごとの形状、摩擦）に注力すべきです。</p></div>
+      <div class="sub"><div class="sl">考察 3</div><div class="st">果物の種類とテーブル側による差</div><p>リンゴ 89 %、ブドウ 69 %、スターフルーツ 62 %、洋ナシ 53 %。左側 76 %、右側 59 %。n が小さく信頼区間が重なるため、結論には不十分です。</p></div>
+      <div class="sub"><div class="sl">考察 4</div><div class="st">結論の範囲</div><p>学習と評価はいずれもシミュレーション内：結果は相対比較のためのものであり、実機での性能を予測するものではありません。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>シナリオの結論</h3></div>
+    <div class="panel"><div class="pl">結論</div><p>関節角と動画しかない実機 G1 のテレオペデータから、本プロジェクトは<b>real2sim によりシミュレーションデータセットを構築</b>し（790 エピソード）、GR00T をファインチューニングしました：流用したリンゴ用チェックポイントの <b>0 %</b> から、妨害果物を含むランダムシーンで <b>66 %</b> に向上し、<b>誤った果物をつかんだ回数はゼロ</b>でした。モデルは指示文を理解しており、残る損失は主に把持フェーズにあります。</p></div>
+    <ul>
+      <li><b>関節データのみからの real2sim</b> パイプラインを構築：順運動学で果物と皿の位置を推定し、妨害物を安全に配置、Isaac Lab で再生とフィルタを自動実行。</li>
+      <li>H100 1 枚で GR00T N1.7 を 2 時間 34 分でファインチューニング。失敗 17 件中 11 件は果物を持ち上げられなかったもので、洋ナシの持ち上げ率が最も低い。</li>
+      <li>結果はシミュレーション内での<b>相対比較</b>にのみ用いる：シミュレーションは現実より容易（剛な PD、高い摩擦、固定された皿）であり、実機での性能は予測しない。</li>
+      <li>今後の方向性：妨害物の配置、照明、材質を変えて再生することで安価にデータを増やし、果物ごとの形状と摩擦に応じた把持データを追加する。</li>
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,42 @@
+/* Design tokens — colors follow knowledge/theme-colors.md (same L/C, only the hue --h changes). */
+/* Hues: Blue 255 (default) · Teal 195 · Violet 300 · Green 150 — set with data-hue="…" */
+:root{
+  --h:255;
+  --bg:#f4f4ef;
+  --surface:#fff;
+  --surface-2:#fcfcf9;
+  --ink:#22261e;
+  --ink-2:#3a4132;
+  --ink-3:#4a5142;
+  --muted:#5a614e;
+  --faint:#9aa08e;
+  --line:rgba(34,38,30,.1);
+  --line-2:rgba(34,38,30,.08);
+  --warn:#b4564d;
+  --warn-bg:#f6ece9;
+  --ok:oklch(0.5 0.13 150);
+}
+/* Derived accent tokens are re-declared on every [data-hue] scope so the
+   hue override actually recomputes them (custom properties resolve where declared). */
+:root,[data-hue]{
+  --accent:oklch(0.52 0.13 var(--h));
+  --accent-ink:oklch(0.4 0.12 var(--h));
+  --accent-strong:oklch(0.47 0.13 var(--h));
+  --accent-dot:oklch(0.6 0.16 var(--h));
+  --accent-bar:oklch(0.75 0.19 var(--h));
+  --accent-soft:oklch(0.97 0.03 var(--h));
+  --accent-softer:oklch(0.985 0.012 var(--h));
+  --accent-border:oklch(0.86 0.055 var(--h));
+  --accent-wash:oklch(0.95 0.05 var(--h));
+  --panel:oklch(0.29 0.045 var(--h));
+}
+:root{
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+  --shadow-hero:0 22px 55px -38px rgba(34,38,30,.55);
+  --shadow-card:0 16px 40px -28px rgba(34,38,30,.45);
+}
+[data-hue="teal"]{--h:195}
+[data-hue="violet"]{--h:300}
+[data-hue="green"]{--h:150}
+[data-hue="blue"]{--h:255}

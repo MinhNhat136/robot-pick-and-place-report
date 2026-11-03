@@ -1,0 +1,50 @@
+<section class="section" id="danh-gia" data-hue="blue" data-kicker="V.01 · ĐÁNH GIÁ" data-title="Đánh giá tổng hợp">
+  <div class="hero">
+    <span class="pill">MỤC V.01 · ĐÁNH GIÁ TỔNG HỢP</span>
+    <h2>Ba kịch bản, một bức tranh chung<span class="dot">.</span></h2>
+    <p class="lead">GR00T N1.7 điều khiển được G1 gắp–đặt vật trong mô phỏng: <b>56 %</b> với bài táo, <b>66 %</b> với 4 loại quả, <b>66–73 %</b> với bài búa. Kết quả phụ thuộc trước hết vào <b>hình ảnh khung cảnh</b> và <b>dữ liệu fine-tune</b>, sau đó mới tới cách chấm điểm.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Kết quả tổng hợp</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kịch bản</th><th>Trước khi xử lý</th><th>Kết quả tốt nhất</th><th>Yếu tố quyết định</th><th>Nút thắt còn lại</th></tr></thead>
+      <tbody>
+        <tr><td>III.01 · Táo → đĩa</td><td>0 % (khung cảnh tự dựng)</td><td><b>56 %</b> · 28/50 · Galileo dựng lại</td><td>Khung cảnh giống lúc ghi dữ liệu</td><td>Pha nhìn và tiếp cận: khung cảnh lạ thì chỉ 22 % nhấc được táo</td></tr>
+        <tr><td>III.02 · 4 loại quả</td><td>0 % (checkpoint táo)</td><td><b>66 %</b> · 33/50 · real2sim</td><td>Fine-tune trên 790 episode real2sim</td><td>Pha nắm: 11/17 thất bại là không nhấc được quả</td></tr>
+        <tr class="hl"><td>III.03 · Búa → thùng</td><td>0 % (chưa fine-tune)</td><td><b>66 %</b> · 66/100 · mix200<br><b>73 %</b> · 73/100 · mix400, ngưỡng 0,02</td><td>Dữ liệu tự thu: teleop + sinh thêm</td><td>Pha thả và cách chấm "đứng yên"</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="ci" data-source="eval-summary">
+      <div class="chart-head"><div><div class="ct">Tỉ lệ thành công và khoảng tin cậy Wilson 95 %</div><div class="cs">Chấm = tỉ lệ đo được; thanh ngang = khoảng tin cậy. Di chuột hoặc Tab để xem chi tiết.</div></div><button class="btn" type="button" data-table-toggle>Xem dạng bảng</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="callout"><b>Ghi chú:</b> client NVIDIA trên môi trường Arena gốc đạt 92 % với bài táo; lần chạy đó dùng làm mốc tham chiếu, không nằm trong biểu đồ. Mọi lần đánh giá khác đều chạy vòng kín trên pipeline tự viết, Isaac Sim local.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Nhận định chung</h3></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">01 · HÌNH ẢNH</div><div class="st">Khung cảnh quyết định nhiều hơn model</div><p>Cùng checkpoint, câu lệnh và pipeline, bài táo đi từ 92 % (Arena gốc) xuống 56 % (chỉ lệch ánh sáng) rồi 0 % (lệch cả khung cảnh). Model fine-tune trên một khung cảnh không tổng quát hoá sang khung cảnh khác.</p></div>
+      <div class="sub"><div class="sl">02 · FINE-TUNE</div><div class="st">Tác vụ mới bắt buộc phải tune, và tune nhanh</div><p>Cả bài quả lẫn bài búa đều 0 % khi chưa tune, 66 % sau khi tune. Bài búa chỉ cần 200 episode và ~1 giờ trên một H100; chi phí chính nằm ở dữ liệu.</p></div>
+      <div class="sub"><div class="sl">03 · NGÔN NGỮ</div><div class="st">Model làm đúng theo câu lệnh</div><p>0 lần gắp nhầm trong 50 episode bài quả, dù trên bàn luôn có quả khác và vật nhiễu. Phần ngôn ngữ học tốt từ dữ liệu real2sim.</p></div>
+      <div class="sub"><div class="sl">04 · NÚT THẮT</div><div class="st">Mỗi kịch bản hụt ở một pha khác nhau</div><p>Táo hụt ở pha nhìn và tiếp cận, quả hụt ở pha nắm, búa hụt ở pha thả. Hướng cải thiện vì thế phải đi theo từng tác vụ, không có một cách chung.</p></div>
+      <div class="sub"><div class="sl">05 · DỮ LIỆU</div><div class="st">Thêm dữ liệu cùng kiểu có giới hạn</div><p>Bài búa từ 200 lên 400 episode giúp đặt chính xác hơn (búa ngoài lòng thùng 19 → 5 lần) nhưng tỉ lệ chung không tăng (66 % → 63 %, trong sai số).</p></div>
+      <div class="sub"><div class="sl">06 · CHẤM ĐIỂM</div><div class="st">Cách chấm điểm ảnh hưởng tới con số</div><p>Bài búa: 22/100 lần búa đã nằm trong thùng, tay đã buông, vẫn bị chấm "chưa đứng yên" vì điều kiện chỉ xét vận tốc tức thời. Lần chạy nới ngưỡng lên 0,02 m/s đạt 73 %.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Bài học rút ra</h3></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">01</div><div class="st">Dữ liệu &amp; môi trường quyết định nhiều hơn model</div><p>Cùng checkpoint: 0 % hoặc 56 % chỉ vì khung cảnh.</p></div>
+      <div class="sub"><div class="sl">02</div><div class="st">Câu lệnh là một phần "hợp đồng"</div><p>Quản lý câu lệnh như tham số cấu hình có kiểm soát.</p></div>
+      <div class="sub"><div class="sl">03</div><div class="st">Kiểm chứng theo tầng tiết kiệm thời gian</div><p>Open-loop → phát lại → vòng kín.</p></div>
+      <div class="sub"><div class="sl">04</div><div class="st">Điều kiện thành công cần kiểm thử</div><p>Điều kiện lỏng làm bẩn dữ liệu; điều kiện quá chặt làm thấp chỉ số. Thống nhất ngưỡng trước khi so sánh.</p></div>
+      <div class="sub"><div class="sl">05</div><div class="st">Đánh giá cần số lượng lớn</div><p>50–100 lần thử mỗi cấu hình, luôn kèm khoảng tin cậy.</p></div>
+      <div class="sub"><div class="sl">06</div><div class="st">Sinh thêm dữ liệu rẻ</div><p>133 lượt sinh → 100 demo đạt điều kiện chặt, không tốn thêm giờ teleop.</p></div>
+      <div class="sub"><div class="sl">07</div><div class="st">Fine-tune nhanh và rẻ</div><p>~1 giờ (200 episode) đến 2 giờ 15 (400 episode) trên 1 H100.</p></div>
+    </div>
+  </div>
+</section>

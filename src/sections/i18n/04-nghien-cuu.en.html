@@ -1,0 +1,184 @@
+<section class="section" id="nghien-cuu" data-hue="blue" data-kicker="II.01 · MODEL RESEARCH" data-title="Research on the NVIDIA Isaac GR00T model">
+  <div class="hero">
+    <span class="pill">SECTION II.01 · MODEL RESEARCH</span>
+    <h2>GR00T N1 and the N1.7 version used in the project<span class="dot">.</span></h2>
+    <p class="lead">GR00T N1 is an open VLA model for humanoid robots, made of a vision–language model to <b>understand</b> and a Diffusion Transformer to <b>act</b>. The project uses its successor, <b>GR00T N1.7-3B</b>. This section covers, in order: what the model does, what it is made of, whether it is effective, and how the project applies it.</p>
+    <div class="meta">
+      <div><span class="ml">PAPER</span><span class="mv">arXiv:2503.14734 (03/2025)</span></div>
+      <div><span class="ml">PROJECT MODEL</span><span class="mv">GR00T N1.7-3B</span></div>
+      <div><span class="ml">KEYWORDS</span><span class="mv">VLA · flow matching · data pyramid</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-thuat-ngu-en">
+    <div class="card-head"><span class="num">1</span><h3>Quick glossary</h3></div>
+    <div class="gloss"><div><b>Token</b><span>A small piece of an image or text after encoding; the model reads a sequence of tokens instead of the raw image or text.</span></div><div><b>VLA (Vision-Language-Action)</b><span>A model that looks at an image, reads an instruction and outputs actions for the robot.</span></div><div><b>System 2 / System 1</b><span>The understanding part (slow) and the acting part (fast) of GR00T.</span></div><div><b>Action / action chunk</b><span>An action is a set of target joint angles for one step; an action chunk is the upcoming segment of motion.</span></div><div><b>Flow matching</b><span>How the action chunk is generated: start from random noise and refine it step by step into motion.</span></div><div><b>Embodiment</b><span>One type of robot body (G1, GR-1…); each type has its own encoders.</span></div><div><b>Pre-train / fine-tune</b><span>Learning first on large general data / further tuning for a specific robot and task.</span></div><div><b>Checkpoint</b><span>The trained model weights, saved as a file for reuse.</span></div><div><b>Teleop</b><span>A person controls the robot remotely (here with a VR headset) to record demos.</span></div></div>
+  </div>
+
+  <div class="card" id="nc-video-en">
+    <div class="card-head"><span class="num">2</span><h3>How it works</h3></div>
+    <p>The video below illustrates how a <b>Vision-Language-Action</b> model such as GR00T turns a camera image and an instruction into motion. Click a step on the right to jump the video to the matching part; each step notes how the project applies it.</p>
+    <div class="vchap" data-hue="blue">
+      <figure class="vchap-video">
+        <video src="assets/videos/pipeline.mp4" poster="assets/videos/pipeline-poster.jpg" controls preload="metadata" playsinline></video>
+        <div class="vchap-progress"><span></span></div>
+      </figure>
+      <div class="vchap-side">
+        <div class="vchap-head"><span class="vk">7 STEPS · CLICK TO SEEK THE VIDEO</span><span class="vh">From image and instruction to motion</span></div>
+        <ol class="vchap-list">
+            <li><button type="button" data-seek="0"><span class="ts">0:00</span><span><span class="vt"><small>IMAGE TOKENS</small>Camera image becomes image tokens</span><span class="vd">The image is split into small patches, passed through a vision encoder (trained on image–caption pairs) and then projected into the language model's space.</span><span class="vp"><b>Project:</b> G1 head camera image 640×480; GR00T N1.7 uses the SigLip2 encoder.</span></span></button></li>
+            <li><button type="button" data-seek="12"><span class="ts">0:12</span><span><span class="vt"><small>TEXT TOKENS</small>Instruction becomes text tokens</span><span class="vd">An instruction such as "pick up the dessert item" is split into word pieces.</span><span class="vp"><b>Project:</b> e.g. "put the hammer in the bin"; the instruction must match the wording used when the data was recorded exactly.</span></span></button></li>
+            <li><button type="button" data-seek="18"><span class="ts">0:18</span><span><span class="vt"><small>VISION-LANGUAGE MODEL</small>A vision–language model reads both</span><span class="vd">A language model pre-trained on internet data reads the image tokens and text tokens together.</span><span class="vp"><b>Project:</b> GR00T N1.7 uses Cosmos-Reason2-2B ("System 2").</span></span></button></li>
+            <li><button type="button" data-seek="23"><span class="ts">0:23</span><span><span class="vt"><small>ACTION EXPERT</small>The action expert also reads joint angles</span><span class="vd">A smaller transformer reads the tokens above together with the robot's current joint angles.</span><span class="vp"><b>Project:</b> 31 upper-body joints (arms, hands, waist); the legs are handled by AGILE.</span></span></button></li>
+            <li><button type="button" data-seek="29"><span class="ts">0:29</span><span><span class="vt"><small>ACTION CHUNK · FLOW MATCHING</small>Generate a whole motion chunk with flow matching</span><span class="vd">The model writes out a chunk of joint commands for the future. The chunk starts as noise and is denoised step by step, along the learned direction, into real motion.</span><span class="vp"><b>Project:</b> 40 steps = 0.8 s (apple, hammer); 16 steps (real2sim).</span></span></button></li>
+            <li><button type="button" data-seek="40"><span class="ts">0:40</span><span><span class="vt"><small>CLOSED-LOOP CONTROL</small>Execute, then look again: closed loop</span><span class="vd">The robot executes the first part of the chunk, takes a new image and repeats.</span><span class="vp"><b>Project:</b> apple and hammer run all 40 steps before querying again; real2sim runs 8/16 steps as in the video.</span></span></button></li>
+            <li><button type="button" data-seek="48"><span class="ts">0:48</span><span><span class="vt"><small>VISION-LANGUAGE-ACTION</small>Trained on demos from many robot types</span><span class="vd">The whole model is trained on demos from many types of robots, forming a VLA model.</span><span class="vp"><b>Project:</b> GR00T fine-tuned for G1 with 200–790 demos per task.</span></span></button></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="nc-dau-vao-en">
+    <div class="card-head"><span class="num">3</span><h3>Input data</h3></div>
+    <p>On each call, the model receives three kinds of data from <b>the current moment only</b>: one camera image, the upper-body joint angles and the instruction. The model receives no history of previous frames, and does not see the 12 leg joints (the legs are handled by AGILE).</p>
+    <div class="io-sumrow">
+      <div><b>1</b><span>head camera image<br><small>480×640, current frame</small></span></div>
+      <div><b>31</b><span>upper-body joint angles<br><small>arms, fingers, waist</small></span></div>
+      <div><b>1</b><span>instruction<br><small>unchanged for the whole episode</small></span></div>
+    </div>
+    <div class="io-grid">
+      <figure class="io-robot" data-md="body"><svg viewBox="40 4 440 440" role="img" aria-label="G1 robot: upper-body joints sent to the model" data-body-svg></svg><figcaption><span class="io-k">STATE · G1 ROBOT</span>Blue dots: 31 joints sent to the model · white dots: 12 leg joints controlled by AGILE</figcaption></figure>
+      <div class="io-side">
+        <figure class="io-img"><img src="images/kich-ban-1-tao-dia-frame0.jpg" alt="G1 head camera image, first frame of the apple → plate scenario" loading="lazy"><figcaption><span class="io-k">ROBOT'S VIEW · HEAD CAMERA</span>First frame of scenario 1</figcaption></figure>
+        <div class="io-blk"><span class="io-k">INSTRUCTION SENT</span><p class="io-cmd">"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</p></div>
+      </div>
+    </div>
+    <p class="proj"><b>In the project:</b> scenarios 1 and 3 use the <code>ego_view</code> camera as above; scenario 2 (real2sim) uses the <code>rs_view</code> camera with the same 31 joints.</p>
+  </div>
+
+  <div class="card" id="nc-dau-ra-en">
+    <div class="card-head"><span class="num">4</span><h3>Output data</h3></div>
+    <p>On each call, the model returns <b>a chunk of 40 steps</b> for the near future, each step with 35 values. The robot executes one step per 20 ms tick, so one chunk covers 0.8 s of motion before a new chunk is needed.</p>
+    <div class="io-sumrow">
+      <div><b>40</b><span>steps per chunk<br><small>20 ms per step = 0.8 s of motion</small></span></div>
+      <div><b>35</b><span>values per step<br><small>31 joint angles + 4 leg commands</small></span></div>
+      <div><b>1</b><span>chunk per call<br><small>called again when the chunk is nearly used up</small></span></div>
+    </div>
+    <div class="io-blk io-chunkviz" data-md="chunk">
+      <span class="io-k">EXAMPLE · ONE 40-STEP CHUNK FROM THE APPLE → PLATE DEMO (EPISODE 0, FROM SECOND 0.4)</span>
+      <svg viewBox="0 0 640 260" role="img" aria-label="One 40-step chunk: 7 left-arm joint angles and left-hand grip over time" data-chunk-svg></svg>
+      <div class="io-leg" data-chunk-leg></div>
+      <div class="io-frames">
+        <figure><img src="images/chunk-buoc01.jpg" alt="Head camera at step 1" loading="lazy"><figcaption>Step 1 · hand moves towards the apple</figcaption></figure>
+        <figure><img src="images/chunk-buoc21.jpg" alt="Head camera at step 21" loading="lazy"><figcaption>Step 21 · hand reaches the apple</figcaption></figure>
+        <figure><img src="images/chunk-buoc40.jpg" alt="Head camera at step 40" loading="lazy"><figcaption>Step 40 · apple grasped</figcaption></figure>
+      </div>
+      <p>This is an action chunk recorded in the demo data, in the same form as the chunk the model returns. In open-loop checks, the deviation of the model's predicted chunk for the same moment from this chunk is 10–70 times smaller than the motion amplitude.</p>
+    </div>
+    <div class="io-blk"><span class="io-k">ONE STEP · 35 VALUES</span><div class="io-seg">
+        <span style="flex:7"><b>Left arm</b>7</span><span style="flex:7"><b>Right arm</b>7</span><span style="flex:7"><b>Left hand</b>7</span><span style="flex:7"><b>Right hand</b>7</span><span style="flex:3"><b>Waist</b>3</span><span class="cmd" style="flex:3"><b>Locomotion</b>3</span><span class="cmd" style="flex:3"><b>Height</b>1</span>
+      </div><div class="io-leg"><span><i></i>31 target joint angles → sent straight to the joints</span><span><i class="cmd"></i>4 commands → passed to AGILE</span></div></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">ABSOLUTE ANGLES</div><p>The 31 joint values are target angles, not changes from the previous step. Before use, the client still clamps them to the joint limits and the per-tick velocity limits (II.02, card 7).</p></div>
+      <div class="sub"><div class="sl">LEG COMMANDS</div><p>The model does not control the 12 leg joints directly. It only outputs locomotion commands and the hip height (~0.72 m); AGILE uses them to keep balance. All three project scenarios stand still in place.</p></div>
+    </div>
+    <p class="proj"><b>In the project:</b> scenarios 1 and 3 use exactly the 40-step chunk at 50 Hz as above. Scenario 2 fixes the hip, so there are no leg commands: a 16-step chunk at 20 Hz (also 0.8 s), 31 values per step, 8 steps executed per call.</p>
+  </div>
+
+  <div class="card" id="nc-kien-truc-en">
+    <div class="card-head"><span class="num">5</span><h3>Model architecture</h3></div>
+    <p>The understanding part (called <b>System 2</b> in the paper) is a vision–language model that runs slowly, about 10 times per second. The acting part (<b>System 1</b>, called the "action expert" in the video) takes the output of the understanding part together with the robot's current joint angles, and runs much faster. Click each block in the diagram to see what it does.</p>
+    <div class="vref"><span class="vref-k">SEE IN THE VIDEO</span><button type="button" data-vseek="0"><b>0:00</b>Image</button><button type="button" data-vseek="12"><b>0:12</b>Instruction</button><button type="button" data-vseek="18"><b>0:18</b>Understanding</button><button type="button" data-vseek="23"><b>0:23</b>Acting</button></div>
+    <div class="ds-lab single" data-md="arch">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">DATA FLOW IN GR00T N1</span><span class="ds-tag">DIAGRAM · FIGURES FROM THE PAPER</span></div>
+        <div class="mo-arm wide">
+          <svg viewBox="0 0 760 330" role="img" aria-label="GR00T dual-system architecture" data-arch-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-arch-out></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="proj"><b>In the project:</b> GR00T N1.7 keeps this two-part structure; the understanding part is replaced by a newer model (card 7). The inputs are the G1 head camera image and 31 upper-body joint angles. The three MLP blocks (state encoder, action encoder, action decoder) are specific to each robot type: this is the part that has to be learned when bringing G1 into the model.</p>
+    <div class="perf">
+      <div><small>TOTAL PARAMETERS</small><b>2.2<i>B</i></b><span>GR00T N1, the version in the paper</span></div>
+      <div><small>UNDERSTANDING PART</small><b>1.34<i>B</i></b><span>Most parameters sit in the vision–language model</span></div>
+      <div><small>SPEED</small><b>10 · 120<i>Hz</i></b><span>Understanding part ~10 Hz, control loop ~120 Hz</span></div>
+    </div>
+    <details class="acc"><summary>Technical details · paper</summary><div class="acc-body"><ul><li>Understanding part: Eagle-2, consisting of the SigLIP-2 image encoder and the SmolLM2 language model. A 224×224 image is compressed to 64 tokens (pixel shuffle).</li><li>Features are taken from layer 12 of the language model instead of the last layer: the paper reports this is both faster and more successful.</li><li>Acting part: Diffusion Transformer (DiT), interleaving cross-attention (attending to the understanding part's tokens) and self-attention (between state tokens and action tokens).</li><li>States and actions pass through MLP encoders/decoders specific to each robot type (embodiment).</li></ul></div></details>
+  </div>
+
+  <div class="card" id="nc-ket-qua-en">
+    <div class="card-head"><span class="num">6</span><h3>Published results</h3></div>
+    <p>The paper compares GR00T N1 with Diffusion Policy, a model that learns only from the task's own data, without pre-training. GR00T N1 is better in every configuration, with the largest gap when data is scarce.</p>
+    <div class="cmpbars">
+      <div class="cmpbars-h"><b>Success rate: Diffusion Policy vs. GR00T N1</b><span>paper figures</span></div>
+      <div class="cb-group">Simulation · average of 3 benchmarks (100 demos / task)</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:33.4%"></i></span><span class="v">33.4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:45%"></i></span><span class="v">45.0 %</span></div>
+      <div class="cb-group">Real GR-1 robot · full data</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:46.4%"></i></span><span class="v">46.4 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:76.8%"></i></span><span class="v">76.8 %</span></div>
+      <div class="cb-group">Real GR-1 robot · only 10 % of the data</div>
+      <div class="cb"><span class="l">Diffusion Policy</span><span class="t"><i class="soft" style="width:10.2%"></i></span><span class="v">10.2 %</span></div>
+      <div class="cb"><span class="l">GR00T N1</span><span class="t"><i style="width:42.6%"></i></span><span class="v">42.6 %</span></div>
+    </div>
+    <p class="proj"><b>In the project:</b> this is why a few hundred demos are enough to fine-tune a new task for G1, and why real2sim data and generated data are good enough.</p>
+    <details class="acc"><summary>Detailed table per simulation benchmark · table 4 of the paper</summary><div class="acc-body"><div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Benchmark</th><th class="num">Diffusion Policy<br>30 / 100 / 300 demos</th><th class="num">GR00T-N1-2B<br>30 / 100 / 300 demos</th></tr></thead>
+      <tbody>
+        <tr><td>RoboCasa (24 tasks)</td><td class="num">14.7 / 25.6 / 43.2</td><td class="num"><b>17.4 / 32.1 / 49.6</b></td></tr>
+        <tr><td>DexMimicGen (9 tasks)</td><td class="num">23.7 / 46.9 / 68.4</td><td class="num"><b>29.6 / 58.5 / 74.2</b></td></tr>
+        <tr><td>GR-1 Tabletop (24 tasks)</td><td class="num">21.3 / 32.7 / 40.4</td><td class="num"><b>43.2 / 50.0 / 49.3</b></td></tr>
+      </tbody>
+    </table></div><p>Average success rate (%). GR00T N1 leads in every cell; only GR-1 Tabletop barely improves from 100 to 300 demos.</p></div></details>
+  </div>
+
+  <div class="card" id="nc-n17-en">
+    <div class="card-head"><span class="num">7</span><h3>Version comparison</h3></div>
+    <p>The figures in card 6 are for N1 on the Fourier GR-1 robot. All project experiments use N1.7 on the Unitree G1.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Aspect</th><th>GR00T N1 (paper)</th><th>GR00T N1.7 (project)</th></tr></thead>
+      <tbody>
+        <tr><td>Scale</td><td>~2.2B parameters</td><td>~3B parameters</td></tr>
+        <tr><td>Understanding part (System 2)</td><td>NVIDIA Eagle-2</td><td>Cosmos-Reason2-2B (Qwen3-VL architecture), images at native aspect ratio</td></tr>
+        <tr><td>Acting part (System 1)</td><td>DiT + flow matching</td><td>Unchanged</td></tr>
+        <tr><td>Multi-robot use</td><td>Separate MLP per robot</td><td>Unchanged; the state is padded to a fixed length</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card" id="nc-checkpoint-en">
+    <div class="card-head"><span class="num">8</span><h3>Experimental checkpoints</h3></div>
+    <p>The three checkpoints used in the three scenarios all start from GR00T N1.7-3B; they differ in who fine-tuned them and with what data.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Checkpoint</th><th>Task</th><th>Source</th><th>Fine-tune data</th><th class="num">Success</th></tr></thead>
+      <tbody>
+        <tr><td><b>Scenario 1</b><br><code class="ck">GN1x-Tuned-Arena-G1-Static-PickNPlace</code></td><td>Apple → plate</td><td>NVIDIA, reused</td><td>208 teleop demos in simulation</td><td class="num">92 % original Arena<br>56 % self-built scene</td></tr>
+        <tr><td><b>Scenario 2</b><br><code class="ck">g1_fruits_n17</code></td><td>Pick the correct 1 of 4 fruit types</td><td>Fine-tuned by the project</td><td>790 real2sim episodes from real G1 data</td><td class="num">66 % (33/50)</td></tr>
+        <tr><td><b>Scenario 3</b><br><code class="ck">hammer_mix200_n17</code></td><td>Hammer → bin</td><td>Fine-tuned by the project</td><td>200 episodes: teleop + generated</td><td class="num">66 % (66/100)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="proj"><b>License:</b> N1.7 is under the NVIDIA Open Model Agreement; the Arena checkpoint states "non-commercial use".</p>
+  </div>
+
+  <div class="card" id="nc-nhan-dinh-en">
+    <div class="card-head"><span class="num">9</span><h3>Research conclusions</h3></div>
+    <p>What the project learned after using GR00T N1.7 across all three scenarios.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">STRENGTHS</div><div class="st">Teaches new tasks fast, with little data</div><ul>
+        <li>A few hundred demos are enough: the hammer task went from 0 % to 66–73 % with 200–400 episodes (section III.03).</li>
+        <li>Fine-tuning takes ~1 hour on one H100, and runs on a single GPU.</li>
+        <li>Understands natural instructions: the 4-fruit model picks the right fruit as instructed, never grabbing the wrong one (section III.02).</li>
+        <li>One model controls the arms, hands and waist at the same time.</li>
+      </ul></div>
+      <div class="sub"><div class="sl warn">LIMITATIONS</div><div class="st">Sensitive to visuals, must be tuned per task</div><ul>
+        <li>Scene-dependent: the apple task drops from 92 % to 56 % when the lighting differs, and to 0 % when the whole scene differs (section II.04).</li>
+        <li>Not reusable for other tasks: the apple checkpoint scores 0 % on the 4-fruit task.</li>
+        <li>Each call takes ~1.3 s over the network (the model computes for ~100 ms), longer than a 0.8 s motion chunk (section I.02).</li>
+        <li>NVIDIA's Arena checkpoint states "non-commercial use".</li>
+      </ul></div>
+    </div>
+    <div class="callout"><b>Conclusion:</b> GR00T is a suitable foundation for G1 pick-and-place tasks. The deciding factor for results is not the model but the data: collect it in the actual working environment, or make it visually diverse enough.</div>
+  </div>
+
+</section>

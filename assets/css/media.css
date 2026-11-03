@@ -1,0 +1,86 @@
+/* Video with a clickable chapter list.
+   <div class="vchap"><figure class="vchap-video"><video data-chapters>…</video><figcaption/></figure>
+                      <ol class="vchap-list"><li><button data-seek="12">…</button></li>…</ol></div> */
+.vchap{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:22px;align-items:stretch;margin:12px 0 4px}
+/* the video column sets the row height; the chapter column fills exactly that height and scrolls inside */
+.vchap-video{margin:0;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:#0b0d0a;border:1px solid rgba(34,38,30,.2);box-shadow:0 22px 50px -30px rgba(20,22,18,.7)}
+.vchap-video video{display:block;width:100%;aspect-ratio:9/16;background:#0b0d0a;object-fit:cover}
+.vchap-video figcaption{margin-top:auto;padding:10px 12px;font-size:11.5px;line-height:1.45;color:#b8c0a8;background:#14170f}
+.vchap-video figcaption b{color:#eef1e6}
+.vchap-progress{height:3px;background:rgba(255,255,255,.12)}
+.vchap-progress span{display:block;height:100%;width:0;background:oklch(0.75 0.15 var(--h))}
+
+.vchap-side{position:relative;min-height:0;display:flex;flex-direction:column;border:1px solid rgba(34,38,30,.12);border-radius:16px;background:var(--surface-2);overflow:hidden}
+.vchap-head{flex:none;display:flex;flex-direction:column;gap:3px;padding:13px 16px 11px;border-bottom:1px solid var(--line-2);
+  background:linear-gradient(180deg,oklch(0.97 0.035 var(--h)),oklch(0.995 0.006 var(--h)))}
+.vchap-head .vk{font:600 9.5px var(--mono);letter-spacing:.13em;color:var(--accent)}
+.vchap-head .vh{font-size:14.5px;font-weight:800;color:var(--ink)}
+.vchap-list{list-style:none;margin:0;padding:10px;display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0;overflow-y:auto}
+.vchap-list button{display:grid;grid-template-columns:48px 1fr;gap:12px;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  background:#fff;border:1px solid rgba(34,38,30,.1);border-radius:11px;padding:9px 12px;transition:background .15s,border-color .15s,box-shadow .15s}
+.vchap-list button:hover{border-color:var(--accent-border)}
+.vchap-list button.active{background:radial-gradient(120% 140% at 100% 0%,var(--accent-wash) 0%,#fff 65%);border-color:var(--accent);box-shadow:0 0 0 3px oklch(0.6 0.13 var(--h)/.12)}
+.vchap-list .ts{align-self:start;font:700 11px var(--mono);color:var(--accent-ink);background:var(--accent-softer);border:1px solid var(--accent-border);border-radius:6px;padding:3px 0;text-align:center}
+.vchap-list button.active .ts{background:var(--accent);border-color:var(--accent);color:#fff}
+.vchap-list .vt,.vchap-list .vd{display:block}
+.vchap-list .vt{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.vchap-list .vt small{display:block;font:600 9px var(--mono);letter-spacing:.1em;color:var(--accent);margin-bottom:2px}
+/* details only for the chapter being played */
+.vchap-list .vd,.vchap-list .vp{max-height:0;overflow:hidden;opacity:0;transition:max-height .25s ease,opacity .2s ease,margin .25s ease}
+.vchap-list .vd{font-size:12.6px;color:var(--ink-3);line-height:1.5}
+.vchap-list .vp{display:block;font-size:12.4px;line-height:1.45;color:var(--ink-2);border-left:2px solid var(--accent-bar);padding-left:9px}
+.vchap-list .vp b{color:var(--accent-ink)}
+.vchap-list button.active .vd{max-height:120px;opacity:1;margin-top:4px}
+.vchap-list button.active .vp{max-height:120px;opacity:1;margin-top:6px}
+
+@media (max-width:960px){
+  .vchap{grid-template-columns:1fr}
+  .vchap-video{max-width:320px;width:100%;margin:0 auto}
+  .vchap-list{flex:none;overflow:visible}
+}
+@media print{
+  .vchap{grid-template-columns:200px 1fr}
+  .vchap-list{overflow:visible}
+  .vchap-list .vd,.vchap-list .vp{max-height:none;opacity:1}
+}
+
+/* Success video of one scenario: player on the left, facts of that episode on the right.
+   <div class="case-video"><figure class="cv-player"><video …></video><div class="cv-ctrl">[data-rate]…</div></figure><div class="cv-info">…</div></div> */
+/* Same frame in every scenario: fixed 4:3 box (the III.01 camera format); wider clips are
+   letterboxed with black bars top and bottom. The info column stretches to the frame height. */
+.case-video{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,1fr);gap:22px;align-items:stretch;margin-top:4px}
+
+/* player: dark frame with a soft ring and an episode tag */
+.cv-player{position:relative;margin:0;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#000;
+  box-shadow:0 0 0 1px rgba(34,38,30,.18),0 0 0 6px var(--accent-softer),0 26px 50px -30px rgba(20,22,18,.75)}
+.cv-player video{display:block;width:100%;aspect-ratio:4/3;height:auto;object-fit:contain;background:#000}
+.cv-tag{position:absolute;z-index:1;left:14px;top:14px;display:inline-flex;align-items:center;gap:7px;pointer-events:none;
+  font:600 10px var(--mono);letter-spacing:.1em;color:#fff;background:rgba(10,12,9,.6);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 11px;backdrop-filter:blur(6px)}
+.cv-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:oklch(0.72 0.16 150);box-shadow:0 0 0 3px oklch(0.72 0.16 150/.25)}
+
+/* info column */
+.cv-info{display:flex;flex-direction:column;gap:12px;min-height:100%}
+.cv-info .cv-t{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.015em;line-height:1.3;text-wrap:pretty}
+.cv-cmd{position:relative;font:500 12.8px var(--mono);color:var(--accent-ink);background:linear-gradient(180deg,var(--accent-soft),var(--accent-softer));
+  border:1px solid var(--accent-border);border-radius:12px 12px 12px 4px;padding:8px 14px 9px 40px;line-height:1.45}
+.cv-cmd::before{content:"“";position:absolute;left:12px;top:4px;font:800 30px/1 Georgia,serif;color:var(--accent);opacity:.55}
+.cv-cmd small{display:block;font:600 9px var(--mono);letter-spacing:.14em;color:var(--accent);margin-bottom:4px}
+.cv-stats{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:10px}
+.cv-stats div{position:relative;display:flex;flex-direction:column;justify-content:center;border:1px solid var(--line);border-radius:14px;background:#fff;
+  padding:8px 14px 8px 16px;box-shadow:0 10px 24px -20px rgba(34,38,30,.5);overflow:hidden}
+.cv-stats div::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--accent-bar)}
+.cv-stats b{display:block;font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--accent-ink);line-height:1.05}
+.cv-stats b small{font-size:12px;font-weight:600;color:var(--muted);margin-left:3px;letter-spacing:0}
+.cv-stats span{display:block;font-size:11.8px;color:var(--muted);margin-top:4px;line-height:1.4}
+.cv-note{display:flex;gap:9px;align-items:flex-start;padding-top:10px;border-top:1px dashed var(--accent-border);font-size:12.4px;line-height:1.55;color:var(--ink-3)}
+.cv-note::before{content:"i";flex:none;width:18px;height:18px;margin-top:1px;border-radius:50%;display:grid;place-content:center;background:var(--accent-softer);border:1px solid var(--accent-border);color:var(--accent-ink);font:700 10px var(--mono)}
+@media (max-width:1200px){.case-video{grid-template-columns:1fr}}
+@media print{.cv-ctrl{display:none}}
+
+/* "Trong video" chips: jump from a card back to the matching chapter of the section video */
+.vref{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 12px}
+.vref-k{font:600 9px var(--mono);letter-spacing:.12em;color:var(--faint);margin-right:4px}
+.vref button{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--sans,inherit);color:var(--accent-ink);background:var(--accent-softer);border:1px solid var(--accent-border);border-radius:999px;padding:4px 11px 4px 5px;cursor:pointer}
+.vref button b{font:600 10px var(--mono);color:#fff;background:var(--accent);border-radius:999px;padding:2px 7px}
+.vref button:hover{background:var(--accent-soft);border-color:var(--accent)}
+@media print{.vref{display:none}}

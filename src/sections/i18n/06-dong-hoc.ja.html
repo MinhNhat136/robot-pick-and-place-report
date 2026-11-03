@@ -1,0 +1,127 @@
+<section class="section" id="dong-hoc" data-hue="blue" data-kicker="II.03 · 動作の研究" data-title="ロボット G1 の動作の研究">
+  <div class="hero">
+    <span class="pill">II.03 節 · 動作の研究</span>
+    <h2>関節角度から動作と力へ<span class="dot">。</span></h2>
+    <p class="lead">GR00T が出力するのは<b>目標関節角度</b>だけです。その数値を実際の動作に変えるには、<b>運動学</b>（関節角度 ↔ 手・カメラの位置）と<b>動力学</b>（トルク、慣性、接触、バランス）の理解が必要です。本節ではこれらの知識と、プロジェクト内で現れる場面をまとめます。各概念には試せる図解を用意しています。</p>
+    <div class="meta">
+      <div><span class="ml">ロボット</span><span class="mv">Unitree G1 · 43 関節</span></div>
+      <div><span class="ml">適用先</span><span class="mv">Real2sim · テレオペ · 関節制御 · バランス</span></div>
+      <div><span class="ml">キーワード</span><span class="mv">FK · IK · PD · 接触</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>G1 の関節構造</h3></div>
+    <p>G1 はリンクを回転関節で結んだツリー構造で、根元は骨盤（pelvis）です。関節グループごとに異なるコンポーネントが制御します。各グループをクリックして確認できます。</p>
+    <div class="ds-lab single" data-mo="body">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">G1 の 43 関節 · 正面図</span><span class="ds-tag">模式図</span></div>
+        <div class="mo-body">
+          <svg viewBox="0 0 260 330" role="img" aria-label="ロボット G1 の関節図" data-body-svg></svg>
+          <div class="mo-groups" data-body-list>
+            <button type="button" data-g="leg" aria-pressed="false"><span class="mg-n">12</span><span><b>脚</b><small>片側あたり 股関節 (3)、膝、足首 (2)</small></span><em>AGILE</em></button>
+            <button type="button" data-g="waist" aria-pressed="false"><span class="mg-n">3</span><span><b>腰</b><small>ヨー、ロール、ピッチ</small></span><em>GR00T</em></button>
+            <button type="button" data-g="arm" aria-pressed="false"><span class="mg-n">14</span><span><b>腕</b><small>片側あたり 肩 (3)、肘、手首 (3)</small></span><em>GR00T</em></button>
+            <button type="button" data-g="hand" aria-pressed="false"><span class="mg-n">14</span><span><b>Dex3 ハンド</b><small>片側あたり 人差し指 (2)、中指 (2)、親指 (3)</small></span><em>GR00T</em></button>
+            <p class="ds-note">GR00T は上半身の 31 関節を制御します（タスク中、腰はほぼ固定）。AGILE は脚の 12 関節を担当します。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn"><b>4 種類の関節順序</b>が共存しています：シミュレーション内の順序（USD ツリーの走査順）、全身コントローラの順序、GR00T のグループ順序、AGILE の入力順序。1 列ずれるだけでロボットが転倒したりモデルが「盲目」になったりするため、プロジェクトではすべてを<b>関節名</b>で対応付け、自動テストで確認しています。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>順運動学</h3></div>
+    <p><b>順運動学（FK）</b>は、URDF ファイルに記述された関節ツリーに沿って変換を順に掛け合わせることで、関節角度から各リンク（手、指先、カメラ）の位置を計算します。スライダーを動かすと分かるとおり、関節角度が分かれば手の位置が正確に分かります。</p>
+    <div class="ds-lab single" data-mo="fk">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">腕の側面図 · 3 関節</span><span class="ds-tag">図解 · リンク長は概略値</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="3 関節の腕、順運動学" data-fk-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>肩 <b data-fk-v="0"></b></span><input type="range" min="-60" max="120" value="40" data-fk-q="0"></label>
+              <label><span>肘 <b data-fk-v="1"></b></span><input type="range" min="0" max="140" value="60" data-fk-q="1"></label>
+              <label><span>手首 <b data-fk-v="2"></b></span><input type="range" min="-60" max="60" value="0" data-fk-q="2"></label>
+            </div>
+            <div class="mo-out" data-fk-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout"><b>real2sim での活用：</b>実機 G1 のデータセットには物体の位置がありません。自作の FK（numpy のみ使用）で関節角度から手のひらの軌跡を計算します。手を閉じた場所に果物があり、手を開いた場所に皿があります。胴体の姿勢は両足が床に平らに接しているという仮定から推定します。詳しい図解は II.04 節を参照してください。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>逆運動学</h3></div>
+    <p><b>逆運動学（IK）</b>はその逆で、手首の目標位置を与えて、それを実現する関節角度を求めます。Meta Quest ヘッドセットでテレオペする際、コントローラの姿勢がロボットの手首目標となり、IK ソルバー <b>Pink</b> が毎フレーム関節角度を計算します。枠内をクリックまたはドラッグして目標を設定できます。到達範囲外にも置いてみてください。</p>
+    <div class="ds-lab single" data-mo="ik">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">クリック / ドラッグで手首目標を設定</span><span class="ds-tag">図解 · 2 関節 IK</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 380 270" role="img" aria-label="2 関節の腕、逆運動学" data-ik-svg></svg>
+          <div class="mo-side"><div class="mo-out" data-ik-out></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>動力学</h3></div>
+    <p>運動学が教えてくれるのは、関節角度が分かったときに<b>手がどこにあるか</b>だけです。<b>動力学</b>は次の問いに答えます：関節を<b>実際にその角度まで回転させる</b>にはどうするか。GR00T が送るのは<b>目標角度</b>だけで、力は送りません。各関節のモーターは、リンク（質量と慣性を持つ）を振動させずに目標まで動かすのに十分なトルクを自ら生み出す必要があります。</p>
+    <div class="pd-flow">
+      <div><span class="k">1 · 目標</span><b>到達すべき関節角度</b><small>GR00T から 20 ms ごと</small></div>
+      <div class="hl"><span class="k">2 · PD 制御器</span><b>トルクを計算</b><small>角度誤差と速度に基づく</small></div>
+      <div><span class="k">3 · 物理</span><b>関節が回転</b><small>トルク ÷ 慣性 = 角加速度</small></div>
+      <div><span class="k">4 · 再計測</span><b>新しい角度</b><small>5 ms の物理ステップごとに繰り返し</small></div>
+    </div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">P · 剛性 (K<sub>p</sub>)</div><div class="st">ばねのように</div><p>目標から離れるほど、引き戻す力が強くなります。ばねが硬いほど関節は速く目標に追従しますが、行き過ぎて振動しやすくなります。</p></div>
+      <div class="sub"><div class="sl">D · 減衰 (K<sub>d</sub>)</div><div class="st">ショックアブソーバーのように</div><p>関節が速く回るほど、制動力が大きくなります。減衰が十分なら関節は行き過ぎずに滑らかに目標へ到達し、多すぎると到達が遅くなります。</p></div>
+    </div>
+    <pre class="diagram">トルク = K<sub>p</sub> × (目標角度 − 現在角度)  −  K<sub>d</sub> × 関節速度
+         (ばねが目標へ引き戻す)          (ショックアブソーバーが制動)</pre>
+    <p class="proj"><b>プロジェクトでは：</b>K<sub>p</sub>、K<sub>d</sub> は手で選ばず、分かりやすい 2 つのパラメータからモーター慣性に基づいて導出します：<b>固有振動数 10 Hz</b>（速さ）と<b>減衰比 ζ = 2</b>（滑らかさ）。結果：関節は約 140 ms で目標の 90 % に達し、オーバーシュートはありません。下のスライダーで比較できます。</p>
+    <div class="ds-lab single" data-mo="pd">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">関節にステップ指令 · 実際の角度の時間変化</span><span class="ds-tag">図解 · 理想的な 2 次系</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 230" role="img" aria-label="PD 制御器による関節の応答" data-pd-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one">
+              <label><span>速さ · 固有振動数 <b data-pd-v="w"></b></span><input type="range" min="2" max="20" step="0.5" value="10" data-pd="w"></label>
+              <label><span>滑らかさ · 減衰比 ζ <b data-pd-v="z"></b></span><input type="range" min="0.1" max="3" step="0.05" value="2" data-pd="z"></label>
+            </div>
+            <div class="gen-btns"><button type="button" class="chip" data-pd-preset="10,2">プロジェクト：滑らか</button><button type="button" class="chip" data-pd-preset="10,0.3">減衰不足：振動</button><button type="button" class="chip" data-pd-preset="3,2">柔らかいばね：遅い</button></div>
+            <div class="mo-out" data-pd-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h4>シミュレーションで PD トルクを計算するのは誰か？</h4>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">方式 1 · 暗黙的 PD (IMPLICIT)</div><div class="st">物理ソルバーが自ら計算</div><p>PhysX がソルバーのステップ内で PD 力を計算します。関節が硬くても非常に安定しており、Isaac Lab のデフォルトです。</p></div>
+      <div class="sub"><div class="sl">方式 2 · 明示的 PD (IDEAL PD)</div><div class="st">コードで計算してトルクを与える</div><p>各ステップで上の式をそのまま適用するため、実機ロボットのドライバーにより近い方式です。Arena は G1 にこの方式を使用しています。</p></div>
+    </div>
+    <p class="proj"><b>注意すべき理由：</b>同じ目標角度の系列でも、2 つの方式では腕の動きがわずかに異なります。モデルがどちらの方式で記録したデモから学習したかに合わせて、評価でも同じ方式を使うべきです。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>関節速度の制限</h3></div>
+    <p>安全層が関節角度の急な跳びを抑えます：1 tick（20 ms）あたりの角度変化は、腕で最大 0.2 rad、腰で 0.1 rad、手で 1.5 rad です。しきい値は実データから決定しています（腕：99.9 パーセンタイルで 0.15 rad/tick）。大きなステップ指令を試してみてください：</p>
+    <div class="ds-lab single" data-mo="rate">
+      <div class="ds-pane">
+        <div class="ds-pane-h"><span class="ds-k">ステップ指令と制限後の角度 · 腕の関節</span><span class="ds-tag">図解</span></div>
+        <div class="mo-arm">
+          <svg viewBox="0 0 520 210" role="img" aria-label="関節速度リミッター" data-rate-svg></svg>
+          <div class="mo-side">
+            <div class="ds-sliders one"><label><span>ステップの大きさ <b data-rate-v></b></span><input type="range" min="0.1" max="1.2" step="0.05" value="0.8" data-rate-q></label></div>
+            <div class="mo-out" data-rate-out></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figure class="fig"><img src="images/nb08_rate_limiter.png" alt="速度リミッター前後の肩関節指令" loading="lazy"><figcaption><b>実データ</b>：左肩関節の指令、80 tick 分（40 ステップの系列 2 本を連結）。通常の動作では、リミッター後の線（破線）は元の指令と一致します。安全層が介入するのは異常な跳びがあるときだけです。</figcaption></figure>
+  </div>
+</section>

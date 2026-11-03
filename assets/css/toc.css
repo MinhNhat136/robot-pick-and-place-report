@@ -1,0 +1,101 @@
+/* Right rail: "Trong mục này" — lists the cards of the open section (built by ui/toc.js).
+   Shown on wide screens only; the reading column keeps its own max width. */
+.page{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;max-width:1540px;margin:0 auto;padding:0 32px 0 48px}
+.page > .wrap{max-width:1240px;width:100%;margin:0 auto;padding:0 0 96px;min-width:0}
+.card,.section > .hero{scroll-margin-top:76px}
+
+/* "Liquid glass" panel: translucent tinted glass over the page grid, strong backdrop blur,
+   a specular highlight along the top edge and a light-catching gradient rim. */
+.toc{position:sticky;top:76px;align-self:start;margin-top:28px;max-height:calc(100vh - 100px);display:flex;flex-direction:column;isolation:isolate;
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid rgba(255,255,255,.55);border-radius:24px;overflow:hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(255,255,255,.35),
+    inset 0 0 0 1px rgba(255,255,255,.25),
+    0 1px 2px rgba(34,38,30,.06),
+    0 18px 40px -18px oklch(0.45 0.08 var(--h)/.35),
+    0 40px 80px -40px rgba(34,38,30,.35)}
+/* rim light: thin gradient border that brightens at the top-left and bottom-right */
+.toc::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.15) 35%,oklch(0.8 0.06 var(--h)/.45) 70%,rgba(255,255,255,.8));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+/* specular sheen across the upper part */
+.toc::after{content:"";position:absolute;left:8%;right:8%;top:0;height:46px;z-index:-1;pointer-events:none;border-radius:0 0 50% 50%/0 0 100% 100%;
+  background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0))}
+.toc[hidden]{display:none}
+
+/* ---------- head: progress ring + section name ---------- */
+.toc-head{position:relative;display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;padding:18px 16px 14px}
+.toc-ring{position:relative;width:52px;height:52px}
+.toc-ring svg{width:52px;height:52px;transform:rotate(-90deg)}
+.toc-ring circle{fill:none;stroke-width:5}
+.toc-ring .bg{stroke:oklch(0.93 0.025 var(--h))}
+.toc-ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .2s linear}
+.toc-ring b{position:absolute;inset:0;display:grid;place-content:center;font:700 12px var(--mono);color:var(--accent-ink);letter-spacing:-.02em}
+.toc-k{font:600 9px var(--mono);letter-spacing:.16em;color:var(--accent)}
+.toc-t{font-size:14.5px;font-weight:800;letter-spacing:-.015em;color:var(--ink);margin-top:3px;line-height:1.25}
+.toc-meta{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.toc-meta span{font:600 9.5px var(--mono);letter-spacing:.06em;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 8px}
+
+/* ---------- list: track + dots, active card expands its sub-headings ---------- */
+.toc-list{list-style:none;margin:0;padding:6px 10px 10px;position:relative;overflow-y:auto;flex:1;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 10px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(180deg,transparent 0,#000 10px,#000 calc(100% - 14px),transparent)}
+.toc-track,.toc-fill{position:absolute;left:25px;top:20px;width:2px;border-radius:2px}
+.toc-track{bottom:24px;background:repeating-linear-gradient(180deg,var(--line) 0 4px,transparent 4px 7px)}
+.toc-fill{height:0;background:linear-gradient(180deg,oklch(0.75 0.12 var(--h)),var(--accent));transition:height .25s cubic-bezier(.2,.7,.2,1)}
+.toc-list > li{position:relative}
+.toc-item{position:relative;display:grid;grid-template-columns:18px 1fr;align-items:start;gap:12px;width:100%;text-align:left;font:inherit;
+  background:none;border:0;border-radius:12px;padding:9px 12px 9px 7px;cursor:pointer;color:var(--muted);transition:background .18s,color .18s,transform .18s}
+.toc-item:hover{background:rgba(255,255,255,.55);color:var(--ink);transform:translateX(2px)}
+.toc-item:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.toc-dot{position:relative;z-index:1;justify-self:center;margin-top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid oklch(0.84 0.02 var(--h));transition:all .22s cubic-bezier(.2,.7,.2,1)}
+.toc-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.toc-l{font-size:12.5px;font-weight:600;line-height:1.35;letter-spacing:-.01em;color:inherit}
+.toc-sub{display:flex;gap:6px;align-items:center;font:600 9.5px var(--mono);letter-spacing:.06em;color:var(--faint)}
+.toc-sub i{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6}
+
+.toc-item.passed .toc-dot{background:oklch(0.78 0.09 var(--h));border-color:oklch(0.78 0.09 var(--h))}
+.toc-item.passed .toc-l{color:var(--ink-3)}
+.toc-item.active{background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.45));color:var(--ink);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px oklch(0.85 0.06 var(--h)/.7),0 6px 16px -10px oklch(0.45 0.1 var(--h)/.5)}
+.toc-item.active .toc-dot{width:16px;height:16px;margin-top:2px;background:var(--accent);border:3px solid #fff;box-shadow:0 0 0 2px var(--accent),0 0 0 7px oklch(0.6 0.14 var(--h)/.16)}
+.toc-item.active .toc-l{color:var(--accent-ink);font-weight:800}
+.toc-item.active .toc-sub{color:var(--accent)}
+
+/* sub-headings of the active card */
+.toc-subs{list-style:none;margin:0;padding:0 0 0 37px;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .2s ease,margin .3s ease}
+li.open > .toc-subs{max-height:320px;opacity:1;margin:2px 0 6px}
+.toc-subs button{display:block;width:100%;text-align:left;font:500 12px var(--sans);color:var(--muted);background:none;border:0;border-left:2px solid var(--line);
+  padding:5px 10px;cursor:pointer;line-height:1.35;transition:color .15s,border-color .15s,background .15s}
+.toc-subs button:hover{color:var(--ink);background:rgba(255,255,255,.7)}
+.toc-subs button.active{color:var(--accent-ink);font-weight:700;border-left-color:var(--accent)}
+
+/* ---------- foot: next section + back to top ---------- */
+.toc-foot{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px;border-top:1px solid var(--line-2);background:linear-gradient(180deg,rgba(250,250,245,.6),rgba(246,247,241,.95))}
+.toc-next{display:flex;align-items:center;gap:10px;min-width:0;padding:9px 12px;border-radius:12px;text-decoration:none;color:#fff;
+  background:linear-gradient(135deg,var(--accent),oklch(0.45 0.13 var(--h)));box-shadow:0 10px 20px -14px oklch(0.4 0.13 var(--h))}
+.toc-next:hover{text-decoration:none;color:#fff;filter:brightness(1.07)}
+.toc-next span{display:flex;flex-direction:column;min-width:0}
+.toc-next small{font:600 8.5px var(--mono);letter-spacing:.14em;opacity:.8}
+.toc-next b{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toc-next em{margin-left:auto;font-style:normal;font:700 14px var(--mono)}
+.toc-top{width:40px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--muted);font:700 14px var(--mono);cursor:pointer}
+.toc-top:hover{color:var(--accent-ink);border-color:var(--accent-border)}
+.toc-foot.solo{grid-template-columns:1fr}
+.toc-foot.solo .toc-top{width:100%;padding:9px}
+
+/* scroll targets for sub-headings */
+.card h4{scroll-margin-top:84px}
+
+@media (prefers-reduced-motion:reduce){.toc *{transition:none !important}}
+
+@media (max-width:1360px){
+  .page{grid-template-columns:minmax(0,1fr);padding:0 48px}
+  .toc{display:none}
+}
+@media (max-width:960px){.page{padding:0 16px}.page > .wrap{padding:0 0 72px}}
+@media print{.toc{display:none !important}.page{display:block;padding:0}}
+
+/* dashed divider between the rail header and the card list (same style as .cv-note) */
+.toc-head{border-bottom:1px dashed var(--accent-border);margin:0 14px;padding-left:2px;padding-right:2px}
+.toc-list{padding-top:10px}

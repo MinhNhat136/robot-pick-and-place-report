@@ -1,0 +1,217 @@
+<section class="section" id="hm3" data-hue="blue" data-kicker="III.03 · シナリオ 3" data-title="シナリオ Hammer &amp; Bin">
+  <div class="hero">
+    <span class="pill">シナリオ 3 · HAMMER &amp; BIN</span>
+    <h2>G1 が棚の上のハンマーをつかみ、箱に入れる<span class="dot">。</span></h2>
+    <p class="lead">本プロジェクトで新たに設計したタスクです。左手でハンマーの柄をつかみ、箱の縁を越えて持ち上げ、箱の中央に置いて手を離します。ハンマーは<b>長く薄く、棚の面に近い</b>ためリンゴより難しく、箱の縁に引っかかりやすいのが特徴です。環境を構築し、Meta Quest ヘッドセットで <b>100 件のテレオペデモ</b>を収集、デモを追加生成して GR00T をファインチューニングしました（H100 1 枚で約 1 時間）。全工程は約 6 日間です。結果：未調整 <b>0 %</b> → 200 エピソード <b>66 %</b> → 400 エピソード <b>63 %</b> → 静止しきい値を緩和 <b>73 %</b>。</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">200 · 400<small>エピソード</small></div><ul class="fact-list"><li><span>データ源</span><b>テレオペ + 生成</b></li><li><span>フレーム</span><b>28,022 · 54,541</b></li><li><span>周波数</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">10k · 20k<small>ステップ</small></div><ul class="fact-list"><li><span>学習時間</span><b>61 分 · 2 時間 15 分</b></li><li><span>Batch · GPU</span><b>32 · 1× H100</b></li><li><span>最終 loss</span><b>0.020 · 0.019</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>mix200</span><b><code>hammer_mix200_n17</code></b></li><li><span>mix400</span><b><code>hammer_mix400_n17</code></b></li><li><span>アクション列</span><b>40 ステップ · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">73<small>% 成功</small></div><div class="fact-steps"><span class=""><b>0 %</b><em>ベース</em></span><i>→</i><span class=""><b>66 %</b><em>200 EP</em></span><i>→</i><span class=""><b>63 %</b><em>400 EP</em></span><i>→</i><span class="best"><b>73 %</b><em>しきい値</em></span></div><div class="fact-note">静止しきい値を 0.01 → 0.02 に緩和</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 89 · 成功</span>
+        <video src="assets/videos/kich-ban-3-bua-thung.mp4" poster="assets/videos/kich-ban-3-bua-thung-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">ロボットがハンマーの柄をつかみ、箱の縁を越えて持ち上げ、箱の中央に置いて手を離す</div>
+        <div class="cv-cmd"><small>モデルへの指示文</small>"put the hammer in the bin"</div>
+        <div class="cv-stats"><div><b>3.0<small>s</small></b><span>成功までの時間</span></div><div><b>12.8<small>cm</small></b><span>ハンマーの最大持ち上げ高さ</span></div><div><b>0.7<small>cm</small></b><span>ハンマー中心と箱中心の距離</span></div><div><b>0<small>N</small></b><span>手がハンマーに加える力：解放済み</span></div></div>
+        <div class="cv-note">最良構成（73/100）での 100 エピソード評価から抜粋。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>シナリオの状況</h3></div>
+    <p>G1 ロボットは Galileo ラボの棚の前に立っています。ハンマーは左側にあり、ヘッドが小さなブロックの上に載っています。赤いプラスチック箱は右側にあります。下の画像は Video Showcase のエピソードの<b>最初のフレーム</b>です。</p>
+    <figure class="fig"><img src="images/kich-ban-3-bua-thung-frame0.jpg" alt="Hammer &amp; Bin シナリオの最初のフレーム" loading="lazy"><figcaption><b>フレーム 0</b> · 左：ロボット頭部カメラ（モデルへの入力画像） · 右：外部カメラ（動画撮影専用）。</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シーンと物体</th><th>詳細</th></tr></thead>
+      <tbody>
+        <tr><td>背景</td><td>Galileo ラボ。手が衝突しないよう shield_controller_box_02、jetson_orin_05、jetson_orin_07 の箱を非表示（隙間 ≥ 2 cm）</td></tr>
+        <tr><td>ハンマー</td><td><code>hammer_2_handal_robolab</code> 33 × 13 × 3 cm、位置 (0.63, 0.25) m、yaw 0。柄をつかみやすいようヘッドを 5 cm のブロックに載せる（約 10° 傾斜）</td></tr>
+        <tr><td>箱</td><td><code>red_container</code> 縮尺 0.65 → 40 × 27 × 5.9 cm、位置 (0.68, 0.00) m</td></tr>
+        <tr><td>距離</td><td>ハンマーと箱の縁の距離 5.1 cm</td></tr>
+      </tbody>
+    </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ロボット・カメラ・制御</th><th>詳細</th></tr></thead>
+      <tbody>
+        <tr><td>ロボット</td><td>Unitree G1 + Dex3、位置 (0.25, 0.08) m。左手で柄をつかみ、高さ 5.9 cm の箱の縁を越えて持ち上げ、右へ約 25 cm 移動して離す</td></tr>
+        <tr><td>カメラ</td><td>ロボット頭部カメラ（モデル入力）+ 撮影用の外部カメラ 1 台</td></tr>
+        <tr><td>周波数</td><td>制御 50 Hz。モデル呼び出し 1 回につき 40 ステップのアクション列を返す</td></tr>
+        <tr><td>エピソード</td><td>最大 300 ステップ = 6 s</td></tr>
+        <tr><td>指示文</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>成功条件</td><td>ハンマー中心が箱中心から 10 cm 以内かつ縁より低い。ハンマーが静止（&lt; 0.01 m/s、&lt; 0.1 rad/s — のちに 0.02 m/s へ緩和）。手を離している（手の 22 リンクすべて ≤ 0.01 N）。10 ステップ連続で維持</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>シナリオの目標</h3></div>
+    <p>このシナリオでは、プロジェクトが自ら構築したツールとデータで<b>ロボットに新しいタスクをゼロから教える</b>能力を検証します。</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">目標 1</div><div class="st">まったく新しいタスク</div><p>既存のデータもモデルもないタスクを自ら設定する：棚のハンマーをつかみ、箱に入れる。</p></div>
+      <div class="sub"><div class="sl">目標 2</div><div class="st">全工程を通す</div><p>環境構築、テレオペによるデモ収集、データ拡張、ファインチューニング、評価のすべての工程を実施する。</p></div>
+      <div class="sub"><div class="sl">目標 3</div><div class="st">コストと効果の測定</div><p>必要なデータ量と学習時間、そして各改善が成功率にどれだけ寄与するかを把握する。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>シナリオのデータ</h3></div>
+    <p>新しいシナリオのため既存のデータセットはありません。Isaac Lab 上で <b>Meta Quest ヘッドセットによるテレオペ</b>（50 Hz）でデモを自ら収集し、生成デモ（カード 6）を追加しました。すべてのデモは学習に使う前に厳格な成功条件で再生・確認しています。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>データセット hammer_to_bin</th><th>値</th></tr></thead>
+      <tbody>
+        <tr><td>データ源</td><td>Isaac Lab 上の Meta Quest テレオペ、50 Hz。最初の実デモ 100 件を 10 セッションで収集</td></tr>
+        <tr><td>実デモ</td><td>約 13,700 ステップ。ハンマーの平均持ち上げ高さ 10.6 cm。最終時のハンマー中心と箱中心の距離 3.7 cm（最大 8.4 cm）</td></tr>
+        <tr><td>mix200</td><td>200 エピソード（実 100 + 拡張 100）、28,022 フレーム（約 9.3 分）、LeRobot v2.1、131 MB</td></tr>
+        <tr><td>mix400</td><td>400 エピソード（mix200 + 新規テレオペデモ 200）、54,541 フレーム（約 18 分）</td></tr>
+        <tr><td>指示文</td><td>"put the hammer in the bin"</td></tr>
+        <tr><td>確認</td><td>全デモが成功。mix200：持ち上げ高さ最小 6.4 cm、最終距離の平均 3.8 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>直面した課題</h3></div>
+    <p>ハンマー → 箱のタスクはまったく新しく、データもモデルも既成のシーンもありません。最大の難しさは、ファインチューニングに十分な質の良いデータを用意することです。</p>
+    <div class="callout warn"><b>出発点が何もない。</b>データはすべてテレオペで自ら収集する必要があり、これが最も手間のかかる工程です。実デモ 100 件に 10 セッションを要しました。</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">課題 1</div><div class="st">既存データがない</div><p>G1 でハンマーをつかんで箱に入れるタスクのデータセットもチェックポイントも存在しません。未調整のベースモデルではタスクを実行できません。</p></div>
+      <div class="sub"><div class="sl">課題 2</div><div class="st">テレオペは手間がかかり遅い</div><p>操作者が Meta Quest を装着してデモを 1 件ずつ実演します。1 セッションで約 10 件しか取れず、十分なデータには多くのセッションが必要です。</p></div>
+      <div class="sub"><div class="sl">課題 3</div><div class="st">テレオペが不安定</div><p>コントローラーの信号が途切れるとロボットの手が止まり、2 回目以降はカクつきが発生します。多くの試行を破棄してやり直しました。</p></div>
+      <div class="sub"><div class="sl">課題 4</div><div class="st">デモの品質にばらつき</div><p>ハンマーが箱の縁に引っかかったまま、または手を離していないのに成功と判定されたデモがありました。不良デモが混ざるとモデルが誤った動作を学習します。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>提案手法</h3></div>
+    <p><b>データの追加生成</b>で解決します。実際のテレオペデモから MimicGen 方式で新しいデモを自動生成し、シミュレーションで再生して、厳格な成功条件を満たすものだけを残します。テレオペ時間を増やさずにデータを増やせ、学習に使うデモはすべて検証済みになります。</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">生成方法</div><div class="st">テンプレートデモの変形</div><p>実デモをテンプレートとして使用（60 種類）。時間を ×0.85–1.2 で伸縮し、開始点（σ 1 cm）、把持点（σ 4 mm）、解放点（±1–1.2 cm）をずらして min-jerk 軌道でつなぎ、0.2–0.6 mm の手の揺れを加えます。</p></div>
+      <div class="sub"><div class="sl">フィルタリング</div><div class="st">133 回中 100 回を採用</div><p>生成した各デモをシミュレーションで厳格な成功条件のもと再生し、133 回中 100 回が合格して mix200 に加えられました。</p></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>指標</th><th class="num">拡張</th><th class="num">実</th></tr></thead>
+      <tbody>
+        <tr><td>エピソード長（ステップ）</td><td class="num">145</td><td class="num">137</td></tr>
+        <tr><td>ハンマーの持ち上げ高さ</td><td class="num">10.5 cm</td><td class="num">10.6 cm</td></tr>
+        <tr><td>箱中心までの距離（平均）</td><td class="num">4.0 cm</td><td class="num">3.7 cm</td></tr>
+        <tr><td>箱中心までの距離（最大）</td><td class="num">8.0 cm</td><td class="num">8.4 cm</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_generated_demo.png" alt="拡張デモ" loading="lazy"><figcaption><b>拡張デモの一例</b>：最初・中間・最後のフレーム。主要なポイントでの姿勢は実デモとの差が 1 cm 未満。60 種類のテンプレートデモを使用。</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>実施プロセス</h3></div>
+    <p>まったく新しいシナリオで、既存のデータもモデルもありません。環境を構築し、<b>テレオペでデータを自ら作成</b>、<b>データ拡張</b>で量を増やし、GR00T を<b>ファインチューニング</b>してから、閉ループで実行・評価しました。</p>
+    <div class="flow">
+      <div class="step"><div class="sk">ステップ 1 · 10/07</div><div class="sv">環境設計</div><div class="sd">物体、配置、支えブロック、成功条件</div></div>
+      <div class="step"><div class="sk">ステップ 2 · 10/08–10</div><div class="sv">テレオペでデモ収集</div><div class="sd">Meta Quest · 実デモ 100 件</div></div>
+      <div class="step"><div class="sk">ステップ 3 · 10/08–10</div><div class="sv">データ拡張</div><div class="sd">MimicGen 方式で生成 · 133 中 100 採用</div></div>
+      <div class="step"><div class="sk">ステップ 4 · 10/12</div><div class="sv">ファインチューニング</div><div class="sd">mix200 10k ステップ · mix400 20k ステップ</div></div>
+      <div class="step"><div class="sk">ステップ 5 · 10/12–19</div><div class="sv">実行と評価</div><div class="sd">Isaac Lab Arena · 50–100 エピソード</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ステップ</th><th>作業内容</th><th>Notebook / ツール</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>ハンマーと箱を選定、ハンマーを 5 cm のブロックに載せる、手の邪魔になる背景の箱を非表示、厳格な成功条件を記述</td><td>Isaac Lab Arena, hammer_to_bin/scripts</td><td>最終配置、隙間 ≥ 2 cm</td></tr>
+        <tr><td>2</td><td>プリセットとテレオペ診断ツールを使い Meta Quest でデモを収集、各デモを厳格な条件で再生</td><td>teleop_kit, record_demos.sh</td><td>実デモ 100 件（10 セッション）、のちに 200 件追加</td></tr>
+        <tr><td>3</td><td>テンプレートデモを変形（時間、把持／解放点、手の揺れ）、再生してフィルタリング</td><td>gen_scripted_demos.py</td><td>拡張デモ 100 件 → mix200</td></tr>
+        <tr><td>4</td><td>GR00T N1.7-3B をファインチューニング。LLM は凍結、視覚 + projector + diffusion を調整</td><td>H100 サーバー</td><td>mix200：61 分 · mix400：2 時間 15 分</td></tr>
+        <tr><td>5</td><td>閉ループで N エピソード実行、失敗を分類、動画を撮影</td><td>Arena eval, nb11_hammer_to_bin, nb12_eval_hammer_to_bin</td><td>ベース 0 % → 66 % → 63 % → 73 %</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Fine-tune</h3></div>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">学習時間</div><div class="kv">61<small>分</small></div><div class="kd">1× H100 · 0.36 s/ステップ · 約 53 GB VRAM</div></div>
+      <div class="kpi"><div class="kl">ステップ数 · batch</div><div class="kv">10k<small>· 32</small></div><div class="kd">約 11 epoch · 2k ステップごとにチェックポイント</div></div>
+      <div class="kpi"><div class="kl">最終 loss</div><div class="kv">0.020</div><div class="kd">ステップ 10 の 1.27 から</div></div>
+    </div>
+    <div class="chart" data-chart="line" data-source="hammer-loss-ja">
+      <div class="chart-head"><div><div class="ct">学習 loss · 対数スケール</div><div class="cs">mix200 での GR00T N1.7-3B。LLM 凍結、視覚 + projector + diffusion を調整。マウスを重ねると各ステップを表示。</div></div><button class="btn" type="button" data-table-toggle data-l-table="表で表示" data-l-chart="グラフで表示">表で表示</button></div>
+      <div class="plot"></div>
+      <div class="table-view"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>ステップ</th><th class="num">10</th><th class="num">500</th><th class="num">1,000</th><th class="num">2,000</th><th class="num">4,000</th><th class="num">6,000</th><th class="num">8,000</th><th class="num">10,000</th></tr></thead><tbody><tr><td>Loss</td><td class="num">1.270</td><td class="num">0.222</td><td class="num">0.108</td><td class="num">0.064</td><td class="num">0.045</td><td class="num">0.031</td><td class="num">0.023</td><td class="num">0.020</td></tr></tbody></table></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>達成した結果</h3></div>
+    <p>テレオペ → 拡張 → ファインチューニング → 評価の各工程で測定した数値です。評価はローカルの Isaac Sim で実施（<code>inside</code> 条件：ハンマー中心が箱の内側、静止、手を離している）。</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">最良 · ローカル</div><div class="kv">73<small>%</small></div><div class="kd">mix400 · しきい値 0.02 · 73/100</div></div>
+      <div class="kpi"><div class="kl">ローカル · mix200</div><div class="kv">66<small>%</small></div><div class="kd">66/100 · Wilson 56–75 %</div></div>
+      <div class="kpi"><div class="kl">データ</div><div class="kv">400<small>デモ</small></div><div class="kd">54,541 フレーム · テレオペ 300 + 生成 100</div></div>
+      <div class="kpi"><div class="kl">Fine-tune loss</div><div class="kv">0.019</div><div class="kd">mix400 · 20k ステップ · 2 時間 15 分</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm3-results-ja">
+      <div class="chart-head"><div><div class="ct">成功率と Wilson 95 % 信頼区間</div><div class="cs">ローカル Isaac Sim · inside 条件 · 各実行 100 エピソード。</div></div><button class="btn" type="button" data-table-toggle data-l-table="表で表示" data-l-chart="グラフで表示">表で表示</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>工程</th><th>測定値</th></tr></thead>
+      <tbody>
+        <tr><td>テレオペ</td><td>実デモ 100 件（10 セッション、約 13,700 ステップ）、のちに 200 件追加</td></tr>
+        <tr><td>データ拡張</td><td>生成 133 回 → 厳格な条件を満たすデモ 100 件</td></tr>
+        <tr><td>データセット</td><td>mix200：200 エピソード、28,022 フレーム · mix400：400 エピソード、54,541 フレーム</td></tr>
+        <tr><td>Fine-tune</td><td>mix200：10k ステップ、61 分、loss 0.020 · mix400：20k ステップ、2 時間 15 分、loss 0.019</td></tr>
+        <tr><td>ローカル · mix200</td><td>66/100。3 cm 以上持ち上げ 95/100。最終距離の中央値 6.1 cm</td></tr>
+        <tr><td>ローカル · mix400</td><td>63/100。3 cm 以上持ち上げ 94/100。最終距離の中央値 4.4 cm</td></tr>
+        <tr class="hl"><td>ローカル · mix400、しきい値 0.02</td><td>73/100。3 cm 以上持ち上げ 91/100。成功までの平均時間 2.5 s</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>結果の分析</h3></div>
+    <p>ローカル Isaac Sim での 100 エピソード × 3 回の結果を分類し、データ追加としきい値の緩和で何が変わったかを確認します。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>結果（100 エピソード）</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · しきい値 0.02</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>成功</td><td class="num">66</td><td class="num">63</td><td class="num">73</td></tr>
+        <tr><td>ハンマー中心が箱の外</td><td class="num">19</td><td class="num">5</td><td class="num">6</td></tr>
+        <tr><td>時間切れ時にハンマーが静止していない</td><td class="num">6</td><td class="num">22</td><td class="num">8</td></tr>
+        <tr><td>ハンマーが箱の縁に引っかかる</td><td class="num">3</td><td class="num">4</td><td class="num">4</td></tr>
+        <tr><td>持ち上げられない（&lt; 1 cm）</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
+        <tr><td>ロボット転倒</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
+        <tr><td>手を離していない</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><img src="images/hammer_place_positions.ja.png" alt="終了時のハンマー中心位置：mix200、mix400 しきい値 0.01、mix400 しきい値 0.02" loading="lazy"><figcaption><b>エピソード終了時のハンマー中心位置</b>（上から見た図、原点は箱の中心） · 左：mix200 · 中央：mix400 · 右：静止しきい値 0.02 m/s の mix400。mix200 では、ハンマーが左手側にずれて箱の壁のすぐ外に置かれることが多くありました（灰色の集まり）。mix400 では点が箱の中心付近に集まっています。しきい値 0.01 の mix400 では、失敗の大半は箱の中央にあるのに時間切れ時点で静止していないハンマーです（水色の点 22 個）。しきい値 0.02 の実行では、このグループは 8 個に減りました。赤（持ち上げられない）と紫（ロボット転倒）の点は、ハンマーが箱まで運ばれなかったケースです。</figcaption></figure>
+    <div class="grid two">
+      <div class="sub"><div class="sl">所見 1</div><div class="st">把持と持ち上げは安定</div><p>3 回の実行すべてで 91–95/100 回、ハンマーを 3 cm 以上持ち上げました。持ち上げられなかったのは 3–4 回だけです。損失は主に置く段階で発生しています。</p></div>
+      <div class="sub"><div class="sl">所見 2</div><div class="st">データ追加で置く位置の精度が向上</div><p>mix400 では、ハンマーが箱の外に落ちた回数が 19 から 5 に、最終距離の中央値が 6.1 cm から 4.4 cm に減りました。</p></div>
+      <div class="sub"><div class="sl">所見 3</div><div class="st">静止しきい値が残るボトルネック</div><p>中央の図から、mix400（しきい値 0.01 m/s）の「静止していない」失敗 22 件はすべて箱の内側にあり、手も離していることがわかります。これらの点は成功例よりも箱の中心に近いほどです（中央値 2.9 cm 対 4.3 cm）。ハンマーは 6 s の時間切れまでゆっくり動き続けるだけで（最終速度 0.005–0.023 m/s、回転 0.04–0.32 rad/s）、一度も静止条件を満たしませんでした。置き方の失敗というより、採点方法による失敗です。しきい値 0.02 m/s の実行（右図）では、このグループは 8 件に減り、成功率は 73 % に上がりました。</p></div>
+      <div class="sub"><div class="sl">所見 4</div><div class="st">静止しているハンマーが「静止していない」と判定される理由</div><p>静止条件（Arena のまま変更なし）は、各シミュレーションステップにおけるハンマーの<b>瞬間速度</b>だけを見ています。0.01 m/s 未満かつ 0.1 rad/s 未満を同時に満たす必要があります。22 個のハンマーはすべて箱の内側にあり手も離れていて、確認した動画ではハンマーが滑っている様子は見られません。もし測定された速度（0.5–2.3 cm/s）で箱の中心に着いてから時間切れまでの約 3.5 s 間動き続けていたら、数センチは移動するはずです。実際には、最終時の箱中心までの距離は最接近時との差が中央値で 1.2 cm にすぎません。つまりハンマーは主に<b>その場で微振動</b>しています。ハンマーが箱のメッシュ状の底に置かれると、物理シミュレーションは速度を正確に 0 に戻しません（22 件中 12 件は底に平らに置かれており、成功例では 63 件中 8 件）。さらに箱自体も棚の上に置かれた動的な物体です。この小さな振動が 0.01 m/s を超えるため、瞬間値のしきい値はシミュレーションのノイズに対して厳しすぎます。一定時間（例：0.5 s）内にハンマーが移動したかどうかで判定する方が妥当です。</p></div>
+    </div>
+    <div class="sub"><div class="sl">所見 5</div><div class="st">転倒の増加はモデルやしきい値のせいではない</div><p>73 % の実行ではロボットが 6 回転倒し、他の 2 回の実行ではそれぞれ 2 回でした。6 回とも、手がハンマーに届く前のエピソード開始直後、0.02–0.78 s 以内（最大 300 ステップ中 39 ステップ）に発生しています。ハンマーは棚の上にあり、箱の中心から 25.6 cm 離れたままでした。この時点ではモデルはほとんど制御を始めておらず、静止しきい値はエピソード終了時の採点にしか使われないため、転倒の原因にはなりません。これは nb12 で記録済みのリセットの問題と一致します。前のエピソードが腕と胴体をデフォルト姿勢から大きく離れた状態で終わると、リセットで以前の状態が完全には消えず（腰が曲がったまま、関節に速度が残る）、ロボットは最初のティックで足を踏み出すか転倒します。リセットを 2 回行っても、デモ 20 件の再生で 2/20 回は開始時に失敗しました。6 対 2 の差は統計的に有意ではなく（Fisher p = 0.28）、3 回の実行を合わせると 10/300 エピソード（約 3 %）です。これらの転倒を除くと、73 % の実行は 73/94 ≈ 78 % になります。このノイズを評価から除くには、リセット工程の修正（例：エピソード開始前に姿勢と関節速度を確認する）が必要です。</p></div>
+    <div class="callout warn"><b>注意：</b>しきい値 0.02 の実行は新たな 100 エピソードの実行であり、以前の実行を採点し直したものではないため、ランダムなばらつきの影響を受けます。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">11</span><h3>シナリオの結論</h3></div>
+    <div class="panel"><div class="pl">結論</div><p>本プロジェクトは <b>G1 にまったく新しいタスクを自力で教える</b>ことに成功しました。未調整の 0 % から、わずか 200 エピソード（テレオペ 100 + 生成 100）と H100 1 枚での約 1 時間のファインチューニングで <b>66 %</b> に到達し、全工程は約 6 日間でした。把持と持ち上げは安定しており、残る損失はハンマーを箱に置く段階と採点方法にあります。</p></div>
+    <ul>
+      <li>自社開発のツールで全工程を実施：環境構築、テレオペによるデモ収集、<b>データ生成</b>、ファインチューニング、評価。</li>
+      <li>デモの生成により、テレオペ時間を増やさずにデータを増やせる（生成 133 回 → 厳格な条件を満たすデモ 100 件）。</li>
+      <li>データを 2 倍（mix400）にするとハンマーをより正確に置けるようになった（箱の外 19 → 5 回）が、全体の成功率は上がらなかった（63 %）。静止しきい値 0.02 では <b>73 %</b> に達した。</li>
+      <li>未対応：「静止」の判定を瞬間速度ではなく一定時間内のハンマーの移動量で行うよう変更すること。エピソード開始時にロボットが転倒する原因となるリセット工程の修正（エピソードの約 3 %）。</li>
+    </ul>
+  </div>
+
+</section>

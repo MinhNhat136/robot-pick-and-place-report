@@ -1,0 +1,213 @@
+<section class="section" id="hm1" data-hue="blue" data-kicker="III.01 · KỊCH BẢN 1" data-title="Kịch bản Apple &amp; Plate">
+  <div class="hero">
+    <span class="pill">KỊCH BẢN 1 · APPLE &amp; PLATE</span>
+    <h2>Robot G1 gắp quả táo trên kệ, đặt lên đĩa<span class="dot">.</span></h2>
+    <p class="lead">Kịch bản mẫu của NVIDIA Isaac Lab Arena, chạy lại bằng <b>pipeline điều khiển do dự án tự xây dựng</b>. Dự án kiểm chứng pipeline theo tầng (open-loop với dataset, phát lại demo) rồi đánh giá checkpoint của NVIDIA trong ba khung cảnh. Kết quả: <b>92 %</b> trong môi trường gốc, <b>56 %</b> khi chỉ lệch ánh sáng, <b>0 %</b> khi cả khung cảnh khác — model rất nhạy với hình ảnh, pipeline hoạt động đúng.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-h"><span class="fact-k">DATASET</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span></div><div class="fact-v">208<small>episode</small></div><ul class="fact-list"><li><span>Nguồn</span><b>NVIDIA · teleop XR</b></li><li><span>Frame</span><b>35.066</b></li><li><span>Tần số</span><b>50 Hz</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">FINETUNE</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span></div><div class="fact-v">Không<small>huấn luyện lại</small></div><ul class="fact-list"><li><span>Dùng</span><b>Checkpoint NVIDIA</b></li><li><span>Đã tune cho</span><b>Táo → đĩa</b></li><li><span>Câu lệnh</span><b>Theo dataset</b></li></ul></div>
+    <div class="fact"><div class="fact-h"><span class="fact-k">MODEL</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span></div><div class="fact-v">GR00T N1.7<small>3B</small></div><ul class="fact-list"><li><span>Checkpoint</span><b>GN1x-Tuned-Arena</b></li><li><span>Embodiment</span><b>G1 + Dex3</b></li><li><span>Chuỗi action</span><b>40 bước · 50 Hz</b></li></ul></div>
+    <div class="fact result"><div class="fact-h"><span class="fact-k">RESULT</span><span class="fact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/><path d="M7 6H4v1a3 3 0 003 3M17 6h3v1a3 3 0 01-3 3"/></svg></span></div><div class="fact-v">92<small>% thành công</small></div><div class="fact-steps"><span class="best"><b>92 %</b><em>GỐC</em></span><i>→</i><span class=""><b>56 %</b><em>ÁNH SÁNG</em></span><i>→</i><span class=""><b>0 %</b><em>KHUNG CẢNH</em></span></div><div class="fact-note">Cùng model; chỉ đổi môi trường chạy</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Video Showcase</h3></div>
+    <div class="case-video">
+      <figure class="cv-player">
+        <span class="cv-tag">EPISODE 27 · THÀNH CÔNG</span>
+        <video src="assets/videos/kich-ban-1-tao-dia.mp4" poster="assets/videos/kich-ban-1-tao-dia-poster.jpg" muted loop playsinline controls preload="metadata"></video>
+      </figure>
+      <div class="cv-info">
+        <div class="cv-t">Robot nhặt táo đặt lên đĩa, nhìn từ camera đầu</div>
+        <div class="cv-cmd"><small>CÂU LỆNH GỬI MODEL</small>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</div>
+        <div class="cv-stats"><div><b>2,9<small>s</small></b><span>Thời gian tới thành công</span></div><div><b>1,0<small>cm</small></b><span>Tâm táo cách tâm đĩa</span></div><div><b>4</b><span>Lần gọi model, mỗi lần 40 bước</span></div><div><b>1,1<small>s</small></b><span>Độ trễ trung bình mỗi lần gọi</span></div></div>
+        <div class="cv-note">Trích từ đợt 50 episode trên khung cảnh Galileo dựng lại (28/50 thành công), checkpoint NVIDIA.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Bối cảnh kịch bản</h3></div>
+    <p>Robot G1 đứng trước một kệ trong phòng lab Galileo của Arena; quả táo và chiếc đĩa đặt cạnh nhau trên mặt kệ. Ảnh dưới ghép <b>khung đầu tiên</b> của episode trong Video Showcase (ảnh model nhận vào ở bước 0) với góc nhìn xiên toàn cảnh.</p>
+    <figure class="fig"><img src="images/kich-ban-1-tao-dia-frame0-2view.jpg" alt="Khung đầu kịch bản Apple &amp; Plate" loading="lazy"><figcaption><b>Khung 0</b> · trái: camera đầu robot, ảnh model nhận vào · phải: góc nhìn xiên từ camera ngoài (dựng lại cảnh Galileo trong Isaac Sim, cùng góc camera với kịch bản Hammer &amp; Bin), chỉ để minh hoạ.</figcaption></figure>
+    <div class="grid two">
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Khung cảnh &amp; vật thể</th><th>Chi tiết</th></tr></thead>
+        <tbody>
+          <tr><td>Nền</td><td>Phòng lab Galileo (<code>galileo_locomanip.usd</code>); ẩn 3 hộp thiết bị che tầm tay (jetson_orin_06, jetson_orin_03, hesai_box_06)</td></tr>
+          <tr><td>Mặt kệ</td><td>Tấm đỡ ẩn 0,8 × 1,5 × 0,04 m; mặt trên cao 0,765 m</td></tr>
+          <tr><td>Quả táo</td><td>Đặt tại (0,58; 0,27) m</td></tr>
+          <tr><td>Đĩa</td><td>Đặt tại (0,58; 0,06) m — cách táo ~21 cm về bên phải robot</td></tr>
+          <tr><td>Ma sát</td><td>Tăng ma sát ngón tay Dex3 để giữ táo chắc</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Robot, camera &amp; điều khiển</th><th>Chi tiết</th></tr></thead>
+        <tbody>
+          <tr><td>Robot</td><td>Unitree G1 + bàn tay Dex3, đứng tại (0,25; 0,08) m, quay mặt theo trục +x; chân giữ thăng bằng bằng bộ điều khiển AGILE, hông cao ~0,73–0,75 m</td></tr>
+          <tr><td>Camera</td><td>Gắn trên <code>head_link</code>, 640×480, tiêu cự 15 mm, chúc xuống ~35°</td></tr>
+          <tr><td>Tần số</td><td>Vật lý 200 Hz, điều khiển 50 Hz (4 bước vật lý / lệnh)</td></tr>
+          <tr><td>Episode</td><td>Tối đa 300 bước = 6 s; mỗi lần gọi model trả về chuỗi 40 bước</td></tr>
+          <tr><td>Câu lệnh</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+          <tr><td>Thành công</td><td>Tâm táo cách tâm đĩa &lt; 8 cm, cao hơn đĩa 0–4 cm và vận tốc &lt; 0,1 m/s</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Mục tiêu kịch bản</h3></div>
+    <p>Kịch bản mẫu của NVIDIA được dùng làm <b>chuẩn đối chiếu</b>: model và dữ liệu đã có sẵn, nên mọi sai khác đều đến từ pipeline hoặc môi trường của dự án.</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">MỤC TIÊU 1</div><div class="st">Hiểu đường dữ liệu</div><p>Nắm đầy đủ luồng từ camera và góc khớp tới model, và từ model tới động cơ của G1.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 2</div><div class="st">Tự viết lại pipeline</div><p>Xây package độc lập, không phụ thuộc Arena khi chạy — bước bắt buộc trước khi lên robot thật, vì Arena chỉ chạy trong mô phỏng.</p></div>
+      <div class="sub"><div class="sl">MỤC TIÊU 3</div><div class="st">Kiểm chứng và đo</div><p>Chứng minh pipeline đúng theo tầng, rồi đo tỉ lệ thành công của checkpoint NVIDIA và tìm nguyên nhân khi thất bại.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Dữ liệu kịch bản</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Dataset Arena-G1-Static-PickNPlace</th><th>Giá trị</th></tr></thead>
+      <tbody>
+        <tr><td>Nguồn</td><td>Teleop kính XR trong Isaac Lab, 50 Hz — dữ liệu đã dùng để fine-tune checkpoint NVIDIA</td></tr>
+        <tr><td>Số episode</td><td>208 file (card ghi 200; metadata đánh chỉ số tới 251)</td></tr>
+        <tr><td>Tổng frame</td><td>35.066 (11,7 phút); mỗi episode 2,3–5,3 s</td></tr>
+        <tr><td>Câu lệnh</td><td>"Pick up the apple from the shelf and place it onto the plate on the same shelf next to it."</td></tr>
+        <tr><td>Quan sát</td><td>Chỉ tay trái nắm táo; eo, bàn tay phải gần như bất động; robot đứng yên, thân cao ~0,72 m</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Vấn đề gặp phải</h3></div>
+    <p>Khi tạo lại pipeline của Arena bằng package tự viết, mọi khâu điều khiển đều chạy đúng, nhưng tỉ lệ thành công phụ thuộc mạnh vào <b>hình ảnh camera</b> mà model nhận được.</p>
+    <div class="callout warn"><b>Visual gap:</b> cùng checkpoint, cùng câu lệnh, cùng pipeline, chỉ đổi khung cảnh mô phỏng mà tỉ lệ thành công đi từ <b>92 %</b> xuống <b>56 %</b> rồi <b>0 %</b>.</div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">VẤN ĐỀ 1</div><div class="st">Khung cảnh khác dataset thì model không làm được</div><p>Khung cảnh tự dựng (bàn hộp, sàn lưới, đèn dome) cho <b>0/50</b> thành công, chỉ 11/50 nhấc được táo. Model vươn tay giống demo nhưng không bao giờ ra lệnh nắm.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 2</div><div class="st">Dựng lại đúng khung cảnh vẫn chưa đủ</div><p>Khung cảnh Galileo dựng lại khớp bố trí và góc camera với dataset nhưng chỉ đạt <b>56 %</b>, so với 92 % trong Arena gốc. Khác biệt còn lại chủ yếu ở ánh sáng và cách render.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 3</div><div class="st">Model chỉ học từ một khung cảnh</div><p>Checkpoint được fine-tune trên dữ liệu ghi trong đúng một khung cảnh, một điều kiện ánh sáng, nên gắn chặt với hình ảnh đó thay vì với vật thể cần thao tác.</p></div>
+      <div class="sub"><div class="sl">VẤN ĐỀ 4</div><div class="st">Khó chuyển sang môi trường thật</div><p>Robot thật sẽ gặp ánh sáng, nền, vật liệu khác hẳn mô phỏng; với mức nhạy hình ảnh hiện tại, checkpoint không thể dùng trực tiếp.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Phương pháp đề xuất</h3></div>
+    <p>Đề xuất dùng <b>domain randomization</b>: khi tạo dữ liệu huấn luyện, thay đổi ngẫu nhiên những yếu tố hình ảnh không liên quan tới tác vụ, để model buộc phải dựa vào vật thể và tư thế tay thay vì nền và ánh sáng.</p>
+    <p>Domain randomization cũng là kỹ thuật phổ biến cho <b>sim2real</b>; ở đây áp dụng trước cho khoảng cách giữa các khung cảnh mô phỏng, là bước tiền đề trước khi chuyển sang robot thật.</p>
+    <div class="callout"><b>Trạng thái:</b> chưa thực hiện. Mục này chỉ nêu phương pháp và cách áp dụng vào pipeline hiện có.</div>
+    <h4>Các yếu tố ngẫu nhiên hoá</h4>
+    <p><b>Ngoại quan</b> — thứ model nhìn thấy nhưng không ảnh hưởng tới cách làm tác vụ:</p>
+    <div class="grid">
+      <div class="sub"><div class="sl">ÁNH SÁNG</div><div class="st">Cường độ, màu, hướng</div><p>Thay đổi cường độ và nhiệt độ màu của đèn dome/rect, hướng chiếu, bật tắt đèn bake sẵn — đúng yếu tố làm 92 % rơi xuống 56 %.</p></div>
+      <div class="sub"><div class="sl">VẬT LIỆU</div><div class="st">Màu và texture</div><p>Đổi màu, độ bóng, texture của mặt kệ/bàn, đĩa và nền phòng; giữ nguyên hình dạng vật thể.</p></div>
+      <div class="sub"><div class="sl">KHUNG CẢNH</div><div class="st">Nền và vật xung quanh</div><p>Đổi phông nền, thêm/bớt hộp và vật trang trí ngoài vùng thao tác.</p></div>
+    </div>
+    <p><b>Hình học</b> — góc nhìn và vị trí vật, để model không học thuộc một bố cục cố định:</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">CAMERA</div><div class="st">Tư thế và thông số</div><p>Dao động nhỏ vị trí, góc chúc và tiêu cự camera đầu; thêm nhiễu, độ phơi sáng và color jitter khi huấn luyện.</p></div>
+      <div class="sub"><div class="sl">VẬT THỂ</div><div class="st">Vị trí và hướng</div><p>Xáo vị trí, hướng của táo và đĩa trong vùng với tới của tay.</p></div>
+    </div>
+    <h4>Cách áp dụng</h4>
+    <div class="flow">
+      <div class="step"><div class="sk">BƯỚC 1</div><div class="sv">Khung cảnh ngẫu nhiên</div><div class="sd">Sự kiện reset của Isaac Lab / Replicator đổi các yếu tố trên mỗi episode</div></div>
+      <div class="step"><div class="sk">BƯỚC 2</div><div class="sv">Phát lại demo</div><div class="sd">Phát lại action của 208 demo trong từng khung cảnh, ghi ảnh mới</div></div>
+      <div class="step"><div class="sk">BƯỚC 3</div><div class="sv">Lọc</div><div class="sd">Giữ episode vẫn đạt điều kiện thành công</div></div>
+      <div class="step"><div class="sk">BƯỚC 4</div><div class="sv">Fine-tune lại</div><div class="sd">Từ checkpoint NVIDIA trên dữ liệu đã đa dạng hoá</div></div>
+      <div class="step"><div class="sk">BƯỚC 5</div><div class="sv">Đánh giá chéo</div><div class="sd">Galileo, khung cảnh tự dựng và khung cảnh chưa từng thấy</div></div>
+    </div>
+    <p><b>Kỳ vọng:</b> thu hẹp khoảng cách 92&nbsp;% → 56&nbsp;% → 0&nbsp;% giữa các khung cảnh. Thước đo là tỉ lệ thành công trên khung cảnh tự dựng (hiện 0&nbsp;%) và Galileo dựng lại (hiện 56&nbsp;%), mỗi cấu hình ≥ 50 episode.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Chu trình thực hiện</h3></div>
+    <p>Tái hiện lại luồng chạy của Isaac Lab Arena bằng package tự viết <code>standalone_g1_gr00t</code>: tách từng khâu của Arena ra, viết lại và kiểm chứng riêng trong một notebook, rồi ghép lại thành vòng kín không còn phụ thuộc Arena.</p>
+    <div class="flow">
+      <div class="step"><div class="sk">BƯỚC 1 · ARENA</div><div class="sv">Chạy Arena gốc</div><div class="sd">Checkpoint NVIDIA trong môi trường gốc — mốc đối chiếu 92 %</div></div>
+      <div class="step"><div class="sk">BƯỚC 2 · NB01–02</div><div class="sv">Giao tiếp model</div><div class="sd">Server ZMQ, dịch quan sát và action</div></div>
+      <div class="step"><div class="sk">BƯỚC 3 · NB03–04</div><div class="sv">Kiểm chứng từng khối</div><div class="sd">Open-loop với dataset, chân AGILE</div></div>
+      <div class="step"><div class="sk">BƯỚC 4 · NB05–06</div><div class="sv">Backend Isaac Sim</div><div class="sd">Robot, camera, táo/đĩa, phát lại demo</div></div>
+      <div class="step"><div class="sk">BƯỚC 5 · NB07–08</div><div class="sv">Vòng kín &amp; đóng gói</div><div class="sd">Khung cảnh Galileo, runner, lớp an toàn</div></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Bước</th><th>Việc làm</th><th>Notebook / công cụ</th><th>Kết quả</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Chạy pipeline Arena với client và checkpoint của NVIDIA để có mốc so sánh</td><td>Isaac Lab Arena</td><td>92 % trong môi trường gốc</td></tr>
+        <tr><td>2</td><td>Giao thức ZMQ + msgpack, hợp đồng modality; bảng 4 thứ tự khớp, <code>build_observation</code>, <code>decode_action</code>, <code>ChunkScheduler</code></td><td>nb01_server_wire, nb02_joints_obs_action</td><td>Gửi/nhận đúng chuỗi 40 bước</td></tr>
+        <tr><td>3</td><td>Ảnh và trạng thái thật từ dataset → server → so với action ghi sẵn; tái tạo vector quan sát 80 chiều của policy chân ONNX</td><td>nb03_open_loop_dataset, nb04_agile_onnx</td><td>Sai số nhỏ hơn biên độ 10–70×; AGILE trùng từng bit</td></tr>
+        <tr><td>4</td><td>Dựng tay backend: SimulationContext → robot → camera đầu → táo/đĩa → ma sát ngón tay → observe/apply; ghép đủ đường dữ liệu</td><td>nb05_backend_anatomy, nb06_full_pipeline</td><td>Đứng vững 10 s; phát lại demo thành công</td></tr>
+        <tr><td>5</td><td>Dựng lại khung cảnh Galileo của Arena, chạy 50 episode GR00T; đóng gói runner, policy, <code>sanitize_chunk</code>, <code>RateLimiter</code></td><td>nb07_full_pipeline_loop, nb08_runner_policy_safety</td><td>56 % (lệch ánh sáng), 0 % (khung cảnh tự dựng)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>Kết quả đạt được</h3></div>
+    <p>Số liệu đo được ở từng bước của chu trình, từ kiểm chứng từng khối tới chạy vòng kín. Cùng một checkpoint NVIDIA và cùng câu lệnh cho mọi lần chạy.</p>
+    <div class="kpis" style="margin-top:0">
+      <div class="kpi"><div class="kl">Arena gốc</div><div class="kv">92<small>%</small></div><div class="kd">client NVIDIA · môi trường gốc</div></div>
+      <div class="kpi"><div class="kl">Galileo dựng lại</div><div class="kv">56<small>%</small></div><div class="kd">28/50 · Wilson 42–69 %</div></div>
+      <div class="kpi"><div class="kl">Khung cảnh tự dựng</div><div class="kv">0<small>%</small></div><div class="kd">0/50 · nhấc được 22 %</div></div>
+      <div class="kpi"><div class="kl">Sai số open-loop</div><div class="kv">≤ 0,032<small>rad</small></div><div class="kd">MAE 0,008–0,032 · nhỏ hơn biên độ 10–70×</div></div>
+    </div>
+    <div class="chart" data-chart="ci" data-source="hm1-results">
+      <div class="chart-head"><div><div class="ct">Tỉ lệ thành công và khoảng tin cậy Wilson 95 %</div><div class="cs">Cùng checkpoint, chỉ đổi khung cảnh. Phát lại demo không dùng model, chỉ để kiểm chứng backend.</div></div><button class="btn" type="button" data-table-toggle>Xem dạng bảng</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Bước</th><th>Số liệu đo được</th></tr></thead>
+      <tbody>
+        <tr><td>Giao tiếp model</td><td>Chuỗi 40 bước mỗi lần gọi; độ trễ trung bình ~1,1 s/lần (mô phỏng chờ model nên không ảnh hưởng kết quả)</td></tr>
+        <tr><td>Open-loop với dataset</td><td>MAE tay trái 0,032 · tay phải 0,019 · bàn tay trái 0,008 rad (3 episode, 11 chunk)</td></tr>
+        <tr><td>Câu lệnh</td><td>Câu trong dataset 0,025 rad; câu mặc định Arena 0,047 rad; câu vô nghĩa 0,039 rad</td></tr>
+        <tr><td>Chân AGILE</td><td>Trùng từng bit với bản tham chiếu; đứng vững 500 tick, thân 0,73–0,75 m, nghiêng tối đa ~10°</td></tr>
+        <tr><td>Phát lại demo</td><td>2/3 lần thành công; táo cách tâm đĩa 3 cm; sai số bám khớp 0,04 rad</td></tr>
+        <tr class="hl"><td>Vòng kín · Galileo</td><td>28/50 thành công; nhấc được 72 %; khoảng cách táo–đĩa trung vị 3,8 cm; thời gian tới thành công trung vị 2,7 s</td></tr>
+        <tr><td>Vòng kín · tự dựng</td><td>0/50 thành công; nhấc được 22 %; khoảng cách táo–đĩa trung vị 20,6 cm</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>Phân tích kết quả</h3></div>
+    <p>So sánh các lần chạy theo từng pha của tác vụ để xác định thất bại đến từ đâu.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Pha (50 episode)</th><th class="num">Tự dựng</th><th class="num">Galileo</th></tr></thead>
+      <tbody>
+        <tr><td>Nhấc được táo</td><td class="num">11 (22 %)</td><td class="num">36 (72 %)</td></tr>
+        <tr><td>Đặt trúng đĩa / số đã nhấc</td><td class="num">0 / 11</td><td class="num">28 / 36 (78 %)</td></tr>
+        <tr class="hl"><td>Thành công</td><td class="num">0 %</td><td class="num">56 %</td></tr>
+        <tr><td>Ngã</td><td class="num">3</td><td class="num">2</td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 1</div><div class="st">Thị giác quyết định kết quả</div><p>Cùng checkpoint, câu lệnh, pipeline: 92 % → 56 % → 0 % chỉ do đổi khung cảnh. Hai khoảng tin cậy 0–7 % và 42–69 % không chồng nhau.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 2</div><div class="st">Thất bại nằm ở pha nhìn và tiếp cận</div><p>Ở khung cảnh tự dựng model hầu như không nhấc được táo (22 %). Ở Galileo, khi đã nhấc thì 78 % đặt trúng đĩa — kỹ năng thao tác vẫn còn.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 3</div><div class="st">Pipeline tự viết hoạt động đúng</div><p>28 lần thành công với khoảng cách cuối 1–6 cm, cùng các kiểm chứng open-loop và phát lại, loại trừ lỗi dịch dữ liệu.</p></div>
+      <div class="sub"><div class="sl">NHẬN ĐỊNH 4</div><div class="st">Hệ quả cho triển khai</div><p>Model fine-tune trên một khung cảnh không tổng quát hoá; cần thu dữ liệu trong môi trường làm việc hoặc tăng đa dạng hình ảnh khi huấn luyện.</p></div>
+    </div>
+    <h4>Chi tiết 22 lần thất bại (khung cảnh Galileo)</h4>
+    <details class="acc"><summary><span class="n">12</span>Không nhấc được táo</summary><div class="acc-body"><p>9 lần táo gần như không đổi chỗ; 2 lần táo bị đẩy trượt 4–9 cm; 1 lần táo bị hất rơi khỏi kệ.</p><p>Nguyên nhân khả dĩ: nắm trượt hoặc tiếp cận sai. Vị trí ban đầu giống nhau ⇒ khác biệt đến từ tính ngẫu nhiên khi model lấy mẫu.</p></div></details>
+    <details class="acc"><summary><span class="n">8</span>Nhấc được nhưng đặt trượt</summary><div class="acc-body"><p>6 lần thả cách đĩa 9–20 cm (gần nhất 9,1 cm, vừa vượt ngưỡng 8 cm); 2 lần làm rơi táo khỏi kệ.</p></div></details>
+    <details class="acc"><summary><span class="n">2</span>Ngã ngay đầu episode</summary><div class="acc-body"><p>Ngã ở tick 7 và 30, trước khi chạm táo. Chunk tay đầu tiên chồng lên giai đoạn AGILE còn đang ổn định sau reset. Đề xuất cho robot "khởi động" vài chục tick trước khi giao quyền cho model.</p></div></details>
+    <h4>Các yếu tố đã loại trừ</h4>
+    <div class="grid">
+      <div class="sub"><div class="sl">ĐỘ TRỄ</div><p>Mô phỏng chờ server; độ trễ của episode thành công và thất bại như nhau.</p></div>
+      <div class="sub"><div class="sl">LỚP AN TOÀN</div><p>Chỉ cắt khớp tay ở biên chunk, chưa lần nào cắt bàn tay hay eo.</p></div>
+      <div class="sub"><div class="sl">LỖI PIPELINE</div><p>28 lần thành công với khoảng cách cuối 1–6 cm ⇒ chuỗi dữ liệu hoạt động đúng.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">10</span><h3>Kết luận kịch bản</h3></div>
+    <div class="panel"><div class="pl">KẾT LUẬN</div><p>Model fine-tune trên một khung cảnh <b>rất nhạy với hình ảnh</b>: 56 % khi giống lúc ghi dữ liệu, 0 % khi khác. Triển khai thực tế phải thu dữ liệu ngay trong môi trường làm việc hoặc tăng đa dạng hình ảnh khi huấn luyện.</p></div>
+    <ul>
+      <li>Đã <b>làm chủ và tái hiện độc lập</b> pipeline; mã nguồn sẵn sàng thay backend robot thật.</li>
+      <li>Phải dùng đúng câu lệnh lúc ghi dữ liệu; mỗi cấu hình cần ≥ 50 episode để kết luận.</li>
+      <li>Chưa thực hiện: đối chứng trong Docker Arena gốc; khung cảnh Galileo với xáo ±2 cm; giai đoạn khởi động sau reset.</li>
+    </ul>
+  </div>
+</section>

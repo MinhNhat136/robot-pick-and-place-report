@@ -1,0 +1,96 @@
+/* Print / PDF export: every section, tab and accordion is expanded. */
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff}
+  .sidebar,.topbar,.pager,.chart-head .btn,.no-print{display:none !important}
+  .app{display:block;height:auto}
+  .main{overflow:visible;background:none}
+  .wrap{padding:0;max-width:none}
+  .section{break-before:page;animation:none}
+  .section:first-child{break-before:auto}
+  .card,.hero,.kpi,figure.fig,.chart{box-shadow:none;break-inside:avoid}
+  .tab-panel[hidden]{display:block !important}
+  .tab-list{display:none}
+  details.acc{display:block}
+  details.acc .acc-body{display:block}
+}
+@media print{.section[hidden]{display:block !important}}
+
+/* ---------- PDF = plain research report ----------
+   Only text, images, simple diagrams and tables. ui/print.js adds numbered headings
+   (PHẦN / I.02 / I.02.1) and a Word-style table of contents just before printing. */
+@page{size:A4;margin:20mm 18mm 20mm}
+.print-toc,.print-h,.print-part{display:none}
+@media print{
+  html,body,.app,.main,.page,.wrap{background:#fff !important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  *,*::before,*::after{box-shadow:none !important;text-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;
+    animation:none !important;transition:none !important;transform:none !important}
+
+  /* one serif face, black text, no letter-spaced labels */
+  .section,.print-toc{font-family:"Times New Roman","Liberation Serif","Noto Serif",serif !important;color:#000}
+  .section *:not(svg):not(svg *){font-family:inherit !important;letter-spacing:0 !important;color:#000 !important;text-transform:none !important}
+  .section code,.section kbd,.section pre,.section pre *{font-family:"Liberation Mono","DejaVu Sans Mono",monospace !important;font-size:9.5pt !important}
+
+  /* flatten: boxes lose fills, borders, rounding. Empty elements (bar fills, swatches, dots) keep their colour. */
+  .section *:not(:empty):not(svg):not(svg *):not(img):not(video):not(canvas){background:none !important;border-color:transparent !important;border-radius:0 !important}
+  .section *::before,.section *::after{background-image:none !important}
+  .section *{border-radius:0 !important}
+  .section{font-size:11.5pt;line-height:1.5}
+  .section *:not(svg):not(svg *):not(h1):not(h2):not(h3):not(h4){font-size:inherit !important;line-height:inherit !important}
+  .section b,.section strong{font-weight:700}
+
+  /* section opening */
+  .section{break-before:page}
+  .print-part{display:block;font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;text-transform:uppercase;margin:0 0 18pt;text-align:center}
+  .print-h{display:block;font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;margin:0 0 10pt;break-after:avoid}
+  .main .hero{border:0 !important;padding:0 !important;margin:0 0 6pt;overflow:visible}
+  .main .hero::before,.main .hero::after,.hero .pill,.hero h1,.hero h2{display:none !important}
+  .hero .lead{margin:0 0 6pt;max-width:none}
+  .hero .meta{display:block !important;margin:0;padding:0}
+  .hero .meta > div{display:inline !important}
+  .hero .meta > div::after{content:" · "}
+  .hero .meta > div:last-child::after{content:""}
+  .hero .meta .ml{display:inline}
+  .hero .meta .ml::after{content:": "}
+  .hero .meta .mv{display:inline;font-weight:400}
+
+  /* cards = numbered subsections */
+  .main .card{border:0 !important;padding:0 !important;margin:14pt 0 0;overflow:visible !important;break-inside:auto !important}
+  .main .card::before,.main .card::after{display:none !important}
+  .card-head{display:block !important;margin:0 0 6pt !important;padding:0 !important;border:0 !important;break-after:avoid}
+  .card-head .num,.card-head .tag{display:none !important}
+  .card-head h3{font-size:12.5pt !important;font-weight:700;margin:0}
+  .card-head h3[data-pn]::before{content:attr(data-pn) "  "}
+  .card h4{font-size:11.5pt !important;font-weight:700;font-style:italic;margin:10pt 0 4pt;break-after:avoid}
+  .card p,.card li{orphans:3;widows:3;text-align:justify}
+  .card p{margin:0 0 6pt}
+
+  /* tables: thin black rules */
+  .tbl-wrap{overflow:visible !important;border:0 !important}
+  .section table{border-collapse:collapse !important;width:100%;font-size:10pt !important}
+  .section table *{font-size:10pt !important}
+  .section th,.section td{border:0.6pt solid #000 !important;padding:3pt 5pt !important;vertical-align:top}
+  .section th{font-weight:700}
+  .section tr,.section thead{break-inside:avoid}
+
+  /* figures and diagrams */
+  .main img,.main video{max-height:80mm;width:auto;max-width:100%;object-fit:contain}
+  figure,img,svg,canvas,.chart,.cmpbars,.perf{break-inside:avoid}
+  figure figcaption{font-style:italic;font-size:10pt !important;text-align:center}
+  .section svg text{font-family:"Liberation Sans",Arial,sans-serif}
+
+  /* decoration and controls */
+  .btn,button:empty,input,select,.cv-ctrl,.vref,[data-m3-play],[data-m3-reset],.tab-list{display:none !important}
+  .section svg[stroke="currentColor"][stroke-width="1.8"],.pf-link,.pf-ico,.pf-model-ico,.section .ic,.section .icon,.section [class$="-ic"],.section [class*="-ic "]{display:none !important}
+}
+
+/* Word-style table of contents (ui/print.js) */
+@media print{
+  .print-toc{display:block;font-size:11.5pt;line-height:1.45;color:#000}
+  .print-toc h1{font:700 15pt/1.3 "Times New Roman","Liberation Serif",serif;text-align:center;margin:0 0 16pt}
+  .print-toc a{color:#000;text-decoration:none;display:block}
+  .print-toc .t1{font-weight:700;margin-top:8pt}
+  .print-toc .t2{padding-left:8mm}
+  .print-toc .t3{padding-left:18mm;font-size:10.5pt}
+}
