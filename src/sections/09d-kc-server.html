@@ -1,17 +1,78 @@
-<section class="section" id="kc-server" data-hue="blue" data-kicker="IV.03 · CHẠY SERVER GR00T" data-title="Kiểm chứng kết quả: chạy server GR00T và mở tunnel">
+<section class="section" id="kc-server" data-hue="blue" data-kicker="IV.03 · CHẠY SERVER GR00T" data-title="Kiểm chứng kết quả: chạy server GR00T và kiểm tra kết nối">
   <div class="hero">
     <span class="pill">MỤC IV.03 · CHẠY SERVER GR00T</span>
     <h2>Mỗi kịch bản một checkpoint, một cổng<span class="dot">.</span></h2>
-    <p class="lead">Server GR00T chạy trên <code>pet-poc-gpu-vm</code>, nạp checkpoint của kịch bản cần kiểm chứng và nghe ở một cổng nội bộ. Máy trạm mở tunnel <code>tsh ssh -N -L</code> tới đúng cổng đó rồi mới chạy notebook.</p>
+    <p class="lead">Server GR00T chạy trên máy chủ GPU của khách hàng, nạp checkpoint của kịch bản cần kiểm chứng và nghe ở một cổng. Máy trạm kết nối tới đúng cổng đó (qua mạng nội bộ hoặc SSH tunnel, mục IV.02 card 7) rồi mới chạy notebook ở mục IV.04.</p>
     <div class="meta">
       <div><span class="ml">LỆNH</span><span class="mv">gr00t/eval/run_gr00t_server.py</span></div>
       <div><span class="ml">CỔNG</span><span class="mv">5556 (táo, real2sim) · 5557 (búa)</span></div>
-      <div><span class="ml">KIỂM TRA</span><span class="mv">make smoke · ping từ notebook</span></div>
+      <div><span class="ml">KIỂM TRA</span><span class="mv">Cổng đang nghe · ping từ máy trạm</span></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="num">1</span><h3>Đang bổ sung</h3></div>
-    <div class="callout"><b>Nội dung đang được bổ sung.</b> Hướng dẫn chi tiết của mục này sẽ được cập nhật trong phiên bản sau của báo cáo.</div>
+    <div class="card-head"><span class="num">1</span><h3>Cấu hình server theo kịch bản</h3></div>
+    <p>Đường dẫn dưới đây theo cách đặt ở mục IV.02 card 6 (gốc <code>~/shimizu-robot/</code> trên server). Cổng là giá trị client mặc định mong đợi.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kịch bản · cổng</th><th>Checkpoint (<code>--model-path</code>)</th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>Táo → đĩa<br>5556</td><td><code>models/gn1x_tuned_static_apple</code><br>(tải từ Hugging Face)</td><td><code>configs/g1_sim_wbc_data_</code><br><code>gr00t_n_1_7_config.py</code></td></tr>
+        <tr><td>Búa → thùng, mix200<br>5557</td><td><code>models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td><td>như trên</td></tr>
+        <tr><td>Búa → thùng, mix400<br>5557</td><td><code>models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>như trên</td></tr>
+        <tr><td>Real2sim 4 loại quả<br>5556</td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/</code><br><code>g1_dex3_joint_sim_config.py</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">Táo và real2sim dùng chung cổng 5556 nên mỗi lúc chỉ chạy một trong hai. Búa dùng cổng 5557, chạy song song được nếu GPU đủ bộ nhớ.</div>
+<pre class="diagram"># tải checkpoint táo → đĩa của NVIDIA về server (một lần)
+hf download nvidia/GN1x-Tuned-Arena-G1-Static-PickNPlace \
+   --local-dir ~/shimizu-robot/models/gn1x_tuned_static_apple</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Khởi động server</h3></div>
+    <p>Chạy trong <code>tmux</code> để server không tắt khi ngắt SSH. Ví dụ dưới là kịch bản búa mix200; với kịch bản khác chỉ đổi ba biến đầu theo card 1.</p>
+    <figure class="fig"><video src="assets/videos/iv03-card2-server.mp4" poster="assets/videos/iv03-card2-server-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: chạy server búa mix200 trong tmux trên máy chủ, chờ dòng <code>✓ Server ready</code> (đoạn nạp model được tua nhanh). Máy chủ trong video đã dùng cổng 5557 cho việc khác nên server mẫu nghe cổng 5567; tunnel ở card 3 chuyển về cổng 5557 trên máy trạm.</figcaption></figure>
+<pre class="diagram">tmux new -s gr00t                  # thoát tạm: Ctrl-b d · vào lại: tmux a -t gr00t
+R=~/shimizu-robot
+CKPT=$R/models/hammer_to_bin_mix200/hammer_mix200_n17/checkpoint-10000
+CFG=$R/configs/g1_sim_wbc_data_gr00t_n_1_7_config.py
+PORT=5557
+
+cd ~/Isaac-GR00T
+uv run python gr00t/eval/run_gr00t_server.py \
+  --model-path $CKPT --modality-config-path $CFG \
+  --embodiment-tag NEW_EMBODIMENT --device cuda \
+  --host 127.0.0.1 --port $PORT    # 0.0.0.0 nếu máy trạm nối thẳng qua mạng nội bộ</pre>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">NẠP MODEL</div><div class="sv">Khoảng 1 phút</div><div class="sd">Chưa mở cổng; client gọi lúc này sẽ hết giờ</div></div>
+      <div class="step"><div class="sk">SẴN SÀNG</div><div class="sv">In dòng báo sẵn sàng</div><div class="sd"><code>✓ Server ready — listening on …</code></div></div>
+      <div class="step"><div class="sk">ĐỔI KỊCH BẢN</div><div class="sv">Ctrl-C rồi chạy lại</div><div class="sd">Với checkpoint, config, cổng mới</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Kiểm tra kết nối từ máy trạm</h3></div>
+    <p>Nếu dùng SSH tunnel, mở tunnel trong một terminal riêng và để chạy suốt lúc đánh giá. Sau đó ping server bằng Python của môi trường <code>.venv</code>.</p>
+    <figure class="fig"><video src="assets/videos/iv03-card3-connect.mp4" poster="assets/videos/iv03-card3-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: mở SSH tunnel, kiểm tra cổng 5557 trên máy trạm và chạy <code>smoke_server.py</code> với cấu hình búa (kết quả <code>contract ok</code>).</figcaption></figure>
+<pre class="diagram"># (nếu dùng SSH tunnel) terminal riêng, để chạy suốt
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server
+
+# ping server và hỏi modality config đang nạp
+cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+# táo, búa: ping, đối chiếu modality config với file YAML, gửi quan sát giả
+.venv/bin/python scripts/smoke_server.py --config configs/g1_static_hammer.yaml
+#   (táo: configs/g1_static_apple.yaml)
+# real2sim: ping và in modality config server đang nạp
+.venv/bin/python -c "from g1gr00t.client import Gr00tZmqClient, modality_summary as m
+c = Gr00tZmqClient('127.0.0.1', 5556); print(c.ping(), m(c.get_modality_config()))"</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Triệu chứng</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead>
+      <tbody>
+        <tr><td>Hết giờ ngay lần gọi đầu</td><td>Tunnel chưa mở, sai cổng, hoặc server còn đang nạp model</td><td><code>ss -ltn | grep 555</code> ở cả hai phía; chờ dòng báo sẵn sàng</td></tr>
+        <tr><td>Mất kết nối giữa chừng</td><td>Tunnel hoặc mạng bị ngắt</td><td>Mở lại tunnel rồi chạy lại notebook; nb10 và nb12 chạy tiếp từ episode còn dở</td></tr>
+        <tr><td>Notebook báo sai video key hoặc số khớp</td><td>Server đang nạp checkpoint của kịch bản khác</td><td>Khởi động lại server với đúng checkpoint và modality config ở card 1</td></tr>
+        <tr><td>Mỗi lần gọi &gt; 3 s</td><td>GPU bận hoặc mạng chậm</td><td>Không ảnh hưởng kết quả (mô phỏng dừng chờ model), chỉ chạy lâu hơn</td></tr>
+      </tbody>
+    </table></div>
   </div>
 </section>

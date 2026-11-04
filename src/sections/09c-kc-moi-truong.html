@@ -2,16 +2,157 @@
   <div class="hero">
     <span class="pill">MỤC IV.02 · CÀI ĐẶT MÔI TRƯỜNG</span>
     <h2>Chuẩn bị hai máy để chạy lại các kịch bản<span class="dot">.</span></h2>
-    <p class="lead">Các mục IV.02–IV.04 sẽ hướng dẫn tự chạy lại các kịch bản để kiểm chứng số liệu trong báo cáo. Cần hai máy: <b>máy trạm</b> chạy mô phỏng và notebook (client), <b>máy chủ GPU</b> <code>pet-poc-gpu-vm</code> chạy GR00T (server). Hai máy nói chuyện qua tunnel Teleport (<code>tsh ssh</code>). Hướng dẫn cài đặt cả hai phía đang được bổ sung.</p>
+    <p class="lead">Các mục IV.02–IV.04 hướng dẫn tự chạy lại các kịch bản để kiểm chứng số liệu trong báo cáo. Cần hai máy: <b>máy trạm</b> chạy mô phỏng và notebook (client), <b>máy chủ GPU</b> của khách hàng chạy GR00T (server). Mục này cài đặt cả hai phía; khởi động server và chạy đánh giá được trình bày ở IV.03 và IV.04.</p>
     <div class="meta">
       <div><span class="ml">CLIENT</span><span class="mv">Isaac Sim 6.0.1 · Isaac Lab 3.0.0-beta2 · standalone_g1_gr00t</span></div>
-      <div><span class="ml">SERVER</span><span class="mv">pet-poc-gpu-vm · H100 · Isaac-GR00T 4b1dca9</span></div>
-      <div><span class="ml">KẾT NỐI</span><span class="mv">tsh ssh root@pet-poc-gpu-vm</span></div>
+      <div><span class="ml">SERVER</span><span class="mv">Máy chủ GPU của khách hàng · Isaac-GR00T 4b1dca9</span></div>
+      <div><span class="ml">KẾT NỐI</span><span class="mv">ZeroMQ qua mạng nội bộ hoặc SSH tunnel</span></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="num">1</span><h3>Đang bổ sung</h3></div>
-    <div class="callout"><b>Nội dung đang được bổ sung.</b> Hướng dẫn chi tiết của mục này sẽ được cập nhật trong phiên bản sau của báo cáo.</div>
+    <div class="card-head"><span class="num">1</span><h3>Kiến trúc kết nối</h3></div>
+    <p>Notebook trên máy trạm gửi ảnh camera, trạng thái khớp và câu lệnh tới GR00T server; server trả về một chuỗi action. Hai máy có thể nối thẳng qua mạng nội bộ, hoặc qua SSH tunnel nếu server chỉ nghe ở <code>127.0.0.1</code>.</p>
+    <div class="dg-lanes">
+      <div class="dg-head"><span></span><span>MÁY TRẠM · CLIENT</span><span>KẾT NỐI</span><span>MÁY CHỦ · SERVER</span><span>KẾT QUẢ</span></div>
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">LUỒNG</span><span class="lt">Một lần gọi model</span></div>
+        <div class="dg-node"><div class="nk">ISAAC SIM + NOTEBOOK</div><div class="nt">standalone_g1_gr00t</div><div class="nd">Ảnh camera + trạng thái khớp + câu lệnh</div></div>
+        <div class="dg-node focus"><div class="nk">ZEROMQ · TCP</div><div class="nt">Mạng nội bộ / SSH tunnel</div><div class="nd">Mỗi kịch bản một cổng</div></div>
+        <div class="dg-node"><div class="nk">GPU SERVER</div><div class="nt">GR00T policy server</div><div class="nd">Nạp checkpoint của kịch bản</div></div>
+        <div class="dg-node"><div class="nk">TRẢ VỀ</div><div class="nt">Chuỗi action</div><div class="nd">40 bước (táo, búa) · 16 bước (real2sim)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Yêu cầu phần cứng và phần mềm</h3></div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">MÁY TRẠM · CLIENT</div><div class="st">Mô phỏng và notebook</div><ul><li>Ubuntu 24.04, GPU NVIDIA có RTX (dự án dùng RTX 5090), driver 580</li><li>Isaac Sim <b>6.0.1</b> cài cục bộ tại <code>~/isaac-sim-6</code> (Python 3.12)</li><li>Isaac Lab <b>release/3.0.0-beta2</b> tại <code>~/IsaacLab</code>, cài vào cùng Python của Isaac Sim</li><li>Isaac Lab Arena <b>release/0.2.1</b> tại <code>~/IsaacLab-Arena</code> (nguồn file YAML khớp và modality config)</li><li><code>uv</code>, <code>make</code>, <code>git</code>; truy cập Internet cho lần cài đầu</li></ul></div>
+      <div class="sub"><div class="sl">MÁY CHỦ · SERVER</div><div class="st">GPU server của khách hàng</div><ul><li>Linux, GPU NVIDIA hỗ trợ CUDA (dự án dùng 1× H100 80 GB)</li><li>Isaac-GR00T commit <b>4b1dca9</b>, môi trường <code>uv</code> (Python 3.10), <code>ffmpeg</code></li><li>Quyền truy cập Hugging Face tới model gốc <code>nvidia/GR00T-N1.7-3B</code> (đã chấp nhận giấy phép NVIDIA)</li><li>Checkpoint trong <code>models/</code> và modality config của từng kịch bản (card 5)</li><li>Mở được cổng cho máy trạm, hoặc cho phép SSH</li></ul></div>
+    </div>
+    <div class="callout warn"><b>Giữ đúng cặp phiên bản:</b> toàn bộ kết quả trong báo cáo đo trên Isaac Sim 6.0.1 + Isaac Lab 3.0.0-beta2 và Isaac-GR00T 4b1dca9. Isaac Sim 6.1 cần driver ≥ 595 và chưa được kiểm thử với mã nguồn này.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Đặt gói sản phẩm trên máy trạm</h3></div>
+    <p>Mã nguồn đọc <code>assets/</code>, <code>datasets/</code> và <code>models/</code> theo đường dẫn <code>~/workspace/shimizu-robot/</code>, nên giải nén gói đúng vị trí này. Isaac Sim, Isaac Lab và Arena đặt trong thư mục home như card 2.</p>
+<pre class="diagram">~/workspace/shimizu-robot/      # gói sản phẩm (IV.01)
+├── codes/standalone_g1_gr00t/  # client: package g1gr00t, notebook, Makefile
+├── assets/                     # nucleus_cache + táo, đĩa
+├── datasets/                   # dataset LeRobot
+└── models/                     # checkpoint (chép lên server, card 6)
+~/isaac-sim-6/   ~/IsaacLab/   ~/IsaacLab-Arena/</pre>
+    <div class="callout"><b>Cài ở vị trí khác:</b> Makefile cho phép ghi đè <code>ISAAC_PY</code> (Python của Isaac Sim), <code>ARENA_DIR</code> và <code>ISAAC_GR00T_DIR</code>, ví dụ <code>make sim-test ISAAC_PY=/opt/isaac-sim/python.sh</code>. Đường dẫn dataset và model nằm trong <code>configs/*.yaml</code>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Cài client trên máy trạm</h3></div>
+    <p>Package <code>standalone_g1_gr00t</code> dùng hai môi trường: <b>.venv</b> (Python 3.10, cho kiểm thử và notebook không mô phỏng) và <b>Python của Isaac Sim</b> (cho notebook có mô phỏng).</p>
+    <figure class="fig"><video src="assets/videos/iv02-card4-client.mp4" poster="assets/videos/iv02-card4-client-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: chạy các lệnh kiểm tra client trên máy trạm đã cài Isaac Sim (đoạn <code>make sim-test-scene</code> được tua nhanh). Tên máy hiển thị là <code>user@workstation</code> và <code>user@gpu-server</code>.</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# môi trường .venv
+make venv            # uv venv .venv --python 3.10, cài package + dev + notebook
+make sync            # chép 4 file YAML khớp/WBC từ ~/IsaacLab-Arena, ghi hash nguồn
+make assets          # tải policy chân AGILE (ONNX) vào assets/wbc/
+make test            # unit test không cần mô phỏng
+
+# môi trường Isaac Sim
+export PYTHONNOUSERSITE=1   # không để gói trong ~/.local chen vào Python của Isaac Sim
+make sim-install     # cài package vào ~/isaac-sim-6/python.sh
+make sim-test        # unit test bằng Python của Isaac Sim
+make sim-test-scene  # test có scene: robot đứng vững, bàn / táo / đĩa
+make sim-kernel      # đăng ký kernel Jupyter "isaacsim6" cho notebook mô phỏng</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Dữ liệu trên máy trạm</th><th>Đường dẫn</th><th>Dùng cho</th></tr></thead>
+      <tbody>
+        <tr><td>Policy chân AGILE</td><td><code>codes/standalone_g1_gr00t/assets/wbc/</code> (tải bằng <code>make assets</code>)</td><td>Mọi notebook mô phỏng</td></tr>
+        <tr><td>Asset cảnh Galileo, búa, thùng, robot G1</td><td><code>assets/nucleus_cache/</code> (có sẵn trong gói)</td><td>Kịch bản táo (cảnh Galileo) và búa; chạy không cần mạng</td></tr>
+        <tr><td>Táo, đĩa</td><td><code>assets/objects/</code></td><td>Kịch bản táo (cảnh tự dựng)</td></tr>
+        <tr><td>Dataset búa → thùng mix200</td><td><code>datasets/hammer_to_bin/static_hammer_mix200/</code></td><td>nb12: phát lại demo, khớp màu ảnh</td></tr>
+        <tr><td>Dataset táo → đĩa của NVIDIA</td><td><code>datasets/isaaclab_arena/static_apple_tutorial/</code> (tải từ Hugging Face)</td><td>Phát lại demo, open-loop kịch bản táo</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Kiểm tra xong khi:</b> <code>make test</code>, <code>make sim-test</code> và <code>make sim-test-scene</code> đều không có test lỗi, và Jupyter thấy kernel <b>Isaac Sim Python 3 (isaacsim6)</b>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Cài server trên máy chủ GPU</h3></div>
+    <p>Cài Isaac-GR00T đúng commit đã dùng khi huấn luyện. Bảng dưới cho biết mỗi kịch bản cần checkpoint và modality config nào; cách đưa chúng lên server ở card 6.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card5-server.mp4" poster="assets/videos/iv02-card5-server-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: clone Isaac-GR00T đúng commit, tạo môi trường <code>uv</code> và kiểm tra GPU trên máy chủ (các đoạn tải được tua nhanh). Tên máy hiển thị là <code>user@workstation</code> và <code>user@gpu-server</code>.</figcaption></figure>
+<pre class="diagram"># cần sẵn: git, uv, ffmpeg (sudo apt-get install -y ffmpeg)
+git clone https://github.com/NVIDIA/Isaac-GR00T.git ~/Isaac-GR00T
+cd ~/Isaac-GR00T
+git checkout 4b1dca9d88d2a0b9ea5a65aa61c82ff89f5c4f0e
+git submodule update --init --recursive
+uv sync --python 3.10      # tạo môi trường, cài GR00T và thư viện GPU (vài phút)
+uv run python -c "import gr00t, torch; print('GR00T ok | CUDA', torch.cuda.is_available())"
+# nếu model gốc chưa có trong cache Hugging Face, đăng nhập bằng tài khoản
+# đã chấp nhận giấy phép nvidia/GR00T-N1.7-3B:
+hf auth login</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kịch bản · cổng client</th><th>Checkpoint trong <code>models/</code></th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>Táo → đĩa<br>5556 · <code>g1_static_apple.yaml</code></td><td>Checkpoint NVIDIA tải từ Hugging Face</td><td>Bản của Arena</td></tr>
+        <tr><td>Búa → thùng<br>5557 · <code>NB12_PORT</code></td><td><code>hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code><br><code>hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>Bản của Arena</td></tr>
+        <tr><td>Real2sim 4 loại quả<br>5556 · <code>NB10_PORT</code></td><td><code>real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td>Bản real2sim</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>Modality config phải khớp lúc huấn luyện:</b> dùng sai file thì server vẫn chạy nhưng model nhận sai thứ tự khớp. Bản của Arena là <code>isaaclab_arena_gr00t/embodiments/g1/g1_sim_wbc_data_gr00t_n_1_7_config.py</code> trong Arena <b>release/0.2.1</b> (chép riêng file đó lên server hoặc clone Arena). Bản real2sim là <code>g1_dex3_joint_sim_config.py</code>, nằm trong thư mục <code>real2sim_multi_fruit/g1_fruits_n17_bs32_20k/</code> (cạnh <code>checkpoint-20000</code>) và trong <code>codes/g1_real2sim/groot/</code>. So <code>md5sum</code> hai phía trước khi chạy.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Đưa checkpoint bàn giao lên server</h3></div>
+    <p>Ba checkpoint fine-tune nằm trong thư mục <code>models/</code> của gói bàn giao, mỗi thư mục dùng được ngay với GR00T server: trọng số (3 file <code>safetensors</code>), cấu hình, processor và thống kê chuẩn hoá. Chỉ cần chép những checkpoint của kịch bản muốn kiểm chứng.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card6-checkpoint.mp4" poster="assets/videos/iv02-card6-checkpoint-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu với checkpoint real2sim. Server trong video đã có sẵn bản sao giống hệt nên rsync chỉ đối chiếu, không chép lại 12 GB; lần đầu chép sẽ lâu hơn tuỳ tốc độ mạng. Tên máy hiển thị là <code>user@workstation</code> và <code>user@gpu-server</code>.</figcaption></figure>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">BƯỚC 1</div><div class="sv">Tạo thư mục trên server</div><div class="sd">Ví dụ <code>~/shimizu-robot/models</code></div></div>
+      <div class="step"><div class="sk">BƯỚC 2</div><div class="sv">Chép checkpoint</div><div class="sd"><code>rsync</code> từ máy trạm, chạy tiếp được nếu bị ngắt</div></div>
+      <div class="step"><div class="sk">BƯỚC 3</div><div class="sv">Kiểm tra toàn vẹn</div><div class="sd">So checksum hai phía, đủ 3 file trọng số</div></div>
+      <div class="step"><div class="sk">BƯỚC 4</div><div class="sv">Chép modality config</div><div class="sd">Bản của Arena cho kịch bản táo và búa</div></div>
+    </div>
+<pre class="diagram"># chạy trên máy trạm
+SRV=user@gpu-server
+CKPTS="hammer_to_bin_mix200 hammer_to_bin_mix400 real2sim_multi_fruit"
+cd ~/workspace/shimizu-robot/models
+
+# bước 1 — tạo thư mục trên server
+ssh $SRV 'mkdir -p ~/shimizu-robot/models ~/shimizu-robot/configs'
+
+# bước 2 — chép checkpoint cần dùng, giữ nguyên thư mục con
+rsync -avP $CKPTS $SRV:~/shimizu-robot/models/
+
+# bước 3 — so checksum, không chép (-n):
+# không liệt kê file nào nghĩa là hai phía giống hệt
+rsync -avnc $CKPTS $SRV:~/shimizu-robot/models/
+# đếm file trọng số: kỳ vọng 9 (3 checkpoint × 3 file)
+ssh $SRV 'ls ~/shimizu-robot/models/*/*/checkpoint-*/*.safetensors | wc -l'
+
+# bước 4 — modality config của Arena (kịch bản táo, búa)
+G1=~/IsaacLab-Arena/isaaclab_arena_gr00t/embodiments/g1
+rsync -avP $G1/g1_sim_wbc_data_gr00t_n_1_7_config.py \
+      $SRV:~/shimizu-robot/configs/</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Thư mục trong <code>models/</code></th><th>Đường dẫn <code>--model-path</code> trên server</th></tr></thead>
+      <tbody>
+        <tr><td><code>hammer_to_bin_mix200/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td></tr>
+        <tr><td><code>hammer_to_bin_mix400/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td></tr>
+        <tr><td><code>real2sim_multi_fruit/</code></td><td><code>~/shimizu-robot/models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Không qua mạng được?</b> Chép thư mục <code>models/</code> bằng ổ cứng ngoài rồi đặt trên server theo cùng cấu trúc; vẫn chạy bước 3 bằng <code>sha256sum</code> trên các file <code>safetensors</code> ở hai phía. Checkpoint táo → đĩa của NVIDIA không có trong gói: tải thẳng từ Hugging Face về server.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Thiết lập kết nối</h3></div>
+    <p>Chọn một trong hai cách. Cổng phía server phải trùng cổng client mong đợi (card 5); có thể đổi cổng client bằng biến môi trường <code>NB10_PORT</code>, <code>NB12_PORT</code> hoặc trường <code>server.port</code> trong file YAML.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card7-connect.mp4" poster="assets/videos/iv02-card7-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: mở SSH tunnel tới server búa (cổng 5557), kiểm tra cổng và ping server bằng <code>smoke_server.py</code>. Tên máy hiển thị là <code>user@workstation</code> và <code>user@gpu-server</code>.</figcaption></figure>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">CÁCH 1</div><div class="st">Mạng nội bộ</div><ul><li>Server nghe <code>--host 0.0.0.0</code></li><li>Mở cổng của kịch bản trên firewall cho riêng máy trạm</li><li>Client đặt host là IP server, ví dụ <code>NB12_HOST=10.0.0.5</code></li></ul></div>
+      <div class="sub"><div class="sl">CÁCH 2</div><div class="st">SSH tunnel</div><ul><li>Server nghe <code>--host 127.0.0.1</code>, không mở cổng ra ngoài</li><li>Máy trạm mở tunnel và để chạy suốt lúc đánh giá</li><li>Client giữ host mặc định <code>127.0.0.1</code></li></ul></div>
+    </div>
+<pre class="diagram"># cách 2, trên máy trạm (ví dụ kịch bản búa, cổng 5557)
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server</pre>
   </div>
 </section>

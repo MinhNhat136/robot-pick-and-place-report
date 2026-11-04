@@ -10,7 +10,7 @@ the model that image with
 and records the backbone output (mean over image tokens, over text tokens, and over all tokens).
 The vectors are reduced to 3 dimensions with PCA here, so the output file stays a few KB.
 
-Example (on pet-poc-gpu-vm):
+Example (on the GPU server):
     cd /root/shimizu/Isaac-GR00T
     uv run python /path/to/extract_vlm_features.py \
         --model-path <g1_fruits_n17/checkpoint-20000> \

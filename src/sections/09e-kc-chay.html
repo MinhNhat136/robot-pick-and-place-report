@@ -5,13 +5,93 @@
     <p class="lead">Mọi kịch bản được đánh giá bằng notebook trong <code>codes/standalone_g1_gr00t</code>, chạy trực tiếp trên Isaac Sim cục bộ, <b>không cần Docker Arena</b>. Mỗi notebook có lệnh <code>make</code> để chạy không giao diện (headless) và ghi kết quả vào <code>data/</code>.</p>
     <div class="meta">
       <div><span class="ml">THƯ MỤC</span><span class="mv">codes/standalone_g1_gr00t</span></div>
-      <div><span class="ml">CHẠY</span><span class="mv">make sim-nbXX (headless) · make nb (tương tác)</span></div>
-      <div><span class="ml">ĐẦU RA</span><span class="mv">data/nbXX_eval/: log, tổng kết, video</span></div>
+      <div><span class="ml">CHẠY</span><span class="mv">make sim-nbXX (headless) · Jupyter (tương tác)</span></div>
+      <div><span class="ml">ĐẦU RA</span><span class="mv">data/: log từng episode, tổng kết, video</span></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="num">1</span><h3>Đang bổ sung</h3></div>
-    <div class="callout"><b>Nội dung đang được bổ sung.</b> Hướng dẫn chi tiết của mục này sẽ được cập nhật trong phiên bản sau của báo cáo.</div>
+    <div class="card-head"><span class="num">1</span><h3>Quy trình chung</h3></div>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01 · SERVER</div><div class="sv">Nạp đúng checkpoint</div><div class="sd">Mục IV.03, card 1–2</div></div>
+      <div class="step"><div class="sk">02 · KẾT NỐI</div><div class="sv">Mở tunnel nếu cần</div><div class="sd">Để chạy suốt lúc đánh giá</div></div>
+      <div class="step"><div class="sk">03 · KIỂM TRA</div><div class="sv">Ping server</div><div class="sd">Mục IV.03, card 3</div></div>
+      <div class="step"><div class="sk">04 · CHẠY</div><div class="sv">Lệnh make của kịch bản</div><div class="sd">Card 3 bên dưới</div></div>
+      <div class="step"><div class="sk">05 · SO SÁNH</div><div class="sv">Đọc tổng kết</div><div class="sd">So với khoảng tin cậy (card 4)</div></div>
+    </div>
+    <div class="callout warn"><b>Kết quả có sẵn trong gói sẽ bị ghi đè:</b> lệnh <code>make sim-nbXX</code> ghi output mới vào chính file <code>.ipynb</code>; nb07 còn ghi nối vào <code>data/runs_galileo.jsonl</code> và ghi đè video <code>data/videos/gr00t_galileo/epN.mp4</code>. Sao lưu <code>notebooks/</code> và <code>data/</code> trước khi chạy, và đổi tên <code>runs_galileo.jsonl</code> để tổng kết chỉ gồm lần chạy mới. Bản gốc của các kết quả cũng có trong <code>evals/</code>.</div>
+    <div class="callout"><b>Lỗi lúc tắt Isaac Sim:</b> cuối mỗi lần chạy có thể thấy <code>Segmentation fault</code> và <code>make: *** Error 1</code>. Nếu trước đó đã có dòng <code>[inproc] wrote notebooks/… | ok=True</code> thì notebook đã chạy xong và kết quả đã được ghi đủ.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Kiểm tra nền không cần server</h3></div>
+    <p>Xác nhận mô phỏng, robot, cảnh và cách chấm điểm chạy đúng trước khi tốn thời gian chạy model.</p>
+    <figure class="fig"><video src="assets/videos/iv04-card2-baseline.mp4" poster="assets/videos/iv04-card2-baseline-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: <code>make sim-stand</code> mở cửa sổ mô phỏng, robot đứng 500 tick; sau đó phát lại demo 0 của dataset búa (headless) và đọc tổng kết 1/1. Các đoạn chạy mô phỏng được tua nhanh.</figcaption></figure>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Lệnh</th><th>Làm gì</th><th>Đạt khi</th></tr></thead>
+      <tbody>
+        <tr><td><code>make sim-stand</code></td><td>Robot đứng 500 tick, có cửa sổ</td><td>Robot đứng vững, không ngã</td></tr>
+        <tr><td><code>make sim-replay</code></td><td>Phát lại demo episode 0 của dataset táo, có cửa sổ</td><td>Robot nhặt táo đặt lên đĩa</td></tr>
+        <tr><td><code>make sim-nb12 EPISODES=1 POLICY=replay CKPT=replay</code></td><td>Cảnh búa → thùng, phát lại demo 0 của dataset mix200</td><td>Tổng kết báo 1/1 thành công</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Lệnh kiểm chứng từng kịch bản</h3></div>
+    <figure class="fig"><video src="assets/videos/iv04-card3-run.mp4" poster="assets/videos/iv04-card3-run-poster.jpg" controls preload="none" playsinline></video><figcaption>Video mẫu: chạy nb12 (búa → thùng, mix200) với server ở mục IV.03, rồi xem thư mục kết quả và <code>summary.md</code> như card 4. Video chỉ chạy 2 episode cho ngắn (kết quả 1/2); số liệu trong báo cáo dùng 100 episode. Đoạn mô phỏng được tua nhanh.</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# Táo → đĩa, cảnh Galileo (server táo, cổng 5556)
+make sim-nb07 EPISODES=50
+
+# Real2sim 4 loại quả (server real2sim, cổng 5556)
+make sim-nb10 EPISODES=50
+
+# Búa → thùng (server búa, cổng 5557); CKPT chỉ là nhãn tên thư mục kết quả
+make sim-nb12 EPISODES=100 CKPT=mix200-checkpoint-10000
+make sim-nb12 EPISODES=100 CKPT=mix400-checkpoint-20000</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Kịch bản</th><th>Notebook · thời gian</th><th>Kết quả trong báo cáo</th></tr></thead>
+      <tbody>
+        <tr><td>Táo → đĩa, Galileo</td><td><code>nb07_full_pipeline_loop</code><br>~45 s / episode</td><td><b>56 %</b> · 28/50 · Wilson 42–69 %</td></tr>
+        <tr><td>Real2sim 4 loại quả</td><td><code>nb10_eval_multi_object</code><br>~1–2 phút / episode</td><td><b>66 %</b> · 33/50 · Wilson 52–78 %</td></tr>
+        <tr><td>Búa → thùng, mix200</td><td><code>nb12_eval_hammer_to_bin</code><br>~15–30 s / episode</td><td><b>66 %</b> · 66/100 · Wilson 56–75 %</td></tr>
+        <tr><td>Búa → thùng, mix400</td><td>như trên</td><td><b>73 %</b> · 73/100 · Wilson 64–81 %<br>63 % · 63/100 với ngưỡng đứng yên của Arena</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Ngưỡng đứng yên của búa:</b> nb12 hiện coi búa đã nằm yên khi vận tốc &lt; 0,02 m/s và vận tốc góc &lt; 0,12 rad/s (biến <code>LIN_VEL_TH</code>, <code>ANG_VEL_TH</code> ở §3). Kết quả 73 % đo với ngưỡng này. Muốn tái lập 63 % (ngưỡng gốc của Arena, 0,01 m/s và 0,1 rad/s), sửa hai biến đó trong notebook rồi chạy lại với nhãn <code>CKPT</code> khác.</div>
+    <div class="callout warn"><b>Ngoài phạm vi các lệnh trên:</b> 92 % của kịch bản táo và 56/100 của búa trong Arena đo bằng client Arena gốc trong Docker, không dùng notebook standalone.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Đọc và so sánh kết quả</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Notebook</th><th>Thư mục kết quả</th><th>Tỉ lệ thành công nằm ở</th></tr></thead>
+      <tbody>
+        <tr><td>nb07</td><td><code>data/runs_galileo.jsonl</code>, video trong <code>data/videos/gr00t_galileo/</code></td><td>Bảng tổng kết cuối notebook</td></tr>
+        <tr><td>nb10</td><td><code>data/nb10_eval/</code> (đổi bằng <code>NB10_OUT</code>)</td><td><code>seed0_….summary.json</code></td></tr>
+        <tr><td>nb12</td><td><code>data/nb12_eval/&lt;CKPT&gt;_gr00t_inside/</code></td><td><code>summary.json</code>, <code>summary.md</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid three">
+      <div class="sub"><div class="sl">KHỚP VỚI BÁO CÁO</div><div class="st">Nằm trong khoảng tin cậy</div><p>Mỗi episode được ngẫu nhiên hoá; với 50 episode, chênh khoảng ±13 điểm phần trăm vẫn bình thường, với 100 episode khoảng ±9 điểm.</p></div>
+      <div class="sub"><div class="sl">LỖI KỸ THUẬT</div><div class="st">Không tính vào tỉ lệ</div><p>Episode lỗi (server hết giờ, mất kết nối) được ghi lý do và loại khỏi tỉ lệ thành công; notebook dừng nếu server không trả lời lại.</p></div>
+      <div class="sub"><div class="sl">CHẠY TIẾP</div><div class="st">Không phải chạy lại từ đầu</div><p>nb10 và nb12 bỏ qua các episode đã có trong thư mục kết quả; bật lại server rồi chạy lại đúng lệnh cũ.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Chạy tương tác trong Jupyter</h3></div>
+    <p>Muốn xem từng bước hoặc cửa sổ mô phỏng, mở notebook trong Jupyter thay vì chạy headless.</p>
+<pre class="diagram">make sim-kernel &amp;&amp; make nb     # Jupyter Lab, chọn kernel "Isaac Sim Python 3 (isaacsim6)"</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Gặp</th><th>Xử lý</th></tr></thead>
+      <tbody>
+        <tr><td><code>No module named 'isaaclab'</code></td><td>Đang ở kernel <code>.venv</code>: đổi sang kernel <code>isaacsim6</code></td></tr>
+        <tr><td><code>print</code> không hiện trong cell</td><td>Isaac Lab gán lại <code>sys.stdout</code>; xem output ở terminal chạy Jupyter</td></tr>
+        <tr><td>Treo khi đóng mô phỏng</td><td>Không gọi <code>app.close()</code>; dùng Kernel ▸ Restart</td></tr>
+      </tbody>
+    </table></div>
   </div>
 </section>
