@@ -12,7 +12,7 @@
 .gantt-row .gl{display:flex;flex-direction:column;gap:2px;min-width:0}
 .gantt-row .gl .k{font:600 9px var(--mono);letter-spacing:.12em;color:var(--accent)}
 .gantt-row .gl .t{font-size:13px;font-weight:700;color:var(--ink);line-height:1.25}
-.gantt-row .track{position:relative;height:40px;background-image:repeating-linear-gradient(90deg,rgba(34,38,30,.07) 0 1px,transparent 1px calc(100% * 7 / 63));background-size:100% 100%}
+.gantt-row .track{position:relative;height:40px;background-image:repeating-linear-gradient(90deg,rgba(34,38,30,.07) 0 1px,transparent 1px calc(100% * 7 / 70));background-size:100% 100%}
 .gantt-row .bar{position:absolute;top:50%;height:16px;transform:translateY(-50%);border-radius:5px;background:var(--accent);box-shadow:0 4px 10px -6px oklch(0.4 0.12 var(--h)/.6)}
 .gantt-row .bar.soft{background:oklch(0.8 0.08 var(--h))}
 .gantt-row .bar.open{background:linear-gradient(90deg,transparent,var(--accent) 70%)}
