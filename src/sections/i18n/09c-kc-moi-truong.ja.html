@@ -1,0 +1,158 @@
+<section class="section" id="kc-moi-truong" data-hue="blue" data-kicker="IV.02 · 環境構築" data-title="結果の検証：クライアントとサーバーの環境構築">
+  <div class="hero">
+    <span class="pill">IV.02 節 · 環境構築</span>
+    <h2>シナリオを再実行するために 2 台のマシンを準備する<span class="dot">。</span></h2>
+    <p class="lead">IV.02〜IV.04 節では、報告書の数値を検証するためにシナリオを自分で再実行する手順を説明します。必要なマシンは 2 台です：シミュレーションとノートブックを実行する<b>ワークステーション</b>（クライアント）と、GR00T を実行する顧客の <b>GPU サーバー</b>（サーバー）。本節では両側の環境を構築します。サーバーの起動と評価の実行は IV.03 節と IV.04 節で説明します。</p>
+    <div class="meta">
+      <div><span class="ml">CLIENT</span><span class="mv">Isaac Sim 6.0.1 · Isaac Lab 3.0.0-beta2 · standalone_g1_gr00t</span></div>
+      <div><span class="ml">SERVER</span><span class="mv">顧客の GPU サーバー · Isaac-GR00T 4b1dca9</span></div>
+      <div><span class="ml">接続</span><span class="mv">社内ネットワークまたは SSH トンネル経由の ZeroMQ</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>接続構成</h3></div>
+    <p>ワークステーション上のノートブックがカメラ画像、関節状態、指示文を GR00T サーバーに送り、サーバーはアクション列を返します。2 台のマシンは社内ネットワークで直接接続するか、サーバーが <code>127.0.0.1</code> のみで待ち受ける場合は SSH トンネル経由で接続します。</p>
+    <div class="dg-lanes">
+      <div class="dg-head"><span></span><span>ワークステーション · CLIENT</span><span>接続</span><span>サーバー · SERVER</span><span>結果</span></div>
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">フロー</span><span class="lt">モデル呼び出し 1 回</span></div>
+        <div class="dg-node"><div class="nk">ISAAC SIM + ノートブック</div><div class="nt">standalone_g1_gr00t</div><div class="nd">カメラ画像 + 関節状態 + 指示文</div></div>
+        <div class="dg-node focus"><div class="nk">ZEROMQ · TCP</div><div class="nt">社内ネットワーク / SSH トンネル</div><div class="nd">シナリオごとに 1 ポート</div></div>
+        <div class="dg-node"><div class="nk">GPU SERVER</div><div class="nt">GR00T policy server</div><div class="nd">シナリオのチェックポイントを読み込む</div></div>
+        <div class="dg-node"><div class="nk">応答</div><div class="nt">アクション列</div><div class="nd">40 ステップ（リンゴ、ハンマー） · 16 ステップ（real2sim）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>ハードウェアとソフトウェアの要件</h3></div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">ワークステーション · CLIENT</div><div class="st">シミュレーションとノートブック</div><ul><li>Ubuntu 24.04、RTX 対応の NVIDIA GPU（本プロジェクトでは RTX 5090）、ドライバー 580</li><li>Isaac Sim <b>6.0.1</b> を <code>~/isaac-sim-6</code> にローカルインストール（Python 3.12）</li><li>Isaac Lab <b>release/3.0.0-beta2</b> を <code>~/IsaacLab</code> に配置し、Isaac Sim と同じ Python にインストール</li><li>Isaac Lab Arena <b>release/0.2.1</b> を <code>~/IsaacLab-Arena</code> に配置（関節 YAML ファイルと modality config の取得元）</li><li><code>uv</code>、<code>make</code>、<code>git</code>。初回インストール時はインターネット接続が必要</li></ul></div>
+      <div class="sub"><div class="sl">サーバー · SERVER</div><div class="st">顧客の GPU サーバー</div><ul><li>Linux、CUDA 対応の NVIDIA GPU（本プロジェクトでは 1× H100 80 GB）</li><li>Isaac-GR00T コミット <b>4b1dca9</b>、<code>uv</code> 環境（Python 3.10）、<code>ffmpeg</code></li><li>ベースモデル <code>nvidia/GR00T-N1.7-3B</code> への Hugging Face アクセス権（NVIDIA のライセンスに同意済み）</li><li><code>models/</code> 内のチェックポイントと各シナリオの modality config（カード 5）</li><li>ワークステーションに向けてポートを開放できること、または SSH を許可できること</li></ul></div>
+    </div>
+    <div class="callout warn"><b>バージョンの組み合わせを守ること：</b>報告書の結果はすべて Isaac Sim 6.0.1 + Isaac Lab 3.0.0-beta2 と Isaac-GR00T 4b1dca9 で測定しています。Isaac Sim 6.1 はドライバー ≥ 595 が必要で、このソースコードではまだテストしていません。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>ワークステーションへの成果物パッケージの配置</h3></div>
+    <p>ソースコードは <code>assets/</code>、<code>datasets/</code>、<code>models/</code> をパス <code>~/workspace/shimizu-robot/</code> から読み込むため、パッケージはこの場所に展開してください。Isaac Sim、Isaac Lab、Arena はカード 2 のとおりホームディレクトリに配置します。</p>
+<pre class="diagram">~/workspace/shimizu-robot/      # 成果物パッケージ（IV.01）
+├── codes/standalone_g1_gr00t/  # クライアント：g1gr00t パッケージ、ノートブック、Makefile
+├── assets/                     # nucleus_cache + リンゴ、皿
+├── datasets/                   # LeRobot データセット
+└── models/                     # チェックポイント（サーバーへコピー、カード 6）
+~/isaac-sim-6/   ~/IsaacLab/   ~/IsaacLab-Arena/</pre>
+    <div class="callout"><b>別の場所にインストールする場合：</b>Makefile では <code>ISAAC_PY</code>（Isaac Sim の Python）、<code>ARENA_DIR</code>、<code>ISAAC_GR00T_DIR</code> を上書きできます。例：<code>make sim-test ISAAC_PY=/opt/isaac-sim/python.sh</code>。データセットとモデルのパスは <code>configs/*.yaml</code> にあります。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>ワークステーションへのクライアントのインストール</h3></div>
+    <p><code>standalone_g1_gr00t</code> パッケージは 2 つの環境を使います：<b>.venv</b>（Python 3.10、テストとシミュレーションなしのノートブック用）と <b>Isaac Sim の Python</b>（シミュレーションありのノートブック用）。</p>
+    <figure class="fig"><video src="assets/videos/iv02-card4-client.mp4" poster="assets/videos/iv02-card4-client-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：Isaac Sim をインストール済みのワークステーションでクライアントの確認コマンドを実行します（<code>make sim-test-scene</code> の部分は早送り）。表示されるホスト名は <code>user@workstation</code> と <code>user@gpu-server</code> です。</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# .venv 環境
+make venv            # uv venv .venv --python 3.10、パッケージ + dev + notebook をインストール
+make sync            # ~/IsaacLab-Arena から関節/WBC の YAML ファイル 4 つをコピーし、取得元のハッシュを記録
+make assets          # AGILE の脚 policy（ONNX）を assets/wbc/ にダウンロード
+make test            # シミュレーション不要の unit test
+
+# Isaac Sim 環境
+export PYTHONNOUSERSITE=1   # ~/.local のパッケージが Isaac Sim の Python に混入しないようにする
+make sim-install     # パッケージを ~/isaac-sim-6/python.sh にインストール
+make sim-test        # Isaac Sim の Python で unit test
+make sim-test-scene  # シーンありのテスト：ロボットが安定して立つ、テーブル / リンゴ / 皿
+make sim-kernel      # シミュレーション用ノートブックの Jupyter カーネル "isaacsim6" を登録</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ワークステーション上のデータ</th><th>パス</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>AGILE の脚 policy</td><td><code>codes/standalone_g1_gr00t/assets/wbc/</code>（<code>make assets</code> でダウンロード）</td><td>すべてのシミュレーション用ノートブック</td></tr>
+        <tr><td>Galileo シーン、ハンマー、箱、G1 ロボットのアセット</td><td><code>assets/nucleus_cache/</code>（パッケージに同梱）</td><td>リンゴ（Galileo シーン）とハンマーのシナリオ。ネットワーク不要で実行可能</td></tr>
+        <tr><td>リンゴ、皿</td><td><code>assets/objects/</code></td><td>リンゴのシナリオ（自作シーン）</td></tr>
+        <tr><td>ハンマー → 箱 mix200 データセット</td><td><code>datasets/hammer_to_bin/static_hammer_mix200/</code></td><td>nb12：デモ再生、画像の色合わせ</td></tr>
+        <tr><td>NVIDIA のリンゴ → 皿データセット</td><td><code>datasets/isaaclab_arena/static_apple_tutorial/</code>（Hugging Face からダウンロード）</td><td>デモ再生、リンゴのシナリオの open-loop</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>確認完了の目安：</b><code>make test</code>、<code>make sim-test</code>、<code>make sim-test-scene</code> のいずれも失敗したテストがなく、Jupyter でカーネル <b>Isaac Sim Python 3 (isaacsim6)</b> が見えること。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>GPU サーバーへのサーバーのインストール</h3></div>
+    <p>学習時に使ったものと同じコミットの Isaac-GR00T をインストールします。下表は各シナリオに必要なチェックポイントと modality config を示します。それらをサーバーに配置する方法はカード 6 にあります。</p>
+    <figure class="fig"><video src="assets/videos/iv02-card5-server.mp4" poster="assets/videos/iv02-card5-server-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：Isaac-GR00T を指定のコミットで clone し、<code>uv</code> 環境を作成してサーバーの GPU を確認します（ダウンロードの部分は早送り）。表示されるホスト名は <code>user@workstation</code> と <code>user@gpu-server</code> です。</figcaption></figure>
+<pre class="diagram"># 事前に必要：git、uv、ffmpeg（sudo apt-get install -y ffmpeg）
+git clone https://github.com/NVIDIA/Isaac-GR00T.git ~/Isaac-GR00T
+cd ~/Isaac-GR00T
+git checkout 4b1dca9d88d2a0b9ea5a65aa61c82ff89f5c4f0e
+git submodule update --init --recursive
+uv sync --python 3.10      # 環境を作成し、GR00T と GPU ライブラリをインストール（数分）
+uv run python -c "import gr00t, torch; print('GR00T ok | CUDA', torch.cuda.is_available())"
+# ベースモデルが Hugging Face のキャッシュにない場合は、
+# nvidia/GR00T-N1.7-3B のライセンスに同意済みのアカウントでログイン：
+hf auth login</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シナリオ · クライアントのポート</th><th><code>models/</code> 内のチェックポイント</th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>リンゴ → 皿<br>5556 · <code>g1_static_apple.yaml</code></td><td>Hugging Face からダウンロードする NVIDIA のチェックポイント</td><td>Arena 版</td></tr>
+        <tr><td>ハンマー → 箱<br>5557 · <code>NB12_PORT</code></td><td><code>hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code><br><code>hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>Arena 版</td></tr>
+        <tr><td>Real2sim 果物 4 種<br>5556 · <code>NB10_PORT</code></td><td><code>real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td>real2sim 版</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>Modality config は学習時と一致させること：</b>誤ったファイルを使ってもサーバーは動作しますが、モデルは誤った関節順序を受け取ります。Arena 版は Arena <b>release/0.2.1</b> 内の <code>isaaclab_arena_gr00t/embodiments/g1/g1_sim_wbc_data_gr00t_n_1_7_config.py</code> です（このファイルだけをサーバーにコピーするか、Arena を clone します）。real2sim 版は <code>g1_dex3_joint_sim_config.py</code> で、<code>real2sim_multi_fruit/g1_fruits_n17_bs32_20k/</code> フォルダ（<code>checkpoint-20000</code> の隣）と <code>codes/g1_real2sim/groot/</code> にあります。実行前に両側で <code>md5sum</code> を比較してください。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>納品チェックポイントのサーバーへの配置</h3></div>
+    <p>ファインチューニング済みチェックポイント 3 つは成果物パッケージの <code>models/</code> フォルダにあり、各フォルダは GR00T サーバーですぐに使えます：重み（<code>safetensors</code> ファイル 3 つ）、設定、processor、正規化統計。検証したいシナリオのチェックポイントだけをコピーすれば十分です。</p>
+    <figure class="fig"><video src="assets/videos/iv02-card6-checkpoint.mp4" poster="assets/videos/iv02-card6-checkpoint-poster.jpg" controls preload="none" playsinline></video><figcaption>real2sim チェックポイントでのサンプル動画。動画のサーバーには同一のコピーがすでにあるため、rsync は照合のみ行い、12 GB を再コピーしていません。初回のコピーはネットワーク速度に応じてより長くかかります。表示されるホスト名は <code>user@workstation</code> と <code>user@gpu-server</code> です。</figcaption></figure>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">ステップ 1</div><div class="sv">サーバーにフォルダを作成</div><div class="sd">例：<code>~/shimizu-robot/models</code></div></div>
+      <div class="step"><div class="sk">ステップ 2</div><div class="sv">チェックポイントをコピー</div><div class="sd">ワークステーションから <code>rsync</code>、中断しても再開可能</div></div>
+      <div class="step"><div class="sk">ステップ 3</div><div class="sv">完全性の確認</div><div class="sd">両側のチェックサムを比較し、重みファイル 3 つが揃っていることを確認</div></div>
+      <div class="step"><div class="sk">ステップ 4</div><div class="sv">modality config をコピー</div><div class="sd">リンゴとハンマーのシナリオ用の Arena 版</div></div>
+    </div>
+<pre class="diagram"># ワークステーションで実行
+SRV=user@gpu-server
+CKPTS="hammer_to_bin_mix200 hammer_to_bin_mix400 real2sim_multi_fruit"
+cd ~/workspace/shimizu-robot/models
+
+# ステップ 1 — サーバーにフォルダを作成
+ssh $SRV 'mkdir -p ~/shimizu-robot/models ~/shimizu-robot/configs'
+
+# ステップ 2 — 必要なチェックポイントをサブフォルダ構成のままコピー
+rsync -avP $CKPTS $SRV:~/shimizu-robot/models/
+
+# ステップ 3 — チェックサムを比較、コピーはしない（-n）：
+# ファイルが 1 つも表示されなければ両側は同一
+rsync -avnc $CKPTS $SRV:~/shimizu-robot/models/
+# 重みファイルの数：期待値は 9（チェックポイント 3 つ × ファイル 3 つ）
+ssh $SRV 'ls ~/shimizu-robot/models/*/*/checkpoint-*/*.safetensors | wc -l'
+
+# ステップ 4 — Arena の modality config（リンゴ、ハンマーのシナリオ）
+G1=~/IsaacLab-Arena/isaaclab_arena_gr00t/embodiments/g1
+rsync -avP $G1/g1_sim_wbc_data_gr00t_n_1_7_config.py \
+      $SRV:~/shimizu-robot/configs/</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th><code>models/</code> 内のフォルダ</th><th>サーバー上の <code>--model-path</code> のパス</th></tr></thead>
+      <tbody>
+        <tr><td><code>hammer_to_bin_mix200/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td></tr>
+        <tr><td><code>hammer_to_bin_mix400/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td></tr>
+        <tr><td><code>real2sim_multi_fruit/</code></td><td><code>~/shimizu-robot/models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>ネットワーク経由で転送できない場合：</b><code>models/</code> フォルダを外付けディスクでコピーし、同じ構成でサーバーに配置します。その場合もステップ 3 は両側の <code>safetensors</code> ファイルに対して <code>sha256sum</code> で実施してください。NVIDIA のリンゴ → 皿チェックポイントはパッケージに含まれないため、Hugging Face からサーバーに直接ダウンロードします。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>接続の設定</h3></div>
+    <p>次の 2 つの方法のいずれかを選びます。サーバー側のポートはクライアントが想定するポート（カード 5）と一致させる必要があります。クライアントのポートは環境変数 <code>NB10_PORT</code>、<code>NB12_PORT</code> または YAML ファイルの <code>server.port</code> フィールドで変更できます。</p>
+    <figure class="fig"><video src="assets/videos/iv02-card7-connect.mp4" poster="assets/videos/iv02-card7-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：ハンマーのサーバー（ポート 5557）への SSH トンネルを開き、ポートを確認して <code>smoke_server.py</code> でサーバーに ping します。表示されるホスト名は <code>user@workstation</code> と <code>user@gpu-server</code> です。</figcaption></figure>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">方法 1</div><div class="st">社内ネットワーク</div><ul><li>サーバーは <code>--host 0.0.0.0</code> で待ち受け</li><li>ファイアウォールでシナリオのポートをワークステーションに対してのみ開放</li><li>クライアントのホストをサーバーの IP に設定。例：<code>NB12_HOST=10.0.0.5</code></li></ul></div>
+      <div class="sub"><div class="sl">方法 2</div><div class="st">SSH トンネル</div><ul><li>サーバーは <code>--host 127.0.0.1</code> で待ち受け、ポートを外部に開放しない</li><li>ワークステーションでトンネルを開き、評価中は開いたままにする</li><li>クライアントのホストは既定の <code>127.0.0.1</code> のまま</li></ul></div>
+    </div>
+<pre class="diagram"># 方法 2、ワークステーションで実行（例：ハンマーのシナリオ、ポート 5557）
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server</pre>
+  </div>
+</section>

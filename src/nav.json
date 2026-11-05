@@ -129,6 +129,13 @@
           "file": "09e-kc-chay.html",
           "label_en": "Run the verification",
           "label_ja": "検証の実行"
+        },
+        {
+          "id": "vss",
+          "label": "Đánh giá video bằng VSS",
+          "file": "09f-vss.html",
+          "label_en": "Video evaluation with VSS",
+          "label_ja": "VSS による動画評価"
         }
       ],
       "kicker_en": "PART IV",

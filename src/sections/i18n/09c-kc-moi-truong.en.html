@@ -1,0 +1,158 @@
+<section class="section" id="kc-moi-truong" data-hue="blue" data-kicker="IV.02 · ENVIRONMENT SETUP" data-title="Result verification: setting up the client and server environments">
+  <div class="hero">
+    <span class="pill">SECTION IV.02 · ENVIRONMENT SETUP</span>
+    <h2>Prepare two machines to re-run the scenarios<span class="dot">.</span></h2>
+    <p class="lead">Sections IV.02–IV.04 explain how to re-run the scenarios yourself to verify the figures in this report. Two machines are needed: a <b>workstation</b> that runs the simulation and notebooks (client), and the client's <b>GPU server</b> that runs GR00T (server). This section sets up both sides; starting the server and running the evaluation are covered in IV.03 and IV.04.</p>
+    <div class="meta">
+      <div><span class="ml">CLIENT</span><span class="mv">Isaac Sim 6.0.1 · Isaac Lab 3.0.0-beta2 · standalone_g1_gr00t</span></div>
+      <div><span class="ml">SERVER</span><span class="mv">Client's GPU server · Isaac-GR00T 4b1dca9</span></div>
+      <div><span class="ml">CONNECTION</span><span class="mv">ZeroMQ over the local network or an SSH tunnel</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Connection architecture</h3></div>
+    <p>The notebook on the workstation sends camera images, joint states and the instruction to the GR00T server; the server returns an action chunk. The two machines can connect directly over the local network, or through an SSH tunnel if the server only listens on <code>127.0.0.1</code>.</p>
+    <div class="dg-lanes">
+      <div class="dg-head"><span></span><span>WORKSTATION · CLIENT</span><span>CONNECTION</span><span>SERVER</span><span>RESULT</span></div>
+      <div class="dg-lane" data-hue="blue">
+        <div class="lane-label"><span class="lk">FLOW</span><span class="lt">One model call</span></div>
+        <div class="dg-node"><div class="nk">ISAAC SIM + NOTEBOOK</div><div class="nt">standalone_g1_gr00t</div><div class="nd">Camera images + joint states + instruction</div></div>
+        <div class="dg-node focus"><div class="nk">ZEROMQ · TCP</div><div class="nt">Local network / SSH tunnel</div><div class="nd">One port per scenario</div></div>
+        <div class="dg-node"><div class="nk">GPU SERVER</div><div class="nt">GR00T policy server</div><div class="nd">Loads the scenario's checkpoint</div></div>
+        <div class="dg-node"><div class="nk">RETURNS</div><div class="nt">Action chunk</div><div class="nd">40 steps (apple, hammer) · 16 steps (real2sim)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Hardware and software requirements</h3></div>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">WORKSTATION · CLIENT</div><div class="st">Simulation and notebooks</div><ul><li>Ubuntu 24.04, NVIDIA RTX GPU (the project used an RTX 5090), driver 580</li><li>Isaac Sim <b>6.0.1</b> installed locally at <code>~/isaac-sim-6</code> (Python 3.12)</li><li>Isaac Lab <b>release/3.0.0-beta2</b> at <code>~/IsaacLab</code>, installed into the same Python as Isaac Sim</li><li>Isaac Lab Arena <b>release/0.2.1</b> at <code>~/IsaacLab-Arena</code> (source of the joint YAML files and the modality config)</li><li><code>uv</code>, <code>make</code>, <code>git</code>; Internet access for the first installation</li></ul></div>
+      <div class="sub"><div class="sl">SERVER</div><div class="st">Client's GPU server</div><ul><li>Linux, CUDA-capable NVIDIA GPU (the project used 1× H100 80 GB)</li><li>Isaac-GR00T commit <b>4b1dca9</b>, <code>uv</code> environment (Python 3.10), <code>ffmpeg</code></li><li>Hugging Face access to the base model <code>nvidia/GR00T-N1.7-3B</code> (NVIDIA license accepted)</li><li>Checkpoints from <code>models/</code> and the modality config for each scenario (card 5)</li><li>A port reachable from the workstation, or SSH access</li></ul></div>
+    </div>
+    <div class="callout warn"><b>Keep the exact version pair:</b> all results in this report were measured on Isaac Sim 6.0.1 + Isaac Lab 3.0.0-beta2 and Isaac-GR00T 4b1dca9. Isaac Sim 6.1 requires driver ≥ 595 and has not been tested with this code.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Place the deliverable package on the workstation</h3></div>
+    <p>The code reads <code>assets/</code>, <code>datasets/</code> and <code>models/</code> from <code>~/workspace/shimizu-robot/</code>, so extract the package at this location. Isaac Sim, Isaac Lab and Arena go in the home folder as in card 2.</p>
+<pre class="diagram">~/workspace/shimizu-robot/      # deliverable package (IV.01)
+├── codes/standalone_g1_gr00t/  # client: g1gr00t package, notebooks, Makefile
+├── assets/                     # nucleus_cache + apple, plate
+├── datasets/                   # LeRobot datasets
+└── models/                     # checkpoints (copy to the server, card 6)
+~/isaac-sim-6/   ~/IsaacLab/   ~/IsaacLab-Arena/</pre>
+    <div class="callout"><b>Installing elsewhere:</b> the Makefile lets you override <code>ISAAC_PY</code> (Isaac Sim's Python), <code>ARENA_DIR</code> and <code>ISAAC_GR00T_DIR</code>, e.g. <code>make sim-test ISAAC_PY=/opt/isaac-sim/python.sh</code>. Dataset and model paths are in <code>configs/*.yaml</code>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Install the client on the workstation</h3></div>
+    <p>The <code>standalone_g1_gr00t</code> package uses two environments: <b>.venv</b> (Python 3.10, for tests and notebooks without simulation) and <b>Isaac Sim's Python</b> (for notebooks with simulation).</p>
+    <figure class="fig"><video src="assets/videos/iv02-card4-client.mp4" poster="assets/videos/iv02-card4-client-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: running the client check commands on a workstation with Isaac Sim installed (the <code>make sim-test-scene</code> part is sped up). The host names shown are <code>user@workstation</code> and <code>user@gpu-server</code>.</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# .venv environment
+make venv            # uv venv .venv --python 3.10, install package + dev + notebook
+make sync            # copy 4 joint/WBC YAML files from ~/IsaacLab-Arena, record the source hash
+make assets          # download the AGILE leg policy (ONNX) into assets/wbc/
+make test            # unit tests that need no simulation
+
+# Isaac Sim environment
+export PYTHONNOUSERSITE=1   # keep packages in ~/.local out of Isaac Sim's Python
+make sim-install     # install the package into ~/isaac-sim-6/python.sh
+make sim-test        # unit tests with Isaac Sim's Python
+make sim-test-scene  # scene tests: robot stands stably, table / apple / plate
+make sim-kernel      # register the "isaacsim6" Jupyter kernel for simulation notebooks</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Data on the workstation</th><th>Path</th><th>Used for</th></tr></thead>
+      <tbody>
+        <tr><td>AGILE leg policy</td><td><code>codes/standalone_g1_gr00t/assets/wbc/</code> (downloaded with <code>make assets</code>)</td><td>All simulation notebooks</td></tr>
+        <tr><td>Galileo scene, hammer, bin, G1 robot assets</td><td><code>assets/nucleus_cache/</code> (included in the package)</td><td>Apple scenario (Galileo scene) and hammer; runs offline</td></tr>
+        <tr><td>Apple, plate</td><td><code>assets/objects/</code></td><td>Apple scenario (self-built scene)</td></tr>
+        <tr><td>Hammer → bin dataset mix200</td><td><code>datasets/hammer_to_bin/static_hammer_mix200/</code></td><td>nb12: demo replay, image colour matching</td></tr>
+        <tr><td>NVIDIA apple → plate dataset</td><td><code>datasets/isaaclab_arena/static_apple_tutorial/</code> (downloaded from Hugging Face)</td><td>Demo replay, open-loop for the apple scenario</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Done when:</b> <code>make test</code>, <code>make sim-test</code> and <code>make sim-test-scene</code> all pass with no failing tests, and Jupyter shows the <b>Isaac Sim Python 3 (isaacsim6)</b> kernel.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Install the server on the GPU server</h3></div>
+    <p>Install Isaac-GR00T at the exact commit used for training. The table below shows which checkpoint and modality config each scenario needs; card 6 explains how to put them on the server.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card5-server.mp4" poster="assets/videos/iv02-card5-server-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: cloning Isaac-GR00T at the right commit, creating the <code>uv</code> environment and checking the GPU on the server (download parts are sped up). The host names shown are <code>user@workstation</code> and <code>user@gpu-server</code>.</figcaption></figure>
+<pre class="diagram"># prerequisites: git, uv, ffmpeg (sudo apt-get install -y ffmpeg)
+git clone https://github.com/NVIDIA/Isaac-GR00T.git ~/Isaac-GR00T
+cd ~/Isaac-GR00T
+git checkout 4b1dca9d88d2a0b9ea5a65aa61c82ff89f5c4f0e
+git submodule update --init --recursive
+uv sync --python 3.10      # create the environment, install GR00T and GPU libraries (a few minutes)
+uv run python -c "import gr00t, torch; print('GR00T ok | CUDA', torch.cuda.is_available())"
+# if the base model is not yet in the Hugging Face cache, log in with an account
+# that has accepted the nvidia/GR00T-N1.7-3B license:
+hf auth login</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scenario · client port</th><th>Checkpoint in <code>models/</code></th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>Apple → plate<br>5556 · <code>g1_static_apple.yaml</code></td><td>NVIDIA checkpoint downloaded from Hugging Face</td><td>Arena version</td></tr>
+        <tr><td>Hammer → bin<br>5557 · <code>NB12_PORT</code></td><td><code>hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code><br><code>hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>Arena version</td></tr>
+        <tr><td>Real2sim 4 fruits<br>5556 · <code>NB10_PORT</code></td><td><code>real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td>Real2sim version</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>The modality config must match the one used in training:</b> with the wrong file the server still runs, but the model receives the joints in the wrong order. The Arena version is <code>isaaclab_arena_gr00t/embodiments/g1/g1_sim_wbc_data_gr00t_n_1_7_config.py</code> in Arena <b>release/0.2.1</b> (copy that file alone to the server, or clone Arena). The real2sim version is <code>g1_dex3_joint_sim_config.py</code>, located in <code>real2sim_multi_fruit/g1_fruits_n17_bs32_20k/</code> (next to <code>checkpoint-20000</code>) and in <code>codes/g1_real2sim/groot/</code>. Compare <code>md5sum</code> on both sides before running.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>Copy the delivered checkpoints to the server</h3></div>
+    <p>The three fine-tuned checkpoints are in the <code>models/</code> folder of the deliverable package, and each folder works directly with the GR00T server: weights (3 <code>safetensors</code> files), configuration, processor and normalization statistics. Copy only the checkpoints for the scenarios you want to verify.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card6-checkpoint.mp4" poster="assets/videos/iv02-card6-checkpoint-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video with the real2sim checkpoint. The server in the video already has an identical copy, so rsync only compares and does not re-copy the 12 GB; the first copy takes longer depending on network speed. The host names shown are <code>user@workstation</code> and <code>user@gpu-server</code>.</figcaption></figure>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">STEP 1</div><div class="sv">Create folders on the server</div><div class="sd">E.g. <code>~/shimizu-robot/models</code></div></div>
+      <div class="step"><div class="sk">STEP 2</div><div class="sv">Copy the checkpoints</div><div class="sd"><code>rsync</code> from the workstation, resumable if interrupted</div></div>
+      <div class="step"><div class="sk">STEP 3</div><div class="sv">Check integrity</div><div class="sd">Compare checksums on both sides, all 3 weight files present</div></div>
+      <div class="step"><div class="sk">STEP 4</div><div class="sv">Copy the modality config</div><div class="sd">Arena version for the apple and hammer scenarios</div></div>
+    </div>
+<pre class="diagram"># run on the workstation
+SRV=user@gpu-server
+CKPTS="hammer_to_bin_mix200 hammer_to_bin_mix400 real2sim_multi_fruit"
+cd ~/workspace/shimizu-robot/models
+
+# step 1 — create folders on the server
+ssh $SRV 'mkdir -p ~/shimizu-robot/models ~/shimizu-robot/configs'
+
+# step 2 — copy the needed checkpoints, keeping the subfolders
+rsync -avP $CKPTS $SRV:~/shimizu-robot/models/
+
+# step 3 — compare checksums without copying (-n):
+# no files listed means both sides are identical
+rsync -avnc $CKPTS $SRV:~/shimizu-robot/models/
+# count weight files: expect 9 (3 checkpoints × 3 files)
+ssh $SRV 'ls ~/shimizu-robot/models/*/*/checkpoint-*/*.safetensors | wc -l'
+
+# step 4 — Arena modality config (apple, hammer scenarios)
+G1=~/IsaacLab-Arena/isaaclab_arena_gr00t/embodiments/g1
+rsync -avP $G1/g1_sim_wbc_data_gr00t_n_1_7_config.py \
+      $SRV:~/shimizu-robot/configs/</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Folder in <code>models/</code></th><th><code>--model-path</code> on the server</th></tr></thead>
+      <tbody>
+        <tr><td><code>hammer_to_bin_mix200/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td></tr>
+        <tr><td><code>hammer_to_bin_mix400/</code></td><td><code>~/shimizu-robot/models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td></tr>
+        <tr><td><code>real2sim_multi_fruit/</code></td><td><code>~/shimizu-robot/models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>No network transfer possible?</b> Copy the <code>models/</code> folder on an external drive and place it on the server with the same structure; still do step 3 using <code>sha256sum</code> on the <code>safetensors</code> files on both sides. The NVIDIA apple → plate checkpoint is not in the package: download it directly from Hugging Face to the server.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Set up the connection</h3></div>
+    <p>Choose one of two options. The server port must match the port the client expects (card 5); the client port can be changed with the <code>NB10_PORT</code> or <code>NB12_PORT</code> environment variables or the <code>server.port</code> field in the YAML file.</p>
+    <figure class="fig"><video src="assets/videos/iv02-card7-connect.mp4" poster="assets/videos/iv02-card7-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: opening an SSH tunnel to the hammer server (port 5557), checking the port and pinging the server with <code>smoke_server.py</code>. The host names shown are <code>user@workstation</code> and <code>user@gpu-server</code>.</figcaption></figure>
+    <div class="grid pair">
+      <div class="sub"><div class="sl">OPTION 1</div><div class="st">Local network</div><ul><li>The server listens on <code>--host 0.0.0.0</code></li><li>Open the scenario's port in the firewall for the workstation only</li><li>The client sets the host to the server IP, e.g. <code>NB12_HOST=10.0.0.5</code></li></ul></div>
+      <div class="sub"><div class="sl">OPTION 2</div><div class="st">SSH tunnel</div><ul><li>The server listens on <code>--host 127.0.0.1</code>, no port exposed</li><li>The workstation opens the tunnel and keeps it running throughout the evaluation</li><li>The client keeps the default host <code>127.0.0.1</code></li></ul></div>
+    </div>
+<pre class="diagram"># option 2, on the workstation (e.g. hammer scenario, port 5557)
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server</pre>
+  </div>
+</section>

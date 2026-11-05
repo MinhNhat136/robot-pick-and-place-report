@@ -9,8 +9,8 @@
   const KEY = "report-lang";
   const LANGS = [
     { code: "vi", short: "VI", name: "Tiếng Việt", ready: true },
-    { code: "ja", short: "JA", name: "日本語", ready: false },   // ready: every section translated
-    { code: "en", short: "EN", name: "English", ready: false },
+    { code: "ja", short: "JA", name: "日本語", ready: true },    // ready: every section translated
+    { code: "en", short: "EN", name: "English", ready: true },
   ];
 
   let btn, menu, current = "vi";
@@ -48,12 +48,12 @@
     init() {
       btn = document.createElement("button");
       btn.type = "button"; btn.className = "lang-btn no-print";
-      btn.setAttribute("aria-label", "Chọn ngôn ngữ"); btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-label", "Chọn ngôn ngữ"); btn.dataset.trAttr = "aria-label"; btn.dataset.trEn = "Choose language"; btn.dataset.trJa = "言語を選択"; btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false");
       btn.innerHTML = `<span class="lang-code">VI</span>`;
 
       menu = document.createElement("div");
       menu.className = "lang-menu no-print"; menu.hidden = true; menu.setAttribute("role", "menu");
-      menu.innerHTML = `<div class="lang-h">NGÔN NGỮ</div>` + LANGS.map(l =>
+      menu.innerHTML = `<div class="lang-h" data-tr-en="LANGUAGE" data-tr-ja="言語">NGÔN NGỮ</div>` + LANGS.map(l =>
         `<button type="button" role="menuitemradio" data-lang="${l.code}"><span class="lang-s">${l.short}</span>` +
         `<span class="lang-n">${l.name}</span>${l.ready ? "" : '<span class="lang-tag">Phần I–III</span>'}</button>`).join("");
       document.body.append(menu, btn);

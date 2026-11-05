@@ -1,0 +1,51 @@
+<section class="section" id="danh-gia" data-hue="blue" data-kicker="V.01 · EVALUATION" data-title="Overall evaluation">
+  <div class="hero">
+    <span class="pill">SECTION V.01 · OVERALL EVALUATION</span>
+    <h2>Three scenarios, one overall picture<span class="dot">.</span></h2>
+    <p class="lead">GR00T N1.7 can control G1 to pick and place objects in simulation: <b>56 %</b> on the apple task, <b>66 %</b> on the 4 fruits, <b>66–73 %</b> on the hammer task. Results depend first on the <b>visual appearance of the scene</b> and the <b>fine-tuning data</b>, and only then on how success is scored.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Summary of results</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scenario</th><th>Before fixes</th><th>Best result</th><th>Deciding factor</th><th>Remaining bottleneck</th></tr></thead>
+      <tbody>
+        <tr><td>III.01 · Apple → plate</td><td>0 % (self-built scene)</td><td><b>56 %</b> · 28/50 · reconstructed Galileo</td><td>Scene matching the one used for data recording</td><td>Perception and approach phase: in an unfamiliar scene only 22 % lift the apple</td></tr>
+        <tr><td>III.02 · 4 fruits</td><td>0 % (apple checkpoint)</td><td><b>66 %</b> · 33/50 · real2sim</td><td>Fine-tuning on 790 real2sim episodes</td><td>Grasp phase: 11/17 failures are failing to lift the fruit</td></tr>
+        <tr class="hl"><td>III.03 · Hammer → bin</td><td>0 % (not fine-tuned)</td><td><b>66 %</b> · 66/100 · mix200<br><b>73 %</b> · 73/100 · mix400, threshold 0.02</td><td>Self-collected data: teleop + generated</td><td>Release phase and the "at rest" scoring</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="ci" data-source="eval-summary-en">
+      <div class="chart-head"><div><div class="ct">Success rate and 95 % Wilson confidence interval</div><div class="cs">Dot = measured rate; horizontal bar = confidence interval. Hover or Tab for details.</div></div><button class="btn" type="button" data-l-table="Show as table" data-l-chart="Show chart" data-table-toggle>View as table</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="callout"><b>Note:</b> the NVIDIA client on the original Arena environment reached 92 % on the apple task; that run serves as a reference baseline and is not in the chart. All other evaluations ran closed-loop on the project's own pipeline, on local Isaac Sim.</div>
+    <div class="callout"><b>Video-based scoring (section <a href="#vss">IV.05</a>):</b> NVIDIA VSS was tried on 99 hammer → bin episode videos, judging success on its own. On 86 held-out episodes, video summarization (60.5 %) and Q&amp;A (59.3 %) did not beat always answering "success" (73.3 %). After a decoding fix (<code>top_k: 1</code>), the real-time alert agreed with Arena on 94.2 %; that run was made after the outcomes were known, so it needs confirming on fresh data.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Overall findings</h3></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">01 · VISUALS</div><div class="st">The scene matters more than the model</div><p>With the same checkpoint and instruction, the apple task drops from 92 % (NVIDIA client, original Arena) to 56 % (only the lighting differs) and then to 0 % (the whole scene differs). A model fine-tuned on one scene does not generalize to another.</p></div>
+      <div class="sub"><div class="sl">02 · FINE-TUNING</div><div class="st">New tasks must be tuned, and tuning is fast</div><p>The fruit task scores 0 % when reusing the apple checkpoint, and the hammer task 0 % before tuning; both reach 66 % after fine-tuning. The hammer task needs only 200 episodes and ~1 hour on one H100; the main cost is the data.</p></div>
+      <div class="sub"><div class="sl">03 · LANGUAGE</div><div class="st">The model follows the instruction</div><p>0 wrong picks in 50 episodes of the fruit task, even though there are always other fruits and distractors on the table. The language part learns well from the real2sim data.</p></div>
+      <div class="sub"><div class="sl">04 · BOTTLENECK</div><div class="st">Each scenario falls short in a different phase</div><p>The apple falls short in perception and approach, the fruits in grasping, the hammer in releasing. Improvements therefore have to be task-specific; there is no single common fix.</p></div>
+      <div class="sub"><div class="sl">05 · DATA</div><div class="st">More data of the same kind has limits</div><p>Going from 200 to 400 episodes on the hammer task makes placement more accurate (hammer outside the bin interior 19 → 5 times) but the overall rate does not rise (66 % → 63 %, within the margin of error).</p></div>
+      <div class="sub"><div class="sl">06 · SCORING</div><div class="st">How success is scored affects the number</div><p>Hammer task: in 22/100 runs the hammer was already in the bin and the hand had let go, yet it was scored "not at rest" because the condition only checks instantaneous velocity. The run with the threshold relaxed to 0.02 m/s reached 73 %.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Lessons learned</h3></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">01</div><div class="st">Data &amp; environment matter more than the model</div><p>Same checkpoint: 0 % or 56 % just because of the scene.</p></div>
+      <div class="sub"><div class="sl">02</div><div class="st">The instruction is part of the "contract"</div><p>Manage instructions like controlled configuration parameters.</p></div>
+      <div class="sub"><div class="sl">03</div><div class="st">Layered verification saves time</div><p>Open-loop → replay → closed-loop.</p></div>
+      <div class="sub"><div class="sl">04</div><div class="st">Success conditions need testing</div><p>Loose conditions pollute the data; overly strict conditions lower the metric. Agree on thresholds before comparing.</p></div>
+      <div class="sub"><div class="sl">05</div><div class="st">Evaluation needs large numbers</div><p>50–100 trials per configuration, always with a confidence interval.</p></div>
+      <div class="sub"><div class="sl">06</div><div class="st">Generating extra data is cheap</div><p>133 generation runs → 100 demos meeting the strict condition, with no extra teleop hours.</p></div>
+      <div class="sub"><div class="sl">07</div><div class="st">Fine-tuning is fast and cheap</div><p>~1 hour (200 episodes) to 2 h 15 (400 episodes) on 1 H100.</p></div>
+    </div>
+  </div>
+</section>

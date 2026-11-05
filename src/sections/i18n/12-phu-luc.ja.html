@@ -1,0 +1,52 @@
+<section class="section" id="phu-luc" data-hue="blue" data-kicker="V.02 · 付録" data-title="付録">
+  <div class="hero">
+    <span class="pill">V.02 節 · 付録</span>
+    <h2>用語 &amp; 参考文献<span class="dot">。</span></h2>
+    <p class="lead">成果物の一覧は IV.01 節を参照してください。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">A</span><h3>用語</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody>
+        <tr><td><b>VLA</b></td><td>画像と言語を入力とし、ロボットの制御指令を直接出力するモデル</td></tr>
+        <tr><td><b>Foundation model</b></td><td>大規模データで事前学習したモデル。少量のデータで特定タスク向けにファインチューニングする</td></tr>
+        <tr><td><b>Embodiment</b></td><td>特定のロボットの身体の種類（関節、カメラ、手）</td></tr>
+        <tr><td><b>Action chunk</b></td><td>1 回の推論でモデルが返すアクション列（40 ステップ = 50 Hz で 0.8 s）</td></tr>
+        <tr><td><b>Flow matching / DiT</b></td><td>ノイズを段階的に除去して連続データを生成する手法。アクション列の生成に使う</td></tr>
+        <tr><td><b>Teleop</b></td><td>人がロボットを遠隔操作して（VR ヘッドセット）見本データを作成すること</td></tr>
+        <tr><td><b>Open-loop / closed-loop</b></td><td>記録済みデータでの評価 / モデルが自ら連続して制御する評価</td></tr>
+        <tr><td><b>Real2sim</b></td><td>実世界のデータをシミュレーションに移すこと</td></tr>
+        <tr><td><b>Domain gap</b></td><td>学習環境と実行環境の違い</td></tr>
+        <tr><td><b>Visual gap</b></td><td>実行時のシーンの見た目がデータ記録時と異なると、モデルの成功率が低下する現象（リンゴのタスク 92 → 56 → 0 %）</td></tr>
+        <tr><td><b>Domain randomization</b></td><td>シミュレーション内で照明、材質、背景、カメラ角度をランダムに変え、モデルが 1 つのシーンを丸暗記しないようにする手法</td></tr>
+        <tr><td><b>Demo generation</b></td><td>既存のテレオペデモ（時間、開始点、把持、解放）を変形してシミュレーションで再実行し、成功したデモだけを残す手法（MimicGen の方式）</td></tr>
+        <tr><td><b>FK / IK</b></td><td>順運動学：関節角度から手の位置を計算する。逆運動学：目標位置から関節角度を計算する</td></tr>
+        <tr><td><b>PD 制御器</b></td><td>比例 – 微分：トルク = Kp × (目標角度 − 現在角度) − Kd × 関節速度。減衰付きのばねのように関節を目標へ引き戻す</td></tr>
+        <tr><td><b>Rate limiter</b></td><td>制御ステップ（20 ms）ごとに、関節指令が前回の指令から変化できる量を一定のしきい値までに制限する（腕 0.2 rad、腰 0.1 rad、手 1.5 rad）</td></tr>
+        <tr><td><b>WBC / AGILE</b></td><td>全身制御器。AGILE は G1 の脚のバランスを保つ</td></tr>
+        <tr><td><b>Wilson 95 %</b></td><td>成功率の信頼区間。試行回数が少ない場合に適する</td></tr>
+        <tr><td><b>MAE</b></td><td>平均絶対誤差</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">B</span><h3>参考文献</h3></div>
+    <ol>
+      <li>NVIDIA. <i>GR00T N1: An Open Foundation Model for Generalist Humanoid Robots.</i> <a href="https://arxiv.org/abs/2503.14734" target="_blank" rel="noopener">arXiv:2503.14734</a>, 2025.</li>
+      <li>NVIDIA. GR00T N1.7-3B および GN1x-Tuned-Arena-G1-Static-PickNPlace の Model card（Hugging Face）。</li>
+      <li>Isaac Lab Arena — <a href="https://github.com/isaac-sim/IsaacLab-Arena" target="_blank" rel="noopener">github.com/isaac-sim/IsaacLab-Arena</a></li>
+      <li>Isaac-GR00T — <a href="https://github.com/NVIDIA/Isaac-GR00T" target="_blank" rel="noopener">github.com/NVIDIA/Isaac-GR00T</a></li>
+      <li>NVIDIA. GR00T end-to-end workflow: fine-tuning on sim data, sim evaluation (docs.nvidia.com).</li>
+      <li>データセット nvidia/Arena-G1-Static-PickNPlace-Task および nvidia/PhysicalAI-Robotics-GR00T-Teleop-G1（CC-BY-4.0）。</li>
+      <li>Black, K. et al. <i>π0: A Vision-Language-Action Flow Model for General Robot Control.</i> arXiv:2410.24164, 2024.</li>
+      <li>Liu, X., Gong, C. <i>Flow Straight and Fast: Rectified Flow.</i> ICLR 2023.</li>
+    </ol>
+  </div>
+
+
+  <div class="footer">
+    <span data-cfg="project">プロジェクト</span><span>·</span><span data-cfg="version">v1.0</span><span>·</span><span data-cfg="date"></span>
+  </div>
+</section>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble index.html from src/.
 
-    python3 build.py              # build once (+ measure PDF page numbers for the table of contents)
+    python3 build.py              # build once (+ measure PDF page numbers, export pdf/report-<lang>.pdf)
     python3 build.py --no-pages   # build once, skip the page-number measurement
     python3 build.py --watch      # rebuild when anything in src/ changes (no page numbers)
 
@@ -202,6 +202,7 @@ def build(pages: bool = True) -> None:
     print(f"built {OUT.name}: {len(sections)} sections, {len(STYLES)} stylesheets, {len(SCRIPTS)} scripts")
     if pages:
         measure_pages(page, digest)
+        export_pdfs(digest)
 
 
 PAGES = ROOT / "data" / "print-pages.json"
@@ -260,6 +261,49 @@ def measure_pages(page: str, digest: str) -> None:
     write_page(page, digest)
     counts = ", ".join(f"{k} {len(v)}" for k, v in sets.items())
     print(f"page numbers: measured in {time.time() - t0:.0f} s ({counts} headings)")
+
+
+PDF_DIR = ROOT / "pdf"
+
+
+def export_pdfs(digest: str) -> None:
+    """Ready-made PDFs (pdf/report-<lang>.pdf) printed by headless Chrome, with the page numbers in the
+    corner and in the table of contents. ui/print.js opens them from the "Save PDF" button in browsers
+    without @page margin boxes (Firefox), which cannot print page numbers themselves."""
+    stamp = PDF_DIR / ".build-hash"
+    langs = ("vi", "en", "ja")
+    if stamp.exists() and stamp.read_text().strip() == digest and all((PDF_DIR / f"report-{l}.pdf").exists() for l in langs):
+        print("pdf: up to date")
+        return
+    chrome = next((c for c in ("google-chrome", "chromium", "chromium-browser") if shutil.which(c)), None)
+    if not chrome:
+        print("warning: pdf export skipped (needs google-chrome/chromium)")
+        return
+    PDF_DIR.mkdir(exist_ok=True)
+    t0 = time.time()
+    with tempfile.TemporaryDirectory() as tmp:
+        procs = []
+        for i, lang in enumerate(langs):
+            pdf = PDF_DIR / f"report-{lang}.pdf"
+            part = Path(tmp) / f"{lang}.pdf"
+            cmd = [chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer", f"--user-data-dir={tmp}/u{i}",
+                   "--virtual-time-budget=10000", f"--print-to-pdf={part}", f"{OUT.resolve().as_uri()}?lang={lang}"]
+            procs.append((lang, pdf, part, subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)))
+        deadline = time.time() + 120
+        ok = True
+        for lang, pdf, part, proc in procs:
+            try:
+                proc.wait(timeout=max(1, deadline - time.time()))
+            except subprocess.TimeoutExpired:
+                proc.kill()
+            if part.exists() and part.stat().st_size > 0:
+                shutil.move(str(part), pdf)
+            else:
+                ok = False
+                print(f"warning: pdf: {lang} did not print")
+    if ok:
+        stamp.write_text(digest + "\n")
+    print(f"pdf: exported {', '.join(f'pdf/report-{l}.pdf' for l in langs)} in {time.time() - t0:.0f} s")
 
 
 def watch() -> None:

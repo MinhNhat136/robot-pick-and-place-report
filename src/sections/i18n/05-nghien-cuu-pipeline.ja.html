@@ -1,10 +1,10 @@
 <section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · パイプラインの調査" data-title="パイプラインの調査：GR00T ↔ G1 フローの再現">
   <div class="hero">
     <span class="pill">II.02 節 · パイプラインの調査</span>
-    <h2>12 本のノートブックで GR00T ↔ G1 フローの各ステップを再現<span class="dot">。</span></h2>
-    <p class="lead">NVIDIA の既存フレームワークに依存しないよう、本プロジェクトではカメラ画像から関節指令までの<b>フロー全体を独自に再構築</b>しました。各ステップは個別の<b>ノートブック</b>で調査し（手作業で実装、データを観察、リファレンスと照合）、その後テスト付きのソースコードとしてパッケージ化しています。</p>
+    <h2>調査用ノートブックで GR00T ↔ G1 フローの各ステップを再現<span class="dot">。</span></h2>
+    <p class="lead">NVIDIA の既存フレームワークに依存しないよう、本プロジェクトではカメラ画像から関節指令までの<b>フロー全体を独自に再構築</b>しました。各ステップは個別の<b>ノートブック</b>で調査し（手作業で実装、データを観察、リファレンスと照合）、その後テスト付きのソースコードとしてパッケージ化しています。各カードの「処理」欄にある <code>nbXX</code> は、そのステップを実装・検証したノートブック（<code>codes/standalone_g1_gr00t/notebooks/</code>）を示します。成果物には 12 本のノートブックがあり、パイプラインを構築する 7 本を本節で、そのパイプラインを使ってシナリオを検証・評価する残り 5 本を第 III 部で扱います。12 本すべての一覧と報告書内の位置はカード 10 にまとめています。</p>
     <div class="meta">
-      <div><span class="ml">ノートブック</span><span class="mv">調査用ノートブック 12 本</span></div>
+      <div><span class="ml">ノートブック</span><span class="mv">ノートブック 12 本 · 本節 7 本、第 III 部 5 本</span></div>
       <div><span class="ml">ソースコード</span><span class="mv">Package g1gr00t · unit test 84 件</span></div>
       <div><span class="ml">キーワード</span><span class="mv">notebook → package · 階層ごとの検証</span></div>
     </div>
@@ -195,6 +195,33 @@
       <div class="cb"><span class="l">Galileo シーン（データ収録時と同じ）</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
       <p class="cb-note">成功したエピソードは約 120 tick で、サーバー呼び出しちょうど 3 回に相当します。独自構築のシーンでもロボットは 50 回中 11 回リンゴを持ち上げましたが、皿の上には置けませんでした。Galileo シーンを再構築すると、リンゴと皿の最小距離（中央値）は 20.6 cm から 3.8 cm に縮小しました。</p>
     </div>
+  </div>
+
+  <div class="card" id="pp-notebooks-ja">
+    <div class="card-head"><span class="num">10</span><h3>ノートブック 12 本と報告書内の位置</h3></div>
+    <p>nb01、nb02、nb04–nb08 はカード 2–9 でパイプラインの各ブロックを構築・検証します。nb03 はシミュレーションを使わずに実データでモデルを確認します。nb09–nb12 はパイプラインをシナリオ 2・3 に適用します。各シナリオには、シーンを構築して 1 エピソードを実行するノートブックと、N エピソードを実行して成功率を算出するノートブックが 1 本ずつあります。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ノートブック</th><th>内容</th><th>掲載箇所</th><th>実行環境</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4"><b>パイプラインの構成要素 · II.02 節</b></td></tr>
+        <tr><td><code>nb01_server_wire</code></td><td>ZeroMQ + msgpack 接続、データ契約の読み取り、遅延測定、接続断の処理</td><td>カード 3、5、6</td><td><code>.venv</code> · サーバー必要</td></tr>
+        <tr><td><code>nb02_joints_obs_action</code></td><td>4 種類の関節順序、観測のパッキング、action チャンクのデコード、チャンクのスケジューリング</td><td>カード 4–7</td><td><code>.venv</code> · サーバー必要</td></tr>
+        <tr><td><code>nb04_agile_onnx</code></td><td>AGILE 脚ポリシー：80 次元観測ベクトル、リファレンスとのビット単位の一致確認</td><td>カード 2、8</td><td><code>.venv</code></td></tr>
+        <tr><td><code>nb05_backend_anatomy</code></td><td>Isaac Sim バックエンドを手作業で構築：ロボット、頭部カメラ、リンゴ/皿、摩擦、関節の読み書き</td><td>カード 2、4、8</td><td>Isaac Sim</td></tr>
+        <tr><td><code>nb08_runner_policy_safety</code></td><td>安全レイヤー（NaN 遮断、制限内へのクランプ、変化量制限）、runner、ログ記録</td><td>カード 7、9</td><td>Isaac Sim</td></tr>
+        <tr><td colspan="4"><b>閉ループ · II.02 節カード 9 とシナリオ 1</b></td></tr>
+        <tr><td><code>nb06_full_pipeline</code></td><td>全ブロックを自作シーンの閉ループに統合：直立、デモ再生、モデル実行</td><td>カード 9 · III.01</td><td>Isaac Sim · サーバー必要</td></tr>
+        <tr><td><code>nb07_full_pipeline_loop</code></td><td>Galileo シーンを再構築し 50 エピソード実行：0/50 → 28/50</td><td>カード 9 · III.01 · IV.04</td><td>Isaac Sim · サーバー必要</td></tr>
+        <tr><td colspan="4"><b>オープンループ検証 · シナリオ 1</b></td></tr>
+        <tr><td><code>nb03_open_loop_dataset</code></td><td>データセットの実画像と状態をサーバーに送り、返されたチャンクを記録済み action と比較</td><td>III.01 ステップ 3</td><td><code>.venv</code> · サーバー必要</td></tr>
+        <tr><td colspan="4"><b>シナリオ 2・3 への適用 · 第 III 部</b></td></tr>
+        <tr><td><code>nb09_multi_object_task_pipeline</code></td><td>果物 4 種の real2sim シーン、指示文の選択、1 エピソード実行</td><td>III.02</td><td>Isaac Sim · サーバー必要</td></tr>
+        <tr><td><code>nb10_eval_multi_object</code></td><td>nb09 のシーンで N エピソード実行：66 %</td><td>III.02 · IV.04</td><td>Isaac Sim · サーバー必要</td></tr>
+        <tr><td><code>nb11_hammer_to_bin</code></td><td>Arena のハンマー → 箱シーンを Isaac Sim で再構築、1 エピソード実行</td><td>III.03</td><td>Isaac Sim · サーバー必要</td></tr>
+        <tr><td><code>nb12_eval_hammer_to_bin</code></td><td>nb11 のシーンで N エピソード実行、失敗を分類：66 %（mix200）、73 %（mix400）</td><td>III.03 · IV.04</td><td>Isaac Sim · サーバー必要</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">ノートブックのコードの大部分は package <code>g1gr00t</code> にまとめてあります。構成要素のノートブック（nb01、nb04、nb05、nb08）には、手書き実装と package を照合するセルがあります。ノートブックの再実行方法：IV.04 節。</div>
   </div>
 
 </section>

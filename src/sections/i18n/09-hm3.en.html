@@ -181,15 +181,15 @@
     <div class="card-head"><span class="num">10</span><h3>Result analysis</h3></div>
     <p>Outcome breakdown of the three 100-episode runs in local Isaac Sim, to see what more data and a relaxed threshold change.</p>
     <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>Outcome (100 episodes)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · threshold 0.02</th></tr></thead>
+      <thead><tr><th>Outcome (100 episodes)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · manual count</th><th class="num">mix400 · threshold 0.02</th></tr></thead>
       <tbody>
-        <tr class="hl"><td>Success</td><td class="num">66</td><td class="num">63</td><td class="num">73</td></tr>
-        <tr><td>Hammer centre outside the bin</td><td class="num">19</td><td class="num">5</td><td class="num">6</td></tr>
-        <tr><td>Hammer not at rest at timeout</td><td class="num">6</td><td class="num">22</td><td class="num">8</td></tr>
-        <tr><td>Hammer resting on the bin rim</td><td class="num">3</td><td class="num">4</td><td class="num">4</td></tr>
-        <tr><td>Not lifted (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
-        <tr><td>Robot fell</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
-        <tr><td>Hand not released</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr class="hl"><td>Success</td><td class="num">66</td><td class="num">63</td><td class="num">87</td><td class="num">73</td></tr>
+        <tr><td>Hammer centre outside the bin</td><td class="num">19</td><td class="num">5</td><td class="num">–</td><td class="num">6</td></tr>
+        <tr><td>Hammer not at rest at timeout</td><td class="num">6</td><td class="num">22</td><td class="num">–</td><td class="num">8</td></tr>
+        <tr><td>Hammer resting on the bin rim</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">4</td></tr>
+        <tr><td>Not lifted (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">3</td></tr>
+        <tr><td>Robot fell</td><td class="num">2</td><td class="num">2</td><td class="num">–</td><td class="num">6</td></tr>
+        <tr><td>Hand not released</td><td class="num">1</td><td class="num">0</td><td class="num">–</td><td class="num">0</td></tr>
       </tbody>
     </table></div>
     <figure class="fig"><img src="images/hammer_place_positions.en.png" alt="Final hammer centre position: mix200, mix400 threshold 0.01 and mix400 threshold 0.02" loading="lazy"><figcaption><b>Hammer centre position at the end of each episode</b>, top-down view, origin at the bin centre · left: mix200 · middle: mix400 · right: mix400 with at-rest threshold 0.02 m/s. With mix200, the hammer was often dropped off to the left-hand side, just outside the bin wall (grey cluster); with mix400 the points gather more around the bin centre. With mix400 at threshold 0.01, most failures are hammers already in the middle of the bin but not at rest at timeout (22 light-blue points); in the run with threshold 0.02 this group shrinks to 8. Red points (not lifted) and purple points (robot fell) are cases where the hammer never reached the bin.</figcaption></figure>

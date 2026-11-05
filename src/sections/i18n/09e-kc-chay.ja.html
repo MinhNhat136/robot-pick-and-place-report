@@ -1,0 +1,97 @@
+<section class="section" id="kc-chay" data-hue="blue" data-kicker="IV.04 · 検証の実行" data-title="結果の検証：シナリオごとのスタンドアロンノートブックの実行">
+  <div class="hero">
+    <span class="pill">IV.04 節 · 検証の実行</span>
+    <h2>ノートブックを再実行し、報告書の数値と比較する<span class="dot">。</span></h2>
+    <p class="lead">すべてのシナリオは <code>codes/standalone_g1_gr00t</code> 内のノートブックで評価し、ローカルの Isaac Sim 上で直接実行するため、<b>Docker Arena は不要</b>です。各ノートブックには GUI なし（headless）で実行して結果を <code>data/</code> に書き出す <code>make</code> コマンドがあります。</p>
+    <div class="meta">
+      <div><span class="ml">フォルダ</span><span class="mv">codes/standalone_g1_gr00t</span></div>
+      <div><span class="ml">実行</span><span class="mv">make sim-nbXX（headless） · Jupyter（対話）</span></div>
+      <div><span class="ml">出力</span><span class="mv">data/：エピソードごとのログ、集計、動画</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>共通の手順</h3></div>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01 · サーバー</div><div class="sv">正しいチェックポイントを読み込む</div><div class="sd">IV.03 節、カード 1–2</div></div>
+      <div class="step"><div class="sk">02 · 接続</div><div class="sv">必要ならトンネルを開く</div><div class="sd">評価中は開いたままにする</div></div>
+      <div class="step"><div class="sk">03 · 確認</div><div class="sv">サーバーに ping</div><div class="sd">IV.03 節、カード 3</div></div>
+      <div class="step"><div class="sk">04 · 実行</div><div class="sv">シナリオの make コマンド</div><div class="sd">下のカード 3</div></div>
+      <div class="step"><div class="sk">05 · 比較</div><div class="sv">集計を読む</div><div class="sd">信頼区間と比較（カード 4）</div></div>
+    </div>
+    <div class="callout warn"><b>パッケージ内の既存の結果は上書きされます：</b><code>make sim-nbXX</code> コマンドは新しい出力をその <code>.ipynb</code> ファイル自体に書き込みます。さらに nb07 は <code>data/runs_galileo.jsonl</code> に追記し、動画 <code>data/videos/gr00t_galileo/epN.mp4</code> を上書きします。実行前に <code>notebooks/</code> と <code>data/</code> をバックアップし、集計が新しい実行だけを含むよう <code>runs_galileo.jsonl</code> の名前を変更してください。結果の原本は <code>evals/</code> にもあります。</div>
+    <div class="callout"><b>Isaac Sim 終了時のエラー：</b>各実行の最後に <code>Segmentation fault</code> と <code>make: *** Error 1</code> が表示されることがあります。その前に <code>[inproc] wrote notebooks/… | ok=True</code> の行が出ていれば、ノートブックは最後まで実行され、結果もすべて書き込まれています。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>サーバー不要の基本確認</h3></div>
+    <p>モデルの実行に時間をかける前に、シミュレーション、ロボット、シーン、採点方法が正しく動作することを確認します。</p>
+    <figure class="fig"><video src="assets/videos/iv04-card2-baseline.mp4" poster="assets/videos/iv04-card2-baseline-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：<code>make sim-stand</code> でシミュレーションウィンドウを開き、ロボットが 500 tick 立ち続けます。続いてハンマーのデータセットのデモ 0 を再生し（headless）、集計 1/1 を確認します。シミュレーションの実行部分は早送りしています。</figcaption></figure>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>コマンド</th><th>内容</th><th>合格条件</th></tr></thead>
+      <tbody>
+        <tr><td><code>make sim-stand</code></td><td>ロボットが 500 tick 立つ、ウィンドウあり</td><td>ロボットが安定して立ち、転倒しない</td></tr>
+        <tr><td><code>make sim-replay</code></td><td>リンゴのデータセットのエピソード 0 のデモを再生、ウィンドウあり</td><td>ロボットがリンゴをつかんで皿に置く</td></tr>
+        <tr><td><code>make sim-nb12 EPISODES=1 POLICY=replay CKPT=replay</code></td><td>ハンマー → 箱のシーンで mix200 データセットのデモ 0 を再生</td><td>集計が 1/1 成功を報告</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>シナリオごとの検証コマンド</h3></div>
+    <figure class="fig"><video src="assets/videos/iv04-card3-run.mp4" poster="assets/videos/iv04-card3-run-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：IV.03 節のサーバーを使って nb12（ハンマー → 箱、mix200）を実行し、カード 4 のとおり結果フォルダと <code>summary.md</code> を確認します。動画は短くするため 2 エピソードのみ実行しています（結果 1/2）。報告書の数値は 100 エピソードを使用しています。シミュレーションの部分は早送りしています。</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# リンゴ → 皿、Galileo シーン（リンゴのサーバー、ポート 5556）
+make sim-nb07 EPISODES=50
+
+# Real2sim 果物 4 種（real2sim のサーバー、ポート 5556）
+make sim-nb10 EPISODES=50
+
+# ハンマー → 箱（ハンマーのサーバー、ポート 5557）。CKPT は結果フォルダ名のラベルにすぎない
+make sim-nb12 EPISODES=100 CKPT=mix200-checkpoint-10000
+make sim-nb12 EPISODES=100 CKPT=mix400-checkpoint-20000</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シナリオ</th><th>ノートブック · 所要時間</th><th>報告書の結果</th></tr></thead>
+      <tbody>
+        <tr><td>リンゴ → 皿、Galileo</td><td><code>nb07_full_pipeline_loop</code><br>約 45 s / エピソード</td><td><b>56 %</b> · 28/50 · Wilson 42–69 %</td></tr>
+        <tr><td>Real2sim 果物 4 種</td><td><code>nb10_eval_multi_object</code><br>約 1–2 分 / エピソード</td><td><b>66 %</b> · 33/50 · Wilson 52–78 %</td></tr>
+        <tr><td>ハンマー → 箱、mix200</td><td><code>nb12_eval_hammer_to_bin</code><br>約 15–30 s / エピソード</td><td><b>66 %</b> · 66/100 · Wilson 56–75 %</td></tr>
+        <tr><td>ハンマー → 箱、mix400</td><td>同上</td><td><b>73 %</b> · 73/100 · Wilson 64–81 %<br>Arena の静止しきい値では 63 % · 63/100</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>ハンマーの静止しきい値：</b>現在の nb12 は、速度 &lt; 0.02 m/s かつ角速度 &lt; 0.12 rad/s のときにハンマーが静止したとみなします（§3 の変数 <code>LIN_VEL_TH</code>、<code>ANG_VEL_TH</code>）。73 % の結果はこのしきい値で測定したものです。63 %（Arena 本来のしきい値、0.01 m/s と 0.1 rad/s）を再現するには、ノートブック内のこの 2 つの変数を変更し、別の <code>CKPT</code> ラベルで再実行してください。</div>
+    <div class="callout warn"><b>上記コマンドの対象外：</b>リンゴのシナリオの 92 % と Arena でのハンマーの 56/100 は、Docker 内の Arena 本来のクライアントで測定したもので、スタンドアロンノートブックは使っていません。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>結果の読み方と比較</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>ノートブック</th><th>結果フォルダ</th><th>成功率の記載場所</th></tr></thead>
+      <tbody>
+        <tr><td>nb07</td><td><code>data/runs_galileo.jsonl</code>、動画は <code>data/videos/gr00t_galileo/</code></td><td>ノートブック末尾の集計表</td></tr>
+        <tr><td>nb10</td><td><code>data/nb10_eval/</code>（<code>NB10_OUT</code> で変更）</td><td><code>seed0_….summary.json</code></td></tr>
+        <tr><td>nb12</td><td><code>data/nb12_eval/&lt;CKPT&gt;_gr00t_inside/</code></td><td><code>summary.json</code>、<code>summary.md</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid three">
+      <div class="sub"><div class="sl">報告書と一致</div><div class="st">信頼区間の範囲内</div><p>各エピソードはランダム化されています。50 エピソードでは約 ±13 ポイント、100 エピソードでは約 ±9 ポイントの差は正常です。</p></div>
+      <div class="sub"><div class="sl">技術的なエラー</div><div class="st">成功率には含めない</div><p>エラーになったエピソード（サーバーのタイムアウト、接続切れ）は理由を記録して成功率から除外します。サーバーが応答しなくなるとノートブックは停止します。</p></div>
+      <div class="sub"><div class="sl">再開</div><div class="st">最初からやり直す必要はない</div><p>nb10 と nb12 は結果フォルダに既にあるエピソードをスキップします。サーバーを再起動し、同じコマンドを再実行してください。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Jupyter での対話実行</h3></div>
+    <p>各ステップやシミュレーションウィンドウを確認したい場合は、headless で実行する代わりに Jupyter でノートブックを開きます。</p>
+<pre class="diagram">make sim-kernel &amp;&amp; make nb     # Jupyter Lab、カーネル "Isaac Sim Python 3 (isaacsim6)" を選択</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>症状</th><th>対処</th></tr></thead>
+      <tbody>
+        <tr><td><code>No module named 'isaaclab'</code></td><td><code>.venv</code> カーネルになっている：<code>isaacsim6</code> カーネルに切り替える</td></tr>
+        <tr><td><code>print</code> がセルに表示されない</td><td>Isaac Lab が <code>sys.stdout</code> を置き換えている。Jupyter を起動したターミナルで出力を確認</td></tr>
+        <tr><td>シミュレーション終了時にハングする</td><td><code>app.close()</code> を呼ばず、Kernel ▸ Restart を使う</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

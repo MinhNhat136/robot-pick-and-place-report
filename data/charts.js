@@ -37,4 +37,20 @@ window.Report.chartData = {
   C["real2sim-groups-ja"] = {"title": "グループ別の成功", "rows": [
     {"label": "リンゴ", "k": 8, "n": 9}, {"label": "ブドウ", "k": 9, "n": 13}, {"label": "スターフルーツ", "k": 8, "n": 13}, {"label": "洋ナシ", "k": 8, "n": 15},
     {"label": "左側の果物", "k": 16, "n": 21}, {"label": "右側の果物", "k": 17, "n": 29}, {"label": "合計", "k": 33, "n": 50, "note": "Wilson 95 %: 52–78 %"}]};
+  C["eval-summary-en"] = {"title": "Summary", "head": ["Evaluation", "Success"], "rows": [
+    {"label": "Apple · project-built scene", "sub": "NVIDIA checkpoint · ±2 cm shuffle", "k": 0, "n": 50},
+    {"label": "Apple · Galileo scene", "sub": "NVIDIA checkpoint", "k": 28, "n": 50, "highlight": true},
+    {"label": "4 fruits · control", "sub": "Apple checkpoint (different task)", "k": 0, "n": 50},
+    {"label": "4 fruits · real2sim", "sub": "Real2sim fine-tune", "k": 33, "n": 50, "highlight": true, "note": "0 wrong-fruit grasps"},
+    {"label": "Hammer · mix200", "sub": "Fine-tune 200 episodes, 10k steps", "k": 66, "n": 100},
+    {"label": "Hammer · mix400", "sub": "Fine-tune 400 episodes, 20k steps", "k": 63, "n": 100},
+    {"label": "Hammer · mix400, threshold 0.02", "sub": "Relaxed at-rest threshold · separate run", "k": 73, "n": 100, "highlight": true}]};
+  C["eval-summary-ja"] = {"title": "総合", "head": ["評価", "成功"], "rows": [
+    {"label": "リンゴ · 独自構築シーン", "sub": "NVIDIA チェックポイント · ±2 cm シャッフル", "k": 0, "n": 50},
+    {"label": "リンゴ · Galileo シーン", "sub": "NVIDIA チェックポイント", "k": 28, "n": 50, "highlight": true},
+    {"label": "果物 4 種 · 対照", "sub": "リンゴのチェックポイント（別タスク）", "k": 0, "n": 50},
+    {"label": "果物 4 種 · real2sim", "sub": "real2sim でファインチューニング", "k": 33, "n": 50, "highlight": true, "note": "誤った果物の把持 0 回"},
+    {"label": "ハンマー · mix200", "sub": "200 エピソード、10k ステップでファインチューニング", "k": 66, "n": 100},
+    {"label": "ハンマー · mix400", "sub": "400 エピソード、20k ステップでファインチューニング", "k": 63, "n": 100},
+    {"label": "ハンマー · mix400、しきい値 0.02", "sub": "静止しきい値を緩和 · 別の実行", "k": 73, "n": 100, "highlight": true}]};
 })(window.Report.chartData);

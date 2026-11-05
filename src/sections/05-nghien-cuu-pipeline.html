@@ -1,10 +1,10 @@
 <section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · NGHIÊN CỨU PIPELINE" data-title="Nghiên cứu pipeline: tái hiện luồng GR00T ↔ G1">
   <div class="hero">
     <span class="pill">MỤC II.02 · NGHIÊN CỨU PIPELINE</span>
-    <h2>Tái hiện từng bước của luồng GR00T ↔ G1 qua 12 notebook<span class="dot">.</span></h2>
-    <p class="lead">Để không phụ thuộc vào khung có sẵn của NVIDIA, dự án <b>tự xây lại toàn bộ luồng</b> từ ảnh camera tới lệnh khớp. Mỗi bước được nghiên cứu trong một <b>notebook</b> riêng — viết tay, quan sát dữ liệu, đối chiếu với tham chiếu — rồi mới đóng gói thành mã nguồn có kiểm thử.</p>
+    <h2>Tái hiện từng bước của luồng GR00T ↔ G1 bằng notebook nghiên cứu<span class="dot">.</span></h2>
+    <p class="lead">Để không phụ thuộc vào khung có sẵn của NVIDIA, dự án <b>tự xây lại toàn bộ luồng</b> từ ảnh camera tới lệnh khớp. Mỗi bước được nghiên cứu trong một <b>notebook</b> riêng — viết tay, quan sát dữ liệu, đối chiếu với tham chiếu — rồi mới đóng gói thành mã nguồn có kiểm thử. Nhãn <code>nbXX</code> trong ô XỬ LÝ của mỗi card là notebook (trong <code>codes/standalone_g1_gr00t/notebooks/</code>) nơi bước đó được viết và kiểm chứng. Gói bàn giao có 12 notebook: 7 notebook dựng pipeline được trình bày ở mục này, 5 notebook còn lại dùng pipeline đó để kiểm chứng và đánh giá các kịch bản ở phần III. Card 10 liệt kê đủ 12 notebook và vị trí của từng notebook trong báo cáo.</p>
     <div class="meta">
-      <div><span class="ml">NOTEBOOK</span><span class="mv">12 notebook nghiên cứu</span></div>
+      <div><span class="ml">NOTEBOOK</span><span class="mv">12 notebook · 7 ở mục này, 5 ở phần III</span></div>
       <div><span class="ml">MÃ NGUỒN</span><span class="mv">Package g1gr00t · 84 unit test</span></div>
       <div><span class="ml">TỪ KHÓA</span><span class="mv">notebook → package · kiểm chứng theo tầng</span></div>
     </div>
@@ -195,6 +195,33 @@
       <div class="cb"><span class="l">Khung cảnh Galileo (như lúc ghi dữ liệu)</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
       <p class="cb-note">Một episode thành công khoảng 120 tick, tương ứng đúng 3 lần gọi server. Ở khung cảnh tự dựng robot vẫn nhấc được táo 11/50 lần nhưng không đặt lên đĩa; khoảng cách táo–đĩa nhỏ nhất (trung vị) giảm từ 20,6 cm xuống 3,8 cm khi dựng lại khung cảnh Galileo.</p>
     </div>
+  </div>
+
+  <div class="card" id="pp-notebooks">
+    <div class="card-head"><span class="num">10</span><h3>Danh mục 12 notebook và vị trí trong báo cáo</h3></div>
+    <p>nb01, nb02 và nb04–nb08 dựng và kiểm chứng từng khối của pipeline ở card 2–9; nb03 kiểm chứng model với dữ liệu thật mà chưa cần mô phỏng; nb09–nb12 áp dụng pipeline cho kịch bản 2 và 3. Mỗi kịch bản có một notebook dựng khung cảnh và chạy thử một episode, kèm một notebook chạy N episode để tính tỉ lệ thành công.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Notebook</th><th>Nội dung</th><th>Trình bày ở</th><th>Môi trường</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4"><b>Khối của pipeline · mục II.02</b></td></tr>
+        <tr><td><code>nb01_server_wire</code></td><td>Kết nối ZeroMQ + msgpack, đọc hợp đồng dữ liệu, đo độ trễ, xử lý mất kết nối</td><td>Card 3, 5, 6</td><td><code>.venv</code> · cần server</td></tr>
+        <tr><td><code>nb02_joints_obs_action</code></td><td>4 hệ thứ tự khớp, đóng gói quan sát, giải mã chuỗi action, lập lịch chuỗi</td><td>Card 4–7</td><td><code>.venv</code> · cần server</td></tr>
+        <tr><td><code>nb04_agile_onnx</code></td><td>Policy chân AGILE: vector quan sát 80 chiều, đối chiếu từng bit với tham chiếu</td><td>Card 2, 8</td><td><code>.venv</code></td></tr>
+        <tr><td><code>nb05_backend_anatomy</code></td><td>Dựng tay backend Isaac Sim: robot, camera đầu, táo/đĩa, ma sát, đọc và ghi khớp</td><td>Card 2, 4, 8</td><td>Isaac Sim</td></tr>
+        <tr><td><code>nb08_runner_policy_safety</code></td><td>Lớp an toàn (chặn NaN, kẹp giới hạn, giới hạn tốc độ), runner, ghi log</td><td>Card 7, 9</td><td>Isaac Sim</td></tr>
+        <tr><td colspan="4"><b>Vòng kín · mục II.02 card 9 và kịch bản 1</b></td></tr>
+        <tr><td><code>nb06_full_pipeline</code></td><td>Ghép đủ các khối thành vòng kín trên khung cảnh tự dựng: đứng vững, phát lại demo, chạy model</td><td>Card 9 · III.01</td><td>Isaac Sim · cần server</td></tr>
+        <tr><td><code>nb07_full_pipeline_loop</code></td><td>Dựng lại khung cảnh Galileo, chạy 50 episode: 0/50 → 28/50</td><td>Card 9 · III.01 · IV.04</td><td>Isaac Sim · cần server</td></tr>
+        <tr><td colspan="4"><b>Kiểm chứng open-loop · kịch bản 1</b></td></tr>
+        <tr><td><code>nb03_open_loop_dataset</code></td><td>Gửi ảnh và trạng thái thật từ dataset lên server, so chuỗi trả về với action ghi sẵn</td><td>III.01 bước 3</td><td><code>.venv</code> · cần server</td></tr>
+        <tr><td colspan="4"><b>Áp dụng cho kịch bản 2 và 3 · phần III</b></td></tr>
+        <tr><td><code>nb09_multi_object_task_pipeline</code></td><td>Khung cảnh real2sim 4 loại quả, chọn câu lệnh, chạy một episode</td><td>III.02</td><td>Isaac Sim · cần server</td></tr>
+        <tr><td><code>nb10_eval_multi_object</code></td><td>Khung cảnh nb09 chạy N episode: 66 %</td><td>III.02 · IV.04</td><td>Isaac Sim · cần server</td></tr>
+        <tr><td><code>nb11_hammer_to_bin</code></td><td>Khung cảnh búa → thùng của Arena dựng lại trong Isaac Sim, chạy một episode</td><td>III.03</td><td>Isaac Sim · cần server</td></tr>
+        <tr><td><code>nb12_eval_hammer_to_bin</code></td><td>Khung cảnh nb11 chạy N episode, phân loại thất bại: 66 % (mix200), 73 % (mix400)</td><td>III.03 · IV.04</td><td>Isaac Sim · cần server</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">Phần lớn mã trong notebook đã được đóng gói vào package <code>g1gr00t</code>; các notebook khối (nb01, nb04, nb05, nb08) có cell đối chiếu phần viết tay với package. Cách chạy lại notebook: mục IV.04.</div>
   </div>
 
 </section>

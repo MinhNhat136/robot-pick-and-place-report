@@ -1,0 +1,51 @@
+<section class="section" id="danh-gia" data-hue="blue" data-kicker="V.01 · 総合評価" data-title="総合評価">
+  <div class="hero">
+    <span class="pill">V.01 節 · 総合評価</span>
+    <h2>3 つのシナリオ、1 つの全体像<span class="dot">。</span></h2>
+    <p class="lead">GR00T N1.7 はシミュレーション内で G1 によるピック&amp;プレースを制御できました：リンゴのタスクで <b>56 %</b>、果物 4 種で <b>66 %</b>、ハンマーのタスクで <b>66–73 %</b>。結果を左右するのはまず<b>シーンの見た目</b>と<b>ファインチューニングのデータ</b>であり、採点方法はその次です。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>結果のまとめ</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シナリオ</th><th>対策前</th><th>最良の結果</th><th>決定要因</th><th>残るボトルネック</th></tr></thead>
+      <tbody>
+        <tr><td>III.01 · リンゴ → 皿</td><td>0 %（自作シーン）</td><td><b>56 %</b> · 28/50 · 再構築した Galileo</td><td>データ記録時と同じシーン</td><td>認識と接近のフェーズ：見慣れないシーンではリンゴを持ち上げられたのは 22 % のみ</td></tr>
+        <tr><td>III.02 · 果物 4 種</td><td>0 %（リンゴのチェックポイント）</td><td><b>66 %</b> · 33/50 · real2sim</td><td>real2sim 790 エピソードでのファインチューニング</td><td>把持のフェーズ：失敗 17 件中 11 件は果物を持ち上げられなかった</td></tr>
+        <tr class="hl"><td>III.03 · ハンマー → 箱</td><td>0 %（ファインチューニング前）</td><td><b>66 %</b> · 66/100 · mix200<br><b>73 %</b> · 73/100 · mix400、しきい値 0.02</td><td>自ら収集したデータ：テレオペ + 追加生成</td><td>解放のフェーズと「静止」の採点方法</td></tr>
+      </tbody>
+    </table></div>
+    <div class="chart" data-chart="ci" data-source="eval-summary-ja">
+      <div class="chart-head"><div><div class="ct">成功率と Wilson 95 % 信頼区間</div><div class="cs">点 = 測定した成功率、横棒 = 信頼区間。マウスを重ねるか Tab キーで詳細を表示。</div></div><button class="btn" type="button" data-table-toggle data-l-table="表で表示" data-l-chart="グラフで表示">表で表示</button></div>
+      <div class="plot"></div>
+      <div class="table-view"></div>
+    </div>
+    <div class="callout"><b>注記：</b>元の Arena 環境での NVIDIA クライアントはリンゴのタスクで 92 % に達しました。この実行は参照基準として用い、グラフには含めていません。その他の評価はすべて、自作パイプラインとローカルの Isaac Sim による閉ループで実行しました。</div>
+    <div class="callout"><b>動画による判定（<a href="#vss">IV.05</a> 節）：</b>ハンマー → ビンのエピソード動画 99 本を NVIDIA VSS に見せ、成否を自動で判定させました。取り分けた 86 エピソードでは、動画要約（60.5 %）と Q&amp;A（59.3 %）は常に「成功」と答える基準（73.3 %）を上回りませんでした。デコードの修正（<code>top_k: 1</code>）後、リアルタイムアラートは Arena と 94.2 % 一致しました。この実行は結果を知った後に行ったため、新しいデータでの確認が必要です。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>全体的な考察</h3></div>
+    <div class="grid two">
+      <div class="sub"><div class="sl">01 · 画像</div><div class="st">モデルよりもシーンの影響が大きい</div><p>同じチェックポイントと指示文で、リンゴのタスクは 92 %（NVIDIA クライアント、元の Arena）から 56 %（照明のみの違い）、さらに 0 %（シーン全体の違い）へ低下しました。1 つのシーンでファインチューニングしたモデルは別のシーンへ汎化しません。</p></div>
+      <div class="sub"><div class="sl">02 · FINE-TUNE</div><div class="st">新しいタスクにはチューニングが必須、そして短時間で済む</div><p>果物のタスクはリンゴのチェックポイントを流用すると 0 %、ハンマーのタスクはチューニング前で 0 % でしたが、どちらもファインチューニング後に 66 % に達しました。ハンマーのタスクは 200 エピソードと H100 1 枚で約 1 時間しか要さず、主なコストはデータにあります。</p></div>
+      <div class="sub"><div class="sl">03 · 言語</div><div class="st">モデルは指示文どおりに動作する</div><p>テーブル上に常に別の果物や妨害物体があったにもかかわらず、果物のタスク 50 エピソードで誤った物体をつかんだのは 0 回でした。言語の部分は real2sim データからよく学習されています。</p></div>
+      <div class="sub"><div class="sl">04 · ボトルネック</div><div class="st">シナリオごとに失敗するフェーズが異なる</div><p>リンゴは認識と接近、果物は把持、ハンマーは解放のフェーズで失敗しています。そのため改善の方向性はタスクごとに考える必要があり、共通の解決策はありません。</p></div>
+      <div class="sub"><div class="sl">05 · データ</div><div class="st">同じ種類のデータを増やす効果には限界がある</div><p>ハンマーのタスクで 200 から 400 エピソードに増やすと配置の精度は上がりました（箱の内側から外れた回数 19 → 5）が、全体の成功率は上がりませんでした（66 % → 63 %、誤差の範囲内）。</p></div>
+      <div class="sub"><div class="sl">06 · 採点</div><div class="st">採点方法が数値に影響する</div><p>ハンマーのタスク：100 回中 22 回は、ハンマーが箱の中にあり手も離していたのに、条件が瞬間速度のみを見るため「静止していない」と判定されました。しきい値を 0.02 m/s に緩和した実行では 73 % に達しました。</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>得られた教訓</h3></div>
+    <div class="grid">
+      <div class="sub"><div class="sl">01</div><div class="st">モデルよりもデータ &amp; 環境の影響が大きい</div><p>同じチェックポイントでも、シーンの違いだけで 0 % か 56 % になる。</p></div>
+      <div class="sub"><div class="sl">02</div><div class="st">指示文は「契約」の一部</div><p>指示文は管理された設定パラメータとして扱う。</p></div>
+      <div class="sub"><div class="sl">03</div><div class="st">段階的な検証で時間を節約できる</div><p>Open-loop → 再生 → 閉ループ。</p></div>
+      <div class="sub"><div class="sl">04</div><div class="st">成功条件はテストが必要</div><p>緩い条件はデータを汚し、厳しすぎる条件は指標を下げる。比較の前にしきい値を統一する。</p></div>
+      <div class="sub"><div class="sl">05</div><div class="st">評価には多くの試行が必要</div><p>構成ごとに 50–100 回の試行を行い、常に信頼区間を併記する。</p></div>
+      <div class="sub"><div class="sl">06</div><div class="st">データの追加生成は低コスト</div><p>133 回の生成 → 厳格な条件を満たすデモ 100 件、テレオペの追加時間は不要。</p></div>
+      <div class="sub"><div class="sl">07</div><div class="st">ファインチューニングは速く低コスト</div><p>H100 1 枚で約 1 時間（200 エピソード）〜 2 時間 15 分（400 エピソード）。</p></div>
+    </div>
+  </div>
+</section>

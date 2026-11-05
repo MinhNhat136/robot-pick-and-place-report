@@ -1,10 +1,10 @@
 <section class="section" id="nghien-cuu-pipeline" data-hue="blue" data-kicker="II.02 · PIPELINE RESEARCH" data-title="Pipeline research: reproducing the GR00T ↔ G1 flow">
   <div class="hero">
     <span class="pill">SECTION II.02 · PIPELINE RESEARCH</span>
-    <h2>Reproducing each step of the GR00T ↔ G1 flow across 12 notebooks<span class="dot">.</span></h2>
-    <p class="lead">To avoid depending on NVIDIA's ready-made framework, the project <b>rebuilt the entire flow itself</b>, from camera image to joint command. Each step was studied in its own <b>notebook</b> — written by hand, inspecting the data, checking against a reference — before being packaged into tested source code.</p>
+    <h2>Reproducing each step of the GR00T ↔ G1 flow with research notebooks<span class="dot">.</span></h2>
+    <p class="lead">To avoid depending on NVIDIA's ready-made framework, the project <b>rebuilt the entire flow itself</b>, from camera image to joint command. Each step was studied in its own <b>notebook</b> — written by hand, inspecting the data, checking against a reference — before being packaged into tested source code. The <code>nbXX</code> tag in each card's PROCESSING box names the notebook (in <code>codes/standalone_g1_gr00t/notebooks/</code>) where that step was written and verified. The package contains 12 notebooks: the 7 that build the pipeline are covered in this section, and the other 5 use that pipeline to verify and evaluate the scenarios in Part III. Card 10 lists all 12 notebooks and where each one appears in the report.</p>
     <div class="meta">
-      <div><span class="ml">NOTEBOOKS</span><span class="mv">12 research notebooks</span></div>
+      <div><span class="ml">NOTEBOOKS</span><span class="mv">12 notebooks · 7 here, 5 in Part III</span></div>
       <div><span class="ml">SOURCE CODE</span><span class="mv">Package g1gr00t · 84 unit tests</span></div>
       <div><span class="ml">KEYWORDS</span><span class="mv">notebook → package · layer-by-layer verification</span></div>
     </div>
@@ -195,6 +195,33 @@
       <div class="cb"><span class="l">Galileo scene (as during data recording)</span><span class="t"><i class="" style="width:56%"></i></span><span class="v">28 / 50</span></div>
       <p class="cb-note">A successful episode takes about 120 ticks, which corresponds to exactly 3 server calls. In the self-built scene the robot still lifted the apple 11/50 times but did not place it on the plate; the minimum apple–plate distance (median) dropped from 20.6 cm to 3.8 cm when the Galileo scene was rebuilt.</p>
     </div>
+  </div>
+
+  <div class="card" id="pp-notebooks-en">
+    <div class="card-head"><span class="num">10</span><h3>The 12 notebooks and where they appear in the report</h3></div>
+    <p>nb01, nb02 and nb04–nb08 build and verify each block of the pipeline in cards 2–9; nb03 checks the model against real data without simulation; nb09–nb12 apply the pipeline to scenarios 2 and 3. Each of these scenarios has one notebook that builds the scene and runs a single episode, plus one notebook that runs N episodes to compute the success rate.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Notebook</th><th>Content</th><th>Covered in</th><th>Environment</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4"><b>Pipeline building blocks · section II.02</b></td></tr>
+        <tr><td><code>nb01_server_wire</code></td><td>ZeroMQ + msgpack connection, reading the data contract, latency measurement, connection-loss handling</td><td>Cards 3, 5, 6</td><td><code>.venv</code> · needs server</td></tr>
+        <tr><td><code>nb02_joints_obs_action</code></td><td>4 joint orderings, observation packing, action-chunk decoding, chunk scheduling</td><td>Cards 4–7</td><td><code>.venv</code> · needs server</td></tr>
+        <tr><td><code>nb04_agile_onnx</code></td><td>AGILE leg policy: 80-dim observation vector, bit-exact check against the reference</td><td>Cards 2, 8</td><td><code>.venv</code></td></tr>
+        <tr><td><code>nb05_backend_anatomy</code></td><td>Hand-built Isaac Sim backend: robot, head camera, apple/plate, friction, joint read/write</td><td>Cards 2, 4, 8</td><td>Isaac Sim</td></tr>
+        <tr><td><code>nb08_runner_policy_safety</code></td><td>Safety layer (NaN blocking, limit clamping, rate limiting), runner, logging</td><td>Cards 7, 9</td><td>Isaac Sim</td></tr>
+        <tr><td colspan="4"><b>Closed loop · section II.02 card 9 and scenario 1</b></td></tr>
+        <tr><td><code>nb06_full_pipeline</code></td><td>All blocks joined into a closed loop in a self-built scene: standing, demo replay, running the model</td><td>Card 9 · III.01</td><td>Isaac Sim · needs server</td></tr>
+        <tr><td><code>nb07_full_pipeline_loop</code></td><td>Rebuilt Galileo scene, 50 episodes: 0/50 → 28/50</td><td>Card 9 · III.01 · IV.04</td><td>Isaac Sim · needs server</td></tr>
+        <tr><td colspan="4"><b>Open-loop verification · scenario 1</b></td></tr>
+        <tr><td><code>nb03_open_loop_dataset</code></td><td>Sends real images and states from the dataset to the server and compares the returned chunk with the recorded actions</td><td>III.01 step 3</td><td><code>.venv</code> · needs server</td></tr>
+        <tr><td colspan="4"><b>Applied to scenarios 2 and 3 · Part III</b></td></tr>
+        <tr><td><code>nb09_multi_object_task_pipeline</code></td><td>Real2sim scene with 4 fruit types, instruction selection, one episode</td><td>III.02</td><td>Isaac Sim · needs server</td></tr>
+        <tr><td><code>nb10_eval_multi_object</code></td><td>nb09 scene run for N episodes: 66 %</td><td>III.02 · IV.04</td><td>Isaac Sim · needs server</td></tr>
+        <tr><td><code>nb11_hammer_to_bin</code></td><td>Arena hammer → bin scene rebuilt in Isaac Sim, one episode</td><td>III.03</td><td>Isaac Sim · needs server</td></tr>
+        <tr><td><code>nb12_eval_hammer_to_bin</code></td><td>nb11 scene run for N episodes with failure classification: 66 % (mix200), 73 % (mix400)</td><td>III.03 · IV.04</td><td>Isaac Sim · needs server</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">Most of the notebook code has been packaged into <code>g1gr00t</code>; the building-block notebooks (nb01, nb04, nb05, nb08) include cells that compare the hand-written code with the package. How to re-run the notebooks: section IV.04.</div>
   </div>
 
 </section>

@@ -1,0 +1,255 @@
+<section class="section" id="vss" data-hue="blue" data-kicker="IV.05 · VSS による動画評価" data-title="NVIDIA VSS によるエピソード動画の評価">
+  <div class="hero">
+    <span class="pill">IV.05 節 · VSS による動画評価</span>
+    <h2>視覚言語モデルに動画を見せ、結果を自動で判定させる<span class="dot">。</span></h2>
+    <p class="lead">NVIDIA VSS（Video Search &amp; Summarization）は、視覚言語モデル（VLM）で動画を分析するツール群です。本節では GPU サーバーへの VSS 3.2.1 のインストール手順を示し、<b>Isaac Sim → VSS ブリッジ</b>を使ってハンマー → ビンのエピソード動画を VSS に見せ、成功か失敗かを判定させて Arena の判定と比較します。各ステップにはコマンド、期待される結果、実際の操作を録画した動画があります。</p>
+    <div class="meta">
+      <div><span class="ml">バージョン</span><span class="mv">VSS 3.2.1 · LVS プロファイル · H100 ×1</span></div>
+      <div><span class="ml">3 つの判定方法</span><span class="mv">動画要約 · Q&amp;A · リアルタイムアラート</span></div>
+      <div><span class="ml">結論</span><span class="mv">リアルタイムアラート、<code>top_k: 1</code>：94.2 %（要確認）</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>本プロジェクトにおける VSS の役割</h3></div>
+    <p>Arena はシミュレーションの状態（ハンマーとビンの位置）からエピソードを判定します。実機ロボットにはそのような状態がなく、あるのは動画だけです。VSS は次の問いに答えるために試しました：<b>動画だけを見て、VLM は Arena と同じ判定を下せるか。</b></p>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01 · エピソード</div><div class="sv">動画 + Arena の判定</div><div class="sd">ハンマー → ビンのシナリオ（III.03 節）</div></div>
+      <div class="step"><div class="sk">02 · 書き出し</div><div class="sv">15 fps、480p</div><div class="sd">最終状態が VLM に見えるよう最後のフレームを 1.5 秒保持</div></div>
+      <div class="step"><div class="sk">03 · VSS</div><div class="sv">VLM が動画を見る</div><div class="sd">Cosmos3 nano reasoner を GPU で実行、Nemotron LLM は build.nvidia.com 経由</div></div>
+      <div class="step"><div class="sk">04 · 判定</div><div class="sv">成功 / 失敗</div><div class="sd">イベント、YES/NO の回答、またはアラートから</div></div>
+      <div class="step"><div class="sk">05 · 比較</div><div class="sv">Arena の判定と比較</div><div class="sd">カード 5</div></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="kl">コンテナ</div><div class="kv">26</div><div class="kd">常時稼働 17 · 起動時のみ 9</div></div>
+      <div class="kpi"><div class="kl">VLM の GPU</div><div class="kv">~44<small>GB</small></div><div class="kd">Cosmos3 モデル 16.3 GB · vLLM は GPU メモリの 0.5 まで</div></div>
+      <div class="kpi"><div class="kl">ディスク</div><div class="kv">~80<small>GB</small></div><div class="kd">Docker イメージ + モデル、最大 42.9 GB</div></div>
+      <div class="kpi"><div class="kl">インストール</div><div class="kv">~12<small>分</small></div><div class="kd">インストールと初回のモデル読み込み</div></div>
+    </div>
+    <div class="callout"><b>手順書と動画：</b>フォルダ <code>vss_guide/</code> には手順書 <code>07_step_by_step_guide.md</code> と 12 本の動画（1 ステップ 1 本、冒頭に 5 秒のタイトルカード）があります。動画のモードは 2 つです：<b>実行</b>（録画中にコマンドを実際に実行）と <b>確認のみ</b>（インストール時に実施済みで、再実行すると害があるため結果の確認だけを行う）。本報告書の動画では、サーバー名と IP アドレスを <code>user@gpu-server</code> と <code>&lt;server-ip&gt;</code> に置き換えています。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>サーバーの要件</h3></div>
+    <p>インストール前に、サーバーを VSS 3.2.1 の要件と比較します。中央の列は録画に使ったマシンです。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>要件</th><th>録画時のマシン</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr><td>Ubuntu 22.04 または 24.04</td><td>Ubuntu 22.04.5 LTS</td><td>OK</td></tr>
+        <tr><td>CPU 18 コア以上</td><td>16 コア</td><td>やや不足だが動作する</td></tr>
+        <tr><td>RAM 128 GB 以上</td><td>188 GB</td><td>OK</td></tr>
+        <tr><td>H100 GPU</td><td>H100 80 GB HBM3</td><td>GPU を共有：VSS 約 44 GB、残りは GR00T などに使用</td></tr>
+        <tr><td>ドライバー 580.65.06</td><td>575.57.08</td><td>アップグレードせず、CUDA forward compatibility で動作</td></tr>
+        <tr><td>Docker 28.3.3 以上 29.5.0 未満</td><td>29.4.3</td><td>OK</td></tr>
+        <tr><td>NVIDIA Container Toolkit 1.17.8 以上</td><td>1.19.1</td><td>OK</td></tr>
+        <tr><td>ディスク空き容量</td><td>約 331 GB</td><td>インストールで約 80 GB 使用、Elasticsearch は 15 GB 超の空きが必要</td></tr>
+      </tbody>
+    </table></div>
+<pre class="diagram">lsb_release -ds; nproc; free -g | head -2
+nvidia-smi --query-gpu=name,driver_version,memory.used,memory.total --format=csv
+docker version --format 'Docker server {{.Server.Version}}'; nvidia-ctk --version | head -1
+df -h /</pre>
+    <figure class="fig"><video src="assets/videos/iv05-01_s01_prereqs.mp4" poster="assets/videos/iv05-01_s01_prereqs-poster.jpg" controls preload="none" playsinline></video><figcaption>ステップ 1 · 実行：OS、CPU、RAM、GPU、ドライバー、Docker、Container Toolkit、ディスク空き容量を確認。</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>VSS 3.2.1 のインストール</h3></div>
+    <p>5 つのステップをこの順に行います。ステップ 3 と 6 は root 権限が必要で共有サーバーを中断させるため、管理者が事前に告知した時間に実施します。</p>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">02 · キー</div><div class="sv">NGC Personal Key</div><div class="sd">nvcr.io にログイン</div></div>
+      <div class="step"><div class="sk">03 · DOCKER</div><div class="sv">29.4.3 にダウングレード</div><div class="sd">管理者 · バージョンを固定</div></div>
+      <div class="step"><div class="sk">04 · ソース</div><div class="sv">v3.2.1 を clone</div><div class="sd">パッチ 4 件を適用</div></div>
+      <div class="step"><div class="sk">05 · 試行</div><div class="sv">Dry-run</div><div class="sd">一時的な clone でのみ</div></div>
+      <div class="step"><div class="sk">06 · インストール</div><div class="sv">イメージ取得、起動</div><div class="sd">26 コンテナ、モデル 16.3 GB</div></div>
+    </div>
+<pre class="diagram"># ステップ 2：キーは専用ファイルに権限 600 で保存。チャットに貼らず、commit しない
+mkdir -p ~/.config/vss &amp;&amp; umask 077
+cat &gt; ~/.config/vss/keys.env &lt;&lt;'EOF'
+export NGC_CLI_API_KEY='nvapi-...'
+export NVIDIA_API_KEY='nvapi-...'
+EOF
+bash -c 'source ~/.config/vss/keys.env; echo "$NGC_CLI_API_KEY" | docker login nvcr.io -u "\$oauthtoken" --password-stdin'
+
+# ステップ 3（管理者）：NVIDIA が検証した範囲の Docker
+VER=5:29.4.3-1~ubuntu.22.04~jammy
+sudo apt-get install -y --allow-downgrades docker-ce=$VER docker-ce-cli=$VER
+sudo apt-mark hold docker-ce docker-ce-cli
+
+# ステップ 4：リリース 3.2.1 をそのまま取得し、パッチを適用
+git clone --branch v3.2.1 https://github.com/NVIDIA-AI-Blueprints/video-search-and-summarization.git vss
+cd vss &amp;&amp; git apply /path/to/local-patches.diff
+
+# ステップ 6：インストール（LLM はリモート、VLM はサーバーの GPU で実行）
+set -a &amp;&amp; source ~/.config/vss/keys.env &amp;&amp; set +a
+export LLM_ENDPOINT_URL=https://integrate.api.nvidia.com RTVI_VLLM_GPU_MEMORY_UTILIZATION=0.5
+bash deploy/docker/scripts/dev-profile.sh up -p lvs -H H100 -i &lt;server-ip&gt; \
+  --use-remote-llm --llm nvidia/nemotron-3.5-lightning-30b-a3b</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>#</th><th>ファイル</th><th>パッチ（<code>local-patches.diff</code>）</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>dev-profile.sh</code>、<code>state_down</code></td><td>削除するのは接頭辞 <code>mdx_</code> の未使用ボリュームのみ。他のユーザーのボリュームは削除しない</td></tr>
+        <tr><td>2</td><td><code>dev-profile.sh</code>、<code>state_up</code></td><td>カーネル設定の変更（ホスト全体の IPv6 無効化）は <code>VSS_APPLY_KERNEL_SETTINGS=true</code> のときだけ</td></tr>
+        <tr><td>3</td><td><code>dev-profile.sh</code>、<code>state_up</code></td><td>事前に設定した <code>RTVI_VLLM_GPU_MEMORY_UTILIZATION</code>（0.7 ではなく 0.5）を維持し、GR00T 用の GPU メモリを残す</td></tr>
+        <tr><td>4</td><td><code>vss-agent/configs/config.yml</code></td><td>エージェントが <code>openai</code> クライアント経由で LLM を呼ぶようにし、400 <code>verify_ssl</code> エラーを修正</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b><code>dev-profile.sh up --dry-run</code> は無害ではありません：</b><code>generated.env</code>（キーと LLM 設定を含むファイル）を上書きし、<code>data-dir</code> で <code>chmod -R 777</code> を実行します。Dry-run は一時的な clone でのみ行ってください（ステップ 5 の動画）。また <code>dev-profile.sh up</code> は必ず先に <code>down -v</code> を実行し、<b>17.8 GB のモデルボリュームを削除</b>します。インストール済みのマシンでは再実行しないでください。</div>
+    <details class="acc"><summary><span class="n">02</span>ステップ 2 の動画 · キーとレジストリへのログイン · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-02_s02_keys.mp4" poster="assets/videos/iv05-02_s02_keys-poster.jpg" controls preload="none" playsinline></video><figcaption>キーファイルの権限が <code>-rw-------</code> で変数がちょうど 2 つ、レジストリが <code>['nvcr.io']</code>、build.nvidia.com が <code>200</code> を返すことを確認。キーの値を表示するコマンドはありません。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">03</span>ステップ 3 の動画 · Docker 29.4.3 · 確認のみ</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-03_s03_docker.mp4" poster="assets/videos/iv05-03_s03_docker-poster.jpg" controls preload="none" playsinline></video><figcaption>バージョンは 29.4.3 ですが、Docker パッケージの固定が外れています。<code>sudo apt-mark hold docker-ce docker-ce-cli</code> を再実行してください（カード 8、発見事項 2）。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">04</span>ステップ 4 の動画 · v3.2.1 の clone とパッチ 4 件 · 確認のみ</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-04_s04_clone.mp4" poster="assets/videos/iv05-04_s04_clone-poster.jpg" controls preload="none" playsinline></video><figcaption><code>git describe</code> が <code>v3.2.1</code> を表示。変更ファイル 2、追加 12 行、削除 4 行。<code>dev-profile.sh</code> に <code>LOCAL PATCH</code> の行が 3 つ。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">05</span>ステップ 5 の動画 · 一時的な clone での dry-run · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-05_s05_dryrun.mp4" poster="assets/videos/iv05-05_s05_dryrun-poster.jpg" controls preload="none" playsinline></video><figcaption>一時的な clone でダミーキーを使って dry-run：<code>exit=0</code>、キーはマスク表示、パッチ 2 と 3 が有効。本物の <code>generated.env</code> の md5 は前後で同じ。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">06</span>ステップ 6 の動画 · イメージ取得とインストール · 確認のみ</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-06_s06_pull_up.mp4" poster="assets/videos/iv05-06_s06_pull_up-poster.jpg" controls preload="none" playsinline></video><figcaption>Docker イメージ 12 個、ログの最終行 <code>State up completed</code>、稼働中 17・終了済み 9 のコンテナ、<code>mdx_*</code> ボリューム 9 個、モデル <code>nim_nvidia_cosmos3-nano-reasoner_bf16-final</code> を読み込み済み。</figcaption></figure>
+    </div></details>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>インストール後の設定とヘルスチェック</h3></div>
+    <p>最初のリクエストで初めて表面化する問題が 2 つあるため、インストール直後に修正します：Elasticsearch のディスク閾値（既定では約 150 GB の空きが必要）と、エージェントの LLM 呼び出し方法（パッチ 4、その後 <code>docker restart vss-agent</code>）です。</p>
+<pre class="diagram"># Elasticsearch のディスク閾値：何度実行しても安全
+curl -s -X PUT 'http://127.0.0.1:9200/_cluster/settings' -H 'Content-Type: application/json' -d '{"persistent":{
+  "cluster.routing.allocation.disk.watermark.low":"15gb",
+  "cluster.routing.allocation.disk.watermark.high":"10gb",
+  "cluster.routing.allocation.disk.watermark.flood_stage":"5gb",
+  "cluster.routing.allocation.disk.watermark.flood_stage.frozen":"5gb"}}'
+
+# generated.env にはキーが含まれる：必要な変数名だけを grep し、cat はしない
+E=../vss/deploy/docker/developer-profiles/dev-profile-lvs/generated.env
+grep -E '^(LLM_MODE|VLM_MODE|LLM_NAME|VLM_NAME|RTVI_VLLM_GPU_MEMORY_UTILIZATION)=' $E</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>確認項目</th><th>合格の結果</th></tr></thead>
+      <tbody>
+        <tr><td>プロジェクト <code>mdx</code> のコンテナ</td><td><code>Up</code> 17（ヘルスチェックがあるものは <code>healthy</code>）、<code>Exited (0)</code> 9</td></tr>
+        <tr><td>LVS サービス、ポート 38111</td><td><code>200</code>、モデル <code>nim_nvidia_cosmos3-nano-reasoner_bf16-final</code></td></tr>
+        <tr><td>VLM、ポート 8018、「Say OK」</td><td><code>OK</code> と回答（<code>EngineDeadError</code> ではない）</td></tr>
+        <tr><td>エージェント、ポート 8000、「hi」</td><td>約 17 秒後にエージェントの挨拶</td></tr>
+        <tr><td>Elasticsearch、ポート 9200</td><td><code>green</code>、閾値 15 / 10 / 5 GB</td></tr>
+        <tr><td>Kafka、トピック <code>mdx-vlm-incidents</code></td><td>8 パーティション、アラート件数を読み取れる</td></tr>
+        <tr><td>GPU</td><td><code>VLLM::EngineCore</code> プロセス 約 43.7 GB</td></tr>
+        <tr><td>Web UI、ポート 7777</td><td><code>200</code></td></tr>
+        <tr><td>ブリッジの <code>tests/smoke_test.sh</code></td><td><code>SMOKE TEST PASSED</code>（モック使用、VSS は呼ばない）</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>よくある障害：</b>ヘルスチェックが <code>healthy</code> のまま VLM エンジンが停止 → <code>docker restart vss-rtvi-vlm</code>。Kafka が停止 → <code>docker start kafka</code>。Elasticsearch が <code>green</code> でない → 多くはディスク不足。</div>
+    <details class="acc"><summary><span class="n">07</span>ステップ 7 の動画 · インストール後の設定 · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-07_s07_config.mp4" poster="assets/videos/iv05-07_s07_config-poster.jpg" controls preload="none" playsinline></video><figcaption>ディスク閾値を同じ値で再設定し、主な設定変数、エージェントのパッチ、ブリッジの設定ファイル 3 つを確認。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">08</span>ステップ 8 の動画 · ヘルスチェック · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-08_s08_health.mp4" poster="assets/videos/iv05-08_s08_health-poster.jpg" controls preload="none" playsinline></video><figcaption>上の確認表をすべて実行。エージェント経由の LLM 呼び出し 1 回を除き、コマンドは状態を読むだけです。</figcaption></figure>
+    </div></details>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>3 つの判定方法と 99 エピソードでの結果</h3></div>
+    <p>ブリッジには VSS の 3 つの仕組みに対応する 3 つのプログラムがあります。それぞれ YAML の設定ファイルを読み、エピソードごとの結果（<code>epNNN.json</code>）と集計表 <code>report.md</code> を書き出します。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>判定方法</th><th>仕組み</th><th>時間</th><th>デコード</th></tr></thead>
+      <tbody>
+        <tr><td><b>動画要約</b>（LVS）<br><code>vss_bridge.run_pipeline</code></td><td>動画を <code>/v1/summarize</code>（ポート 38111）に送信。VLM が要約とイベントのタイムラインを書き、ブリッジが厳密なルールでイベントから判定を読み取る</td><td>約 22 秒 / エピソード</td><td>既定（ランダムサンプリングあり）</td></tr>
+        <tr><td><b>Q&amp;A</b><br><code>vss_bridge.qa_agent</code></td><td>エージェント（ポート 8000）が VLM に質問：「動画の終了時、ハンマーは完全にビンの中にあるか？ YES/NO」</td><td>約 82 秒 / エピソード</td><td>既定（ランダムサンプリングあり）</td></tr>
+        <tr><td><b>リアルタイムアラート</b>（RT alert）<br><code>vss_bridge.rt_alert</code></td><td>各エピソードを固定の 8 秒枠に収める。VLM（ポート 8018）が「失敗はあるか？ Yes / No」に回答。Yes = アラート = 失敗</td><td>ライブストリームの 8 秒区間ごとに約 0.7 秒</td><td>既定、修正版：<code>top_k: 1</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>評価には Arena の判定が付いた<b>ハンマー → ビンの 99 エピソード</b>を使いました。13 エピソードは質問と結果の読み取り方の調整用、<b>86 エピソードは判定専用に取り分けたもの</b>です。比較の基準は常に「成功」と答える方法で、ほとんどのエピソードが成功するため 63/86（73.3 %）正解します。この基準を上回って初めて判定方法として役に立ちます。</p>
+    <p><b>固定の 8 秒枠が重要な理由：</b>成功したエピソードは成功条件を満たした時点で止まるため、クリップが短くなります。動画要約と Q&amp;A では、クリップの長さだけで 86 エピソードすべての結果を当てられてしまいます。リアルタイムアラートはすべてのエピソードを同じ長さにそろえるためこの漏れがなく、これがその結果を最も公平な試験とする理由の一つです。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>判定方法 · 取り分けた 86 エピソード</th><th class="num">Arena との一致</th><th class="num">成功の認識</th><th class="num">失敗の認識</th><th>基準を上回るか</th></tr></thead>
+      <tbody>
+        <tr><td>動画要約</td><td class="num">52/86（60.5 %）</td><td class="num">56 %</td><td class="num">74 %</td><td>いいえ</td></tr>
+        <tr><td>Q&amp;A</td><td class="num">51/86（59.3 %）</td><td class="num">51 %</td><td class="num">83 %</td><td>いいえ</td></tr>
+        <tr><td>リアルタイムアラート、同じ設定で 5 回実行</td><td class="num">74–80 %</td><td class="num">83–89 %</td><td class="num">35–65 %</td><td>いいえ、実行ごとに異なる</td></tr>
+        <tr class="hl"><td><b>リアルタイムアラート、<code>top_k: 1</code></b></td><td class="num"><b>81/86（94.2 %）</b></td><td class="num">100 %</td><td class="num">78 %（18/23）</td><td>はい（p &lt; 0.001）、結果を知った後に測定</td></tr>
+        <tr><td>基準：常に「成功」と答える</td><td class="num">63/86（73.3 %）</td><td class="num">100 %</td><td class="num">0 %</td><td>–</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>結果がばらつく原因（確認済み）：</b>同じ設定・同じフレームでも、リアルタイムアラートの実行同士で 86 エピソード中 28 件の判定が食い違いました。1 つのクリップを 8 回送ると「Yes」が 5 回、「No」が 3 回でした。リアルタイム VLM サービスは <code>temperature</code> が 0 でないときだけモデルに渡すため、<code>temperature 0</code> は捨てられ、モデルは既定の 1.0 でサンプリングします。<code>top_k: 1</code> を加えると決定的なデコードになり、2 回の実行が 99 エピソードすべてで一致し、Arena との一致率は 94.2 % に上がりました。成功はすべて、失敗は 23 件中 18 件を認識しています。</div>
+    <div class="callout warn"><b>94.2 % は有力な手がかりであり、まだ確定した結果ではありません。</b>質問は変えていませんが、この実行は取り分けたエピソードの結果を知った後に行いました。調整用の 13 エピソードでは 8/13 しか正解せず、ロボットの転倒 2 件をどちらも見逃しています。取り分けたエピソードには転倒が 1 件もありません。新しいデータでの実行で確認する必要があります。動画要約と Q&amp;A も同じデコードの欠陥の影響を受けており、まだ <code>top_k: 1</code> で再実行していないため、3 つの方法の比較はまだ公平ではありません。</div>
+    <ul>
+      <li><b>Q&amp;A</b> は成功 63 件中 31 件を「ハンマーは一部だけビンの中」などの回答で失敗と判定しました。2 つのグループの最終フレームと Arena の測定値はほぼ同じです。原因として考えられるのは、ビンの底が浅いことと、質問中の「完全に」（<i>fully</i>）という語です。</li>
+      <li><b>VSS のエージェントは質問を書き換えて</b>から VLM に渡しており、それが 99 件中 46 件ありました。実際に尋ねた質問は一定ではありませんでした。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">6</span><h3>2 エピソードでの 3 つの方法の再実行（ステップ 9–11 の動画）</h3></div>
+    <p>手順書では 2 つのエピソード、ep003（Arena：成功）と ep025（Arena：失敗、ハンマーがビンの外）で 3 つのコマンドを録画しました。各エピソードは同じ（ビット単位で同一の）動画と同じ設定で複数回実行しています：以前に保存した実行、ベトナム語版の録画、英語版の録画です。Q&amp;A は UI デモ動画でもう 1 回実行しています。</p>
+<pre class="diagram">cd &lt;vss_bridge フォルダ&gt;
+python3 -m vss_bridge.run_pipeline --config configs/guide_en_lvs.yaml \
+  --inputs ../data/W8/vss_inputs/ep003.mp4 ../data/W8/vss_inputs/ep025.mp4      # 動画要約
+python3 -m vss_bridge.qa_agent --config configs/guide_en_qa.yaml --episodes ep003,ep025   # Q&amp;A
+python3 -m vss_bridge.rt_alert --config configs/guide_en_rt.yaml --episodes ep003,ep025   # アラート、top_k: 1
+cat out/guide_en/{lvs,qa,rt}/report.md</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>エピソード · Arena</th><th>動画要約</th><th>Q&amp;A</th><th>リアルタイムアラート</th></tr></thead>
+      <tbody>
+        <tr><td><b>ep003</b><br>成功</td><td>成功、成功、<b>失敗</b><br>3 回中 2 回正解</td><td>NO、YES、NO、YES<br>4 回中 2 回正解</td><td>No、No、No<br><b>3 回中 3 回正解</b></td></tr>
+        <tr><td><b>ep025</b><br>失敗（ハンマーがビンの外）</td><td>空 → 失敗、「ハンマーは完全にビンの中」→ <b>成功</b>、「ハンマーは持ち上げられていない」→ 失敗<br>3 回中 2 回正解、正しい説明は 0 回</td><td>毎回 NO<br>毎回正解</td><td>Yes、Yes、Yes<br><b>3 回中 3 回正解</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">録画の結果はカード 5 の全体評価と一致します：動画要約と Q&amp;A は実行ごとに答えが変わり、<code>top_k: 1</code> のリアルタイムアラートは毎回同じ答えを返します。動画内の時間（要約 19–21 秒、Q&amp;A 52–54 秒、アラート 0.3–0.45 秒 / エピソード）は録画時のもので、全体評価の数値ではありません。</div>
+    <figure class="fig"><video src="assets/videos/iv05-09_s09_lvs.mp4" poster="assets/videos/iv05-09_s09_lvs-poster.jpg" controls preload="none" playsinline></video><figcaption>ステップ 9 · 実行：ep003 と ep025 を要約し、<code>report.md</code> と VLM が実際に受け取ったプロンプトを確認。43 秒の待ち時間は 6 倍速。</figcaption></figure>
+    <details class="acc"><summary><span class="n">10</span>ステップ 10 の動画 · Q&amp;A · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-10_s10_qa.mp4" poster="assets/videos/iv05-10_s10_qa-poster.jpg" controls preload="none" playsinline></video><figcaption>ep003 と ep025 の最終状態をエージェントに質問。この録画では 2 つとも正解。108 秒の待ち時間は 17 倍速。</figcaption></figure>
+    </div></details>
+    <details class="acc"><summary><span class="n">11</span>ステップ 11 の動画 · リアルタイムアラート · 実行</summary><div class="acc-body">
+      <figure class="fig"><video src="assets/videos/iv05-11_s11_rt.mp4" poster="assets/videos/iv05-11_s11_rt-poster.jpg" controls preload="none" playsinline></video><figcaption>ep003 → No（アラートなし）、ep025 → Yes（アラート）。Kafka のアラート件数はちょうど 1 増加。全体で約 11 秒。</figcaption></figure>
+    </div></details>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">7</span><h3>Web UI</h3></div>
+    <p>ポート 7777 の UI では、アップロード済みの動画を見たり、エージェントに手動で質問したりできます。UI はサーバーの内部アドレスか <code>localhost</code> でのアクセスしか受け付けないため、ワークステーションからは SSH トンネル経由で開きます：</p>
+<pre class="diagram">ssh -N -L 7777:127.0.0.1:7777 user@gpu-server     # その後 http://localhost:7777 を開く</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>動画内の時刻</th><th>画面</th></tr></thead>
+      <tbody>
+        <tr><td>0:05</td><td><b>Dashboard</b>：ページに埋め込まれた Kibana、ダッシュボードは未作成</td></tr>
+        <tr><td>0:11</td><td><b>Video Management</b>：アップロード済みの動画 99 本。動画のアップロード、RTSP ストリームの追加、検索、各動画の「+ Chat」ボタン</td></tr>
+        <tr><td>0:17–0:21</td><td><code>ep003</code> を検索して再生：2 つの半画面（ロボットの頭部カメラ、三人称視点）</td></tr>
+        <tr><td>0:34</td><td><b>Chat</b> パネルを開く：「Hi, I'm VSS Agent」</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="fig"><video src="assets/videos/iv05-12_s12_ui.mp4" poster="assets/videos/iv05-12_s12_ui-poster.jpg" controls preload="none" playsinline></video><figcaption>ステップ 12 · 実行：Web UI の一巡。この動画では質問は送っていません。</figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">8</span><h3>発見事項と対応</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>#</th><th>発見事項</th><th>対応</th><th>担当</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>dev-profile.sh --dry-run</code> でも <code>generated.env</code> を上書きし、<code>data-dir</code> の権限を変更する</td><td>Dry-run は一時的な clone でのみ（ステップ 5）</td><td>スクリプトを実行する人</td></tr>
+        <tr><td>2</td><td><code>docker-ce</code>、<code>docker-ce-cli</code> が現在固定されていない。<code>apt upgrade</code> で Docker が検証済みの範囲外になりうる</td><td><code>sudo apt-mark hold docker-ce docker-ce-cli</code></td><td>管理者</td></tr>
+        <tr><td>3</td><td>VLM サービスが <code>temperature 0</code> を捨てて 1.0 でサンプリングする：同じ動画でも答えが変わる</td><td>3 つの方法すべてで <code>top_k: 1</code> を送る。動画要約と Q&amp;A を <code>top_k: 1</code> で再実行</td><td>技術リーダー</td></tr>
+        <tr><td>4</td><td>94.2 % は取り分けたエピソードの結果を知った後に測定。そのエピソードにはロボットの転倒がない</td><td>転倒を含む新しいエピソードでの実行で確認</td><td>技術リーダー</td></tr>
+        <tr><td>5</td><td>エージェントが 99 件中 46 件で質問を書き換えた。Q&amp;A は成功 63 件中 31 件を失敗と判定</td><td>VLM に送る質問を固定し、「完全に」の代わりに「ビンの中」を明確に定義する</td><td>技術リーダー</td></tr>
+        <tr><td>6</td><td>ヘルスチェックが <code>healthy</code> のまま VLM エンジンが 10 月 19 日から停止していた。ディスク満杯で Kafka が止まり、Elasticsearch が読み取り専用になった</td><td>ヘルスチェックだけでなく、実際の VLM 呼び出しとディスク使用量で監視する</td><td>管理者</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>結論：</b>現在の設定では、動画要約と Q&amp;A は常に「成功」と答える基準（73.3 %）を上回りません。<code>top_k: 1</code> のリアルタイムアラートは取り分けた 86 エピソードで 94.2 % に達し、高速（8 秒区間ごとに 1 秒未満）で安定しており、今後追うべき方向です。VSS で Arena の判定を置き換えたり補ったりする前に、新しいエピソードでの確認の実行と、残る 2 つの方法の <code>top_k: 1</code> での再実行が必要です。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">9</span><h3>日常の運用</h3></div>
+    <p>以下は <code>vss/deploy/docker</code> で、<code>E=developer-profiles/dev-profile-lvs/generated.env</code> として実行します。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>作業</th><th>コマンド</th></tr></thead>
+      <tbody>
+        <tr><td>ログを見る</td><td><code>docker logs --tail 200 vss-lvs</code>（または <code>vss-rtvi-vlm</code>、<code>vss-agent</code>）</td></tr>
+        <tr><td>データを残したまま全体を停止 / 起動</td><td><code>docker compose --env-file $E stop</code> / <code>start</code></td></tr>
+        <tr><td>GPU を空ける</td><td><code>docker stop vss-rtvi-vlm</code>、再開は <code>docker start vss-rtvi-vlm</code></td></tr>
+        <tr><td>Docker デーモンの再起動後</td><td><code>docker start kafka phoenix</code>（この 2 つは自動で再起動しない）</td></tr>
+        <tr><td>LLM モデルの変更</td><td><code>$E</code> の <code>LLM_NAME</code> を編集し、<code>docker compose --env-file $E up -d --no-deps --force-recreate lvs-server vss-agent</code></td></tr>
+        <tr><td>定期確認</td><td>VLM を実際に呼び出し（カード 4 の表の VLM の行）、<code>df -h /</code> を確認する。ヘルスチェックは VLM の停止を検出できない。ディスク満杯で Kafka が止まり、Elasticsearch が読み取り専用になる（承認を得て古いデータ 79 GB を削除した）</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn">インストール済みのマシンで <code>dev-profile.sh up</code> や <code>down</code> を<b>実行しないでください</b>：17.8 GB のモデルボリュームが削除され、sudo も必要です。<code>generated.env</code> や <code>keys.env</code> を <code>cat</code> したり、<code>grep</code> なしで <code>docker compose config</code> や <code>docker inspect</code> を実行したりも<b>しないでください</b>：キーが画面に表示されます。</div>
+  </div>
+</section>

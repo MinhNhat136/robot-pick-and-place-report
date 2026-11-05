@@ -1,0 +1,97 @@
+<section class="section" id="kc-chay" data-hue="blue" data-kicker="IV.04 · RUN THE VERIFICATION" data-title="Result verification: running the standalone notebooks for each scenario">
+  <div class="hero">
+    <span class="pill">SECTION IV.04 · RUN THE VERIFICATION</span>
+    <h2>Re-run the notebooks and compare with the reported figures<span class="dot">.</span></h2>
+    <p class="lead">Every scenario is evaluated with notebooks in <code>codes/standalone_g1_gr00t</code>, running directly on the local Isaac Sim, <b>without Docker Arena</b>. Each notebook has a <code>make</code> command to run it without a GUI (headless) and write the results to <code>data/</code>.</p>
+    <div class="meta">
+      <div><span class="ml">FOLDER</span><span class="mv">codes/standalone_g1_gr00t</span></div>
+      <div><span class="ml">RUN</span><span class="mv">make sim-nbXX (headless) · Jupyter (interactive)</span></div>
+      <div><span class="ml">OUTPUT</span><span class="mv">data/: per-episode logs, summary, videos</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>General procedure</h3></div>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">01 · SERVER</div><div class="sv">Load the right checkpoint</div><div class="sd">Section IV.03, cards 1–2</div></div>
+      <div class="step"><div class="sk">02 · CONNECT</div><div class="sv">Open the tunnel if needed</div><div class="sd">Keep it running throughout the evaluation</div></div>
+      <div class="step"><div class="sk">03 · CHECK</div><div class="sv">Ping the server</div><div class="sd">Section IV.03, card 3</div></div>
+      <div class="step"><div class="sk">04 · RUN</div><div class="sv">The scenario's make command</div><div class="sd">Card 3 below</div></div>
+      <div class="step"><div class="sk">05 · COMPARE</div><div class="sv">Read the summary</div><div class="sd">Compare with the confidence interval (card 4)</div></div>
+    </div>
+    <div class="callout warn"><b>Results shipped in the package will be overwritten:</b> <code>make sim-nbXX</code> writes new output into the <code>.ipynb</code> file itself; nb07 also appends to <code>data/runs_galileo.jsonl</code> and overwrites the videos <code>data/videos/gr00t_galileo/epN.mp4</code>. Back up <code>notebooks/</code> and <code>data/</code> before running, and rename <code>runs_galileo.jsonl</code> so the summary covers only the new run. The original results are also in <code>evals/</code>.</div>
+    <div class="callout"><b>Error when Isaac Sim shuts down:</b> at the end of each run you may see <code>Segmentation fault</code> and <code>make: *** Error 1</code>. If the line <code>[inproc] wrote notebooks/… | ok=True</code> appeared before that, the notebook finished and the results were fully written.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Baseline checks without a server</h3></div>
+    <p>Confirm that the simulation, robot, scene and scoring work correctly before spending time running the model.</p>
+    <figure class="fig"><video src="assets/videos/iv04-card2-baseline.mp4" poster="assets/videos/iv04-card2-baseline-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: <code>make sim-stand</code> opens the simulation window and the robot stands for 500 ticks; then demo 0 of the hammer dataset is replayed (headless) and the summary reads 1/1. The simulation parts are sped up.</figcaption></figure>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Command</th><th>What it does</th><th>Passes when</th></tr></thead>
+      <tbody>
+        <tr><td><code>make sim-stand</code></td><td>Robot stands for 500 ticks, with a window</td><td>The robot stands stably without falling</td></tr>
+        <tr><td><code>make sim-replay</code></td><td>Replays demo episode 0 of the apple dataset, with a window</td><td>The robot picks up the apple and places it on the plate</td></tr>
+        <tr><td><code>make sim-nb12 EPISODES=1 POLICY=replay CKPT=replay</code></td><td>Hammer → bin scene, replays demo 0 of the mix200 dataset</td><td>The summary reports 1/1 success</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Verification commands per scenario</h3></div>
+    <figure class="fig"><video src="assets/videos/iv04-card3-run.mp4" poster="assets/videos/iv04-card3-run-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: running nb12 (hammer → bin, mix200) against the server from section IV.03, then viewing the results folder and <code>summary.md</code> as in card 4. The video runs only 2 episodes to keep it short (result 1/2); the figures in the report use 100 episodes. The simulation part is sped up.</figcaption></figure>
+<pre class="diagram">cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+
+# Apple → plate, Galileo scene (apple server, port 5556)
+make sim-nb07 EPISODES=50
+
+# Real2sim 4 fruits (real2sim server, port 5556)
+make sim-nb10 EPISODES=50
+
+# Hammer → bin (hammer server, port 5557); CKPT is only a label for the results folder name
+make sim-nb12 EPISODES=100 CKPT=mix200-checkpoint-10000
+make sim-nb12 EPISODES=100 CKPT=mix400-checkpoint-20000</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scenario</th><th>Notebook · time</th><th>Result in the report</th></tr></thead>
+      <tbody>
+        <tr><td>Apple → plate, Galileo</td><td><code>nb07_full_pipeline_loop</code><br>~45 s / episode</td><td><b>56 %</b> · 28/50 · Wilson 42–69 %</td></tr>
+        <tr><td>Real2sim 4 fruits</td><td><code>nb10_eval_multi_object</code><br>~1–2 min / episode</td><td><b>66 %</b> · 33/50 · Wilson 52–78 %</td></tr>
+        <tr><td>Hammer → bin, mix200</td><td><code>nb12_eval_hammer_to_bin</code><br>~15–30 s / episode</td><td><b>66 %</b> · 66/100 · Wilson 56–75 %</td></tr>
+        <tr><td>Hammer → bin, mix400</td><td>same as above</td><td><b>73 %</b> · 73/100 · Wilson 64–81 %<br>63 % · 63/100 with Arena's at-rest threshold</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>Hammer at-rest threshold:</b> nb12 currently treats the hammer as at rest when its velocity is &lt; 0.02 m/s and its angular velocity &lt; 0.12 rad/s (variables <code>LIN_VEL_TH</code>, <code>ANG_VEL_TH</code> in §3). The 73 % result was measured with this threshold. To reproduce 63 % (Arena's original threshold, 0.01 m/s and 0.1 rad/s), change those two variables in the notebook and run again with a different <code>CKPT</code> label.</div>
+    <div class="callout warn"><b>Not covered by the commands above:</b> the 92 % for the apple scenario and the 56/100 for the hammer in Arena were measured with the original Arena client in Docker, not with the standalone notebooks.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">4</span><h3>Read and compare the results</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Notebook</th><th>Results folder</th><th>Where the success rate is</th></tr></thead>
+      <tbody>
+        <tr><td>nb07</td><td><code>data/runs_galileo.jsonl</code>, videos in <code>data/videos/gr00t_galileo/</code></td><td>Summary table at the end of the notebook</td></tr>
+        <tr><td>nb10</td><td><code>data/nb10_eval/</code> (change with <code>NB10_OUT</code>)</td><td><code>seed0_….summary.json</code></td></tr>
+        <tr><td>nb12</td><td><code>data/nb12_eval/&lt;CKPT&gt;_gr00t_inside/</code></td><td><code>summary.json</code>, <code>summary.md</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid three">
+      <div class="sub"><div class="sl">MATCHES THE REPORT</div><div class="st">Within the confidence interval</div><p>Each episode is randomized; with 50 episodes a difference of about ±13 percentage points is normal, with 100 episodes about ±9 points.</p></div>
+      <div class="sub"><div class="sl">TECHNICAL ERRORS</div><div class="st">Not counted in the rate</div><p>Failed episodes (server timeout, lost connection) are logged with the reason and excluded from the success rate; the notebook stops if the server does not respond again.</p></div>
+      <div class="sub"><div class="sl">RESUME</div><div class="st">No need to start over</div><p>nb10 and nb12 skip episodes already present in the results folder; restart the server and re-run the same command.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">5</span><h3>Run interactively in Jupyter</h3></div>
+    <p>To watch each step or the simulation window, open the notebook in Jupyter instead of running headless.</p>
+<pre class="diagram">make sim-kernel &amp;&amp; make nb     # Jupyter Lab, select the "Isaac Sim Python 3 (isaacsim6)" kernel</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Issue</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td><code>No module named 'isaaclab'</code></td><td>You are on the <code>.venv</code> kernel: switch to the <code>isaacsim6</code> kernel</td></tr>
+        <tr><td><code>print</code> output does not show in the cell</td><td>Isaac Lab reassigns <code>sys.stdout</code>; see the output in the terminal running Jupyter</td></tr>
+        <tr><td>Hangs when closing the simulation</td><td>Do not call <code>app.close()</code>; use Kernel ▸ Restart</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

@@ -1,0 +1,52 @@
+<section class="section" id="phu-luc" data-hue="blue" data-kicker="V.02 · APPENDIX" data-title="Appendix">
+  <div class="hero">
+    <span class="pill">SECTION V.02 · APPENDIX</span>
+    <h2>Glossary &amp; references<span class="dot">.</span></h2>
+    <p class="lead">For the list of deliverables, see section IV.01.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">A</span><h3>Glossary</h3></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tbody>
+        <tr><td><b>VLA</b></td><td>A model that takes images and language and directly outputs robot control commands</td></tr>
+        <tr><td><b>Foundation model</b></td><td>A model pre-trained on large data; fine-tuned for a specific task with little data</td></tr>
+        <tr><td><b>Embodiment</b></td><td>A specific type of robot body (joints, cameras, hands)</td></tr>
+        <tr><td><b>Action chunk</b></td><td>The sequence of actions the model returns in one inference (40 steps = 0.8 s at 50 Hz)</td></tr>
+        <tr><td><b>Flow matching / DiT</b></td><td>A technique that generates continuous data by gradual denoising, used to generate action chunks</td></tr>
+        <tr><td><b>Teleop</b></td><td>A person controlling the robot remotely (VR headset) to create demonstration data</td></tr>
+        <tr><td><b>Open-loop / closed-loop</b></td><td>Evaluation on pre-recorded data / the model controlling the robot continuously by itself</td></tr>
+        <tr><td><b>Real2sim</b></td><td>Transferring data from the real world into simulation</td></tr>
+        <tr><td><b>Domain gap</b></td><td>The difference between the training environment and the runtime environment</td></tr>
+        <tr><td><b>Visual gap</b></td><td>The model's success rate drops when the scene looks different at runtime than during data recording (apple task 92 → 56 → 0 %)</td></tr>
+        <tr><td><b>Domain randomization</b></td><td>Randomly varying lighting, materials, background and camera angle in simulation so the model does not memorize one scene</td></tr>
+        <tr><td><b>Demo generation</b></td><td>Transforming existing teleop demos (timing, start point, grasp, release), re-running them in simulation and keeping only the successful ones (the MimicGen approach)</td></tr>
+        <tr><td><b>FK / IK</b></td><td>Forward kinematics: compute the hand position from joint angles; inverse kinematics: compute joint angles from a desired position</td></tr>
+        <tr><td><b>PD controller</b></td><td>Proportional–derivative: torque = Kp × (target angle − current angle) − Kd × joint velocity; pulls the joint toward the target like a damped spring</td></tr>
+        <tr><td><b>Rate limiter</b></td><td>Limits how much a joint command may change from the previous command in each control step (20 ms), up to a threshold (arms 0.2 rad, waist 0.1 rad, hands 1.5 rad)</td></tr>
+        <tr><td><b>WBC / AGILE</b></td><td>Whole-body controller; AGILE keeps the G1's legs balanced</td></tr>
+        <tr><td><b>Wilson 95 %</b></td><td>A confidence interval for a success rate, suitable for small numbers of trials</td></tr>
+        <tr><td><b>MAE</b></td><td>Mean absolute error</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">B</span><h3>References</h3></div>
+    <ol>
+      <li>NVIDIA. <i>GR00T N1: An Open Foundation Model for Generalist Humanoid Robots.</i> <a href="https://arxiv.org/abs/2503.14734" target="_blank" rel="noopener">arXiv:2503.14734</a>, 2025.</li>
+      <li>NVIDIA. Model cards for GR00T N1.7-3B and GN1x-Tuned-Arena-G1-Static-PickNPlace (Hugging Face).</li>
+      <li>Isaac Lab Arena — <a href="https://github.com/isaac-sim/IsaacLab-Arena" target="_blank" rel="noopener">github.com/isaac-sim/IsaacLab-Arena</a></li>
+      <li>Isaac-GR00T — <a href="https://github.com/NVIDIA/Isaac-GR00T" target="_blank" rel="noopener">github.com/NVIDIA/Isaac-GR00T</a></li>
+      <li>NVIDIA. GR00T end-to-end workflow: fine-tuning on sim data, sim evaluation (docs.nvidia.com).</li>
+      <li>Datasets nvidia/Arena-G1-Static-PickNPlace-Task and nvidia/PhysicalAI-Robotics-GR00T-Teleop-G1 (CC-BY-4.0).</li>
+      <li>Black, K. et al. <i>π0: A Vision-Language-Action Flow Model for General Robot Control.</i> arXiv:2410.24164, 2024.</li>
+      <li>Liu, X., Gong, C. <i>Flow Straight and Fast: Rectified Flow.</i> ICLR 2023.</li>
+    </ol>
+  </div>
+
+
+  <div class="footer">
+    <span data-cfg="project">Project</span><span>·</span><span data-cfg="version">v1.0</span><span>·</span><span data-cfg="date"></span>
+  </div>
+</section>

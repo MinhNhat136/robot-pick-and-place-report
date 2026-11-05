@@ -181,15 +181,15 @@
     <div class="card-head"><span class="num">10</span><h3>Phân tích kết quả</h3></div>
     <p>Phân loại kết quả của ba lần chạy 100 episode trên Isaac Sim local để thấy thêm dữ liệu và nới ngưỡng thay đổi điều gì.</p>
     <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>Kết quả (100 episode)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · ngưỡng 0,02</th></tr></thead>
+      <thead><tr><th>Kết quả (100 episode)</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · đếm thủ công</th><th class="num">mix400 · ngưỡng 0,02</th></tr></thead>
       <tbody>
-        <tr class="hl"><td>Thành công</td><td class="num">66</td><td class="num">63</td><td class="num">73</td></tr>
-        <tr><td>Tâm búa ngoài lòng thùng</td><td class="num">19</td><td class="num">5</td><td class="num">6</td></tr>
-        <tr><td>Búa chưa đứng yên khi hết giờ</td><td class="num">6</td><td class="num">22</td><td class="num">8</td></tr>
-        <tr><td>Búa gác trên miệng thùng</td><td class="num">3</td><td class="num">4</td><td class="num">4</td></tr>
-        <tr><td>Không nhấc được (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">3</td></tr>
-        <tr><td>Robot ngã</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
-        <tr><td>Chưa buông tay</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr class="hl"><td>Thành công</td><td class="num">66</td><td class="num">63</td><td class="num">87</td><td class="num">73</td></tr>
+        <tr><td>Tâm búa ngoài lòng thùng</td><td class="num">19</td><td class="num">5</td><td class="num">–</td><td class="num">6</td></tr>
+        <tr><td>Búa chưa đứng yên khi hết giờ</td><td class="num">6</td><td class="num">22</td><td class="num">–</td><td class="num">8</td></tr>
+        <tr><td>Búa gác trên miệng thùng</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">4</td></tr>
+        <tr><td>Không nhấc được (&lt; 1 cm)</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">3</td></tr>
+        <tr><td>Robot ngã</td><td class="num">2</td><td class="num">2</td><td class="num">–</td><td class="num">6</td></tr>
+        <tr><td>Chưa buông tay</td><td class="num">1</td><td class="num">0</td><td class="num">–</td><td class="num">0</td></tr>
       </tbody>
     </table></div>
     <figure class="fig"><img src="images/hammer_place_positions.png" alt="Vị trí tâm búa lúc kết thúc: mix200, mix400 ngưỡng 0,01 và mix400 ngưỡng 0,02" loading="lazy"><figcaption><b>Vị trí tâm búa lúc kết thúc episode</b>, nhìn từ trên xuống, gốc là tâm thùng · trái: mix200 · giữa: mix400 · phải: mix400 với ngưỡng đứng yên 0,02 m/s. Ở mix200, nhiều lần búa được thả lệch về phía tay trái, ngay ngoài thành thùng (cụm xám); ở mix400, các điểm dồn quanh tâm thùng hơn. Với mix400 ngưỡng 0,01, phần lớn thất bại là búa đã nằm giữa thùng nhưng chưa đứng yên khi hết giờ (22 điểm xanh lam); ở lần chạy với ngưỡng 0,02, nhóm này giảm còn 8. Điểm đỏ (không nhấc được) và tím (robot ngã) là các lần búa chưa được đưa tới thùng.</figcaption></figure>

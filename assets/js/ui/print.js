@@ -16,6 +16,7 @@
      language; they are left out when the report has changed since (hash mismatch). With
      ?paginate=1 (used by build.py) every heading gets an invisible @@key@@ marker to find its page. */
   const PAGINATE = new URLSearchParams(location.search).has("paginate");
+  const NO_MARGIN_BOXES = window.CSS && CSS.supports("-moz-appearance", "none");
   function pageSet(lang) {
     const P = window.ReportPrintPages;
     return P && P.hash === window.ReportBuildHash && P.sets ? P.sets[lang] || null : null;
@@ -43,7 +44,7 @@
   }
   function fillCover(lang) {
     if (!cover) return;
-    const L = COVER[lang] || COVER.vi, cfg = k => String(R.config ? R.config.get(k) || "" : "");
+    const L = COVER[lang] || COVER.vi, cfg = k => String(R.config ? R.config.get(k, lang) || "" : "");
     const hero = R.$$("#tong-quan > .hero").find(h => !hidden(h)) || R.$("#tong-quan > .hero");
     const h1 = hero ? R.$("h1, h2", hero) : null;
     R.$(".pc-kind", cover).textContent = L.kind;
@@ -99,7 +100,7 @@
     });
     const box = document.createElement("div");
     box.className = "print-toc";
-    box.innerHTML = `<h1>${TOC_HEAD[lang] || TOC_HEAD.vi}</h1><div class="toc-sub">${esc(R.config ? R.config.get("title") || "" : "")}</div>${toc}`;
+    box.innerHTML = `<h1>${TOC_HEAD[lang] || TOC_HEAD.vi}</h1><div class="toc-sub">${esc(R.config ? R.config.get("title", lang) || "" : "")}</div>${toc}`;
     wrap.prepend(box);
   }
   function cleanup() {
@@ -118,13 +119,25 @@
         '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9.5 14.5 12 17l2.5-2.5"/></svg>';
       document.body.appendChild(btn);
       makeCover();
-      btn.addEventListener("click", () => window.print());
+      btn.addEventListener("click", () => {
+        // Firefox has no @page margin boxes, so its own print cannot put page numbers in the corner:
+        // open the PDF that build.py printed in Chrome for the chosen language instead.
+        if (NO_MARGIN_BOXES) {
+          const lang = document.documentElement.lang || "vi";
+          window.open(`pdf/report-${lang}.pdf`, "_blank");
+          return;
+        }
+        window.print();
+      });
       window.addEventListener("beforeprint", () => {
+        // Before any hidden section is shown: otherwise its fadeUp animation restarts at opacity 0 and
+        // Firefox (which snapshots the page at this moment) prints those sections as blank pages.
+        document.documentElement.classList.add("is-printing");
         R.$$("details.acc").forEach(d => (d.open = true));
         buildPrint();
         R.emit("print:before");
       });
-      window.addEventListener("afterprint", () => { cleanup(); R.emit("print:after"); });
+      window.addEventListener("afterprint", () => { cleanup(); R.emit("print:after"); document.documentElement.classList.remove("is-printing"); });
     },
   };
 })();

@@ -1,0 +1,78 @@
+<section class="section" id="kc-server" data-hue="blue" data-kicker="IV.03 · GR00T サーバーの起動" data-title="結果の検証：GR00T サーバーの起動と接続確認">
+  <div class="hero">
+    <span class="pill">IV.03 節 · GR00T サーバーの起動</span>
+    <h2>シナリオごとに 1 つのチェックポイント、1 つのポート<span class="dot">。</span></h2>
+    <p class="lead">GR00T サーバーは顧客の GPU サーバー上で動作し、検証するシナリオのチェックポイントを読み込んで 1 つのポートで待ち受けます。ワークステーションはそのポートに接続し（社内ネットワークまたは SSH トンネル経由、IV.02 節のカード 7）、その後 IV.04 節のノートブックを実行します。</p>
+    <div class="meta">
+      <div><span class="ml">コマンド</span><span class="mv">gr00t/eval/run_gr00t_server.py</span></div>
+      <div><span class="ml">ポート</span><span class="mv">5556（リンゴ、real2sim） · 5557（ハンマー）</span></div>
+      <div><span class="ml">確認</span><span class="mv">ポートの待ち受け · ワークステーションから ping</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>シナリオ別のサーバー設定</h3></div>
+    <p>以下のパスは IV.02 節のカード 6 の配置（サーバー上のルート <code>~/shimizu-robot/</code>）に従います。ポートはクライアントが既定で想定する値です。</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>シナリオ · ポート</th><th>チェックポイント（<code>--model-path</code>）</th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>リンゴ → 皿<br>5556</td><td><code>models/gn1x_tuned_static_apple</code><br>（Hugging Face からダウンロード）</td><td><code>configs/g1_sim_wbc_data_</code><br><code>gr00t_n_1_7_config.py</code></td></tr>
+        <tr><td>ハンマー → 箱、mix200<br>5557</td><td><code>models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td><td>同上</td></tr>
+        <tr><td>ハンマー → 箱、mix400<br>5557</td><td><code>models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>同上</td></tr>
+        <tr><td>Real2sim 果物 4 種<br>5556</td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/</code><br><code>g1_dex3_joint_sim_config.py</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">リンゴと real2sim は同じポート 5556 を使うため、同時に実行できるのはどちらか一方です。ハンマーはポート 5557 を使うため、GPU のメモリが十分であれば並行して実行できます。</div>
+<pre class="diagram"># NVIDIA のリンゴ → 皿チェックポイントをサーバーにダウンロード（1 回のみ）
+hf download nvidia/GN1x-Tuned-Arena-G1-Static-PickNPlace \
+   --local-dir ~/shimizu-robot/models/gn1x_tuned_static_apple</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>サーバーの起動</h3></div>
+    <p>SSH を切断してもサーバーが停止しないよう、<code>tmux</code> 内で実行します。以下はハンマー mix200 シナリオの例です。他のシナリオでは、カード 1 に従って最初の 3 つの変数を変更するだけです。</p>
+    <figure class="fig"><video src="assets/videos/iv03-card2-server.mp4" poster="assets/videos/iv03-card2-server-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：サーバー上の tmux でハンマー mix200 のサーバーを実行し、<code>✓ Server ready</code> の行を待ちます（モデル読み込みの部分は早送り）。動画のサーバーではポート 5557 が別の用途で使われていたため、サンプルのサーバーはポート 5567 で待ち受けています。カード 3 のトンネルがワークステーション側のポート 5557 に転送します。</figcaption></figure>
+<pre class="diagram">tmux new -s gr00t                  # 一時的に抜ける：Ctrl-b d · 再接続：tmux a -t gr00t
+R=~/shimizu-robot
+CKPT=$R/models/hammer_to_bin_mix200/hammer_mix200_n17/checkpoint-10000
+CFG=$R/configs/g1_sim_wbc_data_gr00t_n_1_7_config.py
+PORT=5557
+
+cd ~/Isaac-GR00T
+uv run python gr00t/eval/run_gr00t_server.py \
+  --model-path $CKPT --modality-config-path $CFG \
+  --embodiment-tag NEW_EMBODIMENT --device cuda \
+  --host 127.0.0.1 --port $PORT    # ワークステーションが社内ネットワークで直接接続する場合は 0.0.0.0</pre>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">モデル読み込み</div><div class="sv">約 1 分</div><div class="sd">ポートはまだ開いておらず、この間のクライアント呼び出しはタイムアウトします</div></div>
+      <div class="step"><div class="sk">準備完了</div><div class="sv">準備完了の行を表示</div><div class="sd"><code>✓ Server ready — listening on …</code></div></div>
+      <div class="step"><div class="sk">シナリオの切り替え</div><div class="sv">Ctrl-C して再実行</div><div class="sd">新しいチェックポイント、config、ポートで</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>ワークステーションからの接続確認</h3></div>
+    <p>SSH トンネルを使う場合は、別のターミナルでトンネルを開き、評価中は開いたままにします。その後、<code>.venv</code> 環境の Python でサーバーに ping します。</p>
+    <figure class="fig"><video src="assets/videos/iv03-card3-connect.mp4" poster="assets/videos/iv03-card3-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>サンプル動画：SSH トンネルを開き、ワークステーションでポート 5557 を確認して、ハンマーの設定で <code>smoke_server.py</code> を実行します（結果 <code>contract ok</code>）。</figcaption></figure>
+<pre class="diagram"># （SSH トンネルを使う場合）別のターミナルで、開いたままにする
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server
+
+# サーバーに ping し、読み込み中の modality config を問い合わせる
+cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+# リンゴ、ハンマー：ping、modality config を YAML ファイルと照合、ダミーの観測を送信
+.venv/bin/python scripts/smoke_server.py --config configs/g1_static_hammer.yaml
+#   （リンゴ：configs/g1_static_apple.yaml）
+# real2sim：ping し、サーバーが読み込んでいる modality config を表示
+.venv/bin/python -c "from g1gr00t.client import Gr00tZmqClient, modality_summary as m
+c = Gr00tZmqClient('127.0.0.1', 5556); print(c.ping(), m(c.get_modality_config()))"</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>症状</th><th>原因</th><th>対処</th></tr></thead>
+      <tbody>
+        <tr><td>最初の呼び出しですぐにタイムアウト</td><td>トンネルが開いていない、ポートが違う、またはサーバーがモデルを読み込み中</td><td>両側で <code>ss -ltn | grep 555</code> を実行し、準備完了の行を待つ</td></tr>
+        <tr><td>途中で接続が切れる</td><td>トンネルまたはネットワークの切断</td><td>トンネルを開き直してノートブックを再実行。nb10 と nb12 は途中のエピソードから再開</td></tr>
+        <tr><td>ノートブックが video key や関節数の不一致を報告</td><td>サーバーが別のシナリオのチェックポイントを読み込んでいる</td><td>カード 1 の正しいチェックポイントと modality config でサーバーを再起動</td></tr>
+        <tr><td>1 回の呼び出しが &gt; 3 s</td><td>GPU が混雑しているか、ネットワークが遅い</td><td>結果には影響しない（シミュレーションはモデルを待って停止する）。実行時間が長くなるだけ</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>

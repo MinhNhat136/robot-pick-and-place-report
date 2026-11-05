@@ -1,0 +1,78 @@
+<section class="section" id="kc-server" data-hue="blue" data-kicker="IV.03 · RUN THE GR00T SERVER" data-title="Result verification: running the GR00T server and checking the connection">
+  <div class="hero">
+    <span class="pill">SECTION IV.03 · RUN THE GR00T SERVER</span>
+    <h2>One checkpoint and one port per scenario<span class="dot">.</span></h2>
+    <p class="lead">The GR00T server runs on the client's GPU server, loads the checkpoint of the scenario to be verified and listens on a port. The workstation connects to that port (over the local network or an SSH tunnel, section IV.02 card 7) before running the notebooks in section IV.04.</p>
+    <div class="meta">
+      <div><span class="ml">COMMAND</span><span class="mv">gr00t/eval/run_gr00t_server.py</span></div>
+      <div><span class="ml">PORT</span><span class="mv">5556 (apple, real2sim) · 5557 (hammer)</span></div>
+      <div><span class="ml">CHECK</span><span class="mv">Port listening · ping from the workstation</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">1</span><h3>Server configuration per scenario</h3></div>
+    <p>The paths below follow the layout from section IV.02 card 6 (root <code>~/shimizu-robot/</code> on the server). The port is the default value the client expects.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Scenario · port</th><th>Checkpoint (<code>--model-path</code>)</th><th>Modality config</th></tr></thead>
+      <tbody>
+        <tr><td>Apple → plate<br>5556</td><td><code>models/gn1x_tuned_static_apple</code><br>(downloaded from Hugging Face)</td><td><code>configs/g1_sim_wbc_data_</code><br><code>gr00t_n_1_7_config.py</code></td></tr>
+        <tr><td>Hammer → bin, mix200<br>5557</td><td><code>models/hammer_to_bin_mix200/</code><br><code>hammer_mix200_n17/checkpoint-10000</code></td><td>same as above</td></tr>
+        <tr><td>Hammer → bin, mix400<br>5557</td><td><code>models/hammer_to_bin_mix400/</code><br><code>hammer_mix400_n17/checkpoint-20000</code></td><td>same as above</td></tr>
+        <tr><td>Real2sim 4 fruits<br>5556</td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/checkpoint-20000</code></td><td><code>models/real2sim_multi_fruit/</code><br><code>g1_fruits_n17_bs32_20k/</code><br><code>g1_dex3_joint_sim_config.py</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">Apple and real2sim share port 5556, so only one of them can run at a time. Hammer uses port 5557 and can run in parallel if the GPU has enough memory.</div>
+<pre class="diagram"># download the NVIDIA apple → plate checkpoint to the server (once)
+hf download nvidia/GN1x-Tuned-Arena-G1-Static-PickNPlace \
+   --local-dir ~/shimizu-robot/models/gn1x_tuned_static_apple</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">2</span><h3>Start the server</h3></div>
+    <p>Run inside <code>tmux</code> so the server keeps running when SSH disconnects. The example below is the hammer mix200 scenario; for other scenarios, change only the first three variables according to card 1.</p>
+    <figure class="fig"><video src="assets/videos/iv03-card2-server.mp4" poster="assets/videos/iv03-card2-server-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: running the hammer mix200 server in tmux on the server and waiting for the <code>✓ Server ready</code> line (the model loading part is sped up). The server in the video was already using port 5557 for something else, so the sample server listens on port 5567; the tunnel in card 3 maps it to port 5557 on the workstation.</figcaption></figure>
+<pre class="diagram">tmux new -s gr00t                  # detach: Ctrl-b d · reattach: tmux a -t gr00t
+R=~/shimizu-robot
+CKPT=$R/models/hammer_to_bin_mix200/hammer_mix200_n17/checkpoint-10000
+CFG=$R/configs/g1_sim_wbc_data_gr00t_n_1_7_config.py
+PORT=5557
+
+cd ~/Isaac-GR00T
+uv run python gr00t/eval/run_gr00t_server.py \
+  --model-path $CKPT --modality-config-path $CFG \
+  --embodiment-tag NEW_EMBODIMENT --device cuda \
+  --host 127.0.0.1 --port $PORT    # 0.0.0.0 if the workstation connects directly over the local network</pre>
+    <div class="flow one-row">
+      <div class="step"><div class="sk">LOADING MODEL</div><div class="sv">About 1 minute</div><div class="sd">Port not open yet; a client call now will time out</div></div>
+      <div class="step"><div class="sk">READY</div><div class="sv">Prints the ready line</div><div class="sd"><code>✓ Server ready — listening on …</code></div></div>
+      <div class="step"><div class="sk">SWITCH SCENARIO</div><div class="sv">Ctrl-C and run again</div><div class="sd">With the new checkpoint, config and port</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="num">3</span><h3>Check the connection from the workstation</h3></div>
+    <p>If you use an SSH tunnel, open it in a separate terminal and keep it running throughout the evaluation. Then ping the server with the Python of the <code>.venv</code> environment.</p>
+    <figure class="fig"><video src="assets/videos/iv03-card3-connect.mp4" poster="assets/videos/iv03-card3-connect-poster.jpg" controls preload="none" playsinline></video><figcaption>Sample video: opening the SSH tunnel, checking port 5557 on the workstation and running <code>smoke_server.py</code> with the hammer configuration (result <code>contract ok</code>).</figcaption></figure>
+<pre class="diagram"># (if using an SSH tunnel) separate terminal, keep it running
+ssh -N -L 5557:127.0.0.1:5557 user@gpu-server
+
+# ping the server and query the loaded modality config
+cd ~/workspace/shimizu-robot/codes/standalone_g1_gr00t
+# apple, hammer: ping, compare the modality config with the YAML file, send a dummy observation
+.venv/bin/python scripts/smoke_server.py --config configs/g1_static_hammer.yaml
+#   (apple: configs/g1_static_apple.yaml)
+# real2sim: ping and print the modality config loaded on the server
+.venv/bin/python -c "from g1gr00t.client import Gr00tZmqClient, modality_summary as m
+c = Gr00tZmqClient('127.0.0.1', 5556); print(c.ping(), m(c.get_modality_config()))"</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Timeout on the first call</td><td>Tunnel not open, wrong port, or the server is still loading the model</td><td><code>ss -ltn | grep 555</code> on both sides; wait for the ready line</td></tr>
+        <tr><td>Connection lost midway</td><td>Tunnel or network dropped</td><td>Reopen the tunnel and re-run the notebook; nb10 and nb12 resume from the unfinished episode</td></tr>
+        <tr><td>Notebook reports a wrong video key or joint count</td><td>The server has another scenario's checkpoint loaded</td><td>Restart the server with the correct checkpoint and modality config from card 1</td></tr>
+        <tr><td>Each call takes &gt; 3 s</td><td>GPU busy or slow network</td><td>Does not affect results (the simulation pauses while waiting for the model), only takes longer</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
