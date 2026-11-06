@@ -184,12 +184,12 @@
       <thead><tr><th>結果（100 エピソード）</th><th class="num">mix200</th><th class="num">mix400</th><th class="num">mix400 · 目視カウント</th><th class="num">mix400 · しきい値 0.02</th></tr></thead>
       <tbody>
         <tr class="hl"><td>成功</td><td class="num">66</td><td class="num">63</td><td class="num">87</td><td class="num">73</td></tr>
-        <tr><td>ハンマー中心が箱の外</td><td class="num">19</td><td class="num">5</td><td class="num">–</td><td class="num">6</td></tr>
-        <tr><td>時間切れ時にハンマーが静止していない</td><td class="num">6</td><td class="num">22</td><td class="num">–</td><td class="num">8</td></tr>
-        <tr><td>ハンマーが箱の縁に引っかかる</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">4</td></tr>
-        <tr><td>持ち上げられない（&lt; 1 cm）</td><td class="num">3</td><td class="num">4</td><td class="num">–</td><td class="num">3</td></tr>
-        <tr><td>ロボット転倒</td><td class="num">2</td><td class="num">2</td><td class="num">–</td><td class="num">6</td></tr>
-        <tr><td>手を離していない</td><td class="num">1</td><td class="num">0</td><td class="num">–</td><td class="num">0</td></tr>
+        <tr><td>ハンマー中心が箱の外</td><td class="num">19</td><td class="num">5</td><td class="num">5</td><td class="num">6</td></tr>
+        <tr><td>時間切れ時にハンマーが静止していない</td><td class="num">6</td><td class="num">22</td><td class="num">0</td><td class="num">8</td></tr>
+        <tr><td>ハンマーが箱の縁に引っかかる</td><td class="num">3</td><td class="num">4</td><td class="num">2</td><td class="num">4</td></tr>
+        <tr><td>持ち上げられない（&lt; 1 cm）</td><td class="num">3</td><td class="num">4</td><td class="num">4</td><td class="num">3</td></tr>
+        <tr><td>ロボット転倒</td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">6</td></tr>
+        <tr><td>手を離していない</td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
       </tbody>
     </table></div>
     <figure class="fig"><img src="images/hammer_place_positions.ja.png" alt="終了時のハンマー中心位置：mix200、mix400 しきい値 0.01、mix400 しきい値 0.02" loading="lazy"><figcaption><b>エピソード終了時のハンマー中心位置</b>（上から見た図、原点は箱の中心） · 左：mix200 · 中央：mix400 · 右：静止しきい値 0.02 m/s の mix400。mix200 では、ハンマーが左手側にずれて箱の壁のすぐ外に置かれることが多くありました（灰色の集まり）。mix400 では点が箱の中心付近に集まっています。しきい値 0.01 の mix400 では、失敗の大半は箱の中央にあるのに時間切れ時点で静止していないハンマーです（水色の点 22 個）。しきい値 0.02 の実行では、このグループは 8 個に減りました。赤（持ち上げられない）と紫（ロボット転倒）の点は、ハンマーが箱まで運ばれなかったケースです。</figcaption></figure>

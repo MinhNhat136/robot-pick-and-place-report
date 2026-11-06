@@ -10,9 +10,9 @@
     <div class="tbl-wrap"><table class="tbl">
       <thead><tr><th>Kịch bản</th><th>Trước khi xử lý</th><th>Kết quả tốt nhất</th><th>Yếu tố quyết định</th><th>Nút thắt còn lại</th></tr></thead>
       <tbody>
-        <tr><td>III.01 · Táo → đĩa</td><td>0 % (khung cảnh tự dựng)</td><td><b>56 %</b> · 28/50 · Galileo dựng lại</td><td>Khung cảnh giống lúc ghi dữ liệu</td><td>Pha nhìn và tiếp cận: khung cảnh lạ thì chỉ 22 % nhấc được táo</td></tr>
+        <tr><td>III.01 · Táo → đĩa</td><td>0 % (khung cảnh tự dựng)</td><td><b>92 %</b> · 46/50 · Isaac Lab Arena gốc, client NVIDIA<br><b>56 %</b> · 28/50 · Galileo dựng lại</td><td>Khung cảnh giống lúc ghi dữ liệu</td><td>Pha nhìn và tiếp cận: khung cảnh lạ thì chỉ 22 % nhấc được táo</td></tr>
         <tr><td>III.02 · 4 loại quả</td><td>0 % (checkpoint táo)</td><td><b>66 %</b> · 33/50 · real2sim</td><td>Fine-tune trên 790 episode real2sim</td><td>Pha nắm: 11/17 thất bại là không nhấc được quả</td></tr>
-        <tr class="hl"><td>III.03 · Búa → thùng</td><td>0 % (chưa fine-tune)</td><td><b>66 %</b> · 66/100 · mix200<br><b>73 %</b> · 73/100 · mix400, ngưỡng 0,02</td><td>Dữ liệu tự thu: teleop + sinh thêm</td><td>Pha thả và cách chấm "đứng yên"</td></tr>
+        <tr class="hl"><td>III.03 · Búa → thùng</td><td>0 % (chưa fine-tune)</td><td><b>66 %</b> · 66/100 · mix200<br><b>73 %</b> · 73/100 · mix400, ngưỡng 0,02<br><b>87 %</b> · 87/100 · mix400, đếm thủ công từ video</td><td>Dữ liệu tự thu: teleop + sinh thêm</td><td>Pha thả và cách chấm "đứng yên"</td></tr>
       </tbody>
     </table></div>
     <div class="chart" data-chart="ci" data-source="eval-summary">
@@ -20,7 +20,7 @@
       <div class="plot"></div>
       <div class="table-view"></div>
     </div>
-    <div class="callout"><b>Ghi chú:</b> client NVIDIA trên môi trường Arena gốc đạt 92 % với bài táo; lần chạy đó dùng làm mốc tham chiếu, không nằm trong biểu đồ. Mọi lần đánh giá khác đều chạy vòng kín trên pipeline tự viết, Isaac Sim local.</div>
+    <div class="callout"><b>Ghi chú:</b> client NVIDIA trên môi trường Isaac Lab Arena gốc đạt 92 % (46/50) với bài táo; lần chạy đó là mốc tham chiếu (dòng đầu biểu đồ). Mọi lần đánh giá khác đều chạy vòng kín trên pipeline tự viết, Isaac Sim local.</div>
     <div class="callout"><b>Chấm bằng video (mục <a href="#vss">IV.05</a>):</b> thử cho NVIDIA VSS xem 99 video episode búa → thùng và tự kết luận. Trên 86 episode giữ riêng, tóm tắt video (60,5 %) và hỏi đáp (59,3 %) không hơn cách đoán "luôn thành công" (73,3 %). Sau khi sửa lỗi giải mã (<code>top_k: 1</code>), cảnh báo thời gian thực khớp với Arena 94,2 %; con số này đo sau khi đã biết kết quả nên cần xác nhận trên dữ liệu mới.</div>
   </div>
 
@@ -51,15 +51,15 @@
 
   <div class="card future">
     <div class="card-head"><span class="num">4</span><h3>Định hướng tương lai</h3></div>
-    <p>Giai đoạn này đã chứng minh GR00T N1.7 điều khiển được G1 gắp–đặt vật trong mô phỏng và dựng được quy trình dữ liệu → fine-tune → đánh giá cho tác vụ mới. Bước tiếp theo đi theo hai nhóm: <b>củng cố kết quả trong mô phỏng</b>, rồi <b>chuẩn bị đưa model lên robot thật</b> (giai đoạn 2).</p>
+    <p>Giai đoạn này đã chứng minh GR00T N1.7 điều khiển được G1 gắp–đặt vật trong mô phỏng và dựng được quy trình dữ liệu → fine-tune → đánh giá cho tác vụ mới. Bước tiếp theo đi theo ba nhóm: <b>nghiên cứu mô hình và cảm biến</b>, <b>thu hẹp khoảng cách hình ảnh giữa mô phỏng và thực tế</b>, rồi <b>chuẩn bị đưa model lên robot thật</b> (giai đoạn 2).</p>
     <div class="grid two">
-      <div class="sub"><div class="sl">01 · MÔ PHỎNG · CHẤM ĐIỂM</div><div class="st">Chốt cách chấm trước khi chạy lại</div><p>Chấm "đứng yên" theo quãng dịch chuyển trong một khoảng thời gian (ví dụ 0,5 s) thay cho vận tốc tức thời, thống nhất với Shimizu rồi chạy lại bài búa một lần. Con số khi đó so sánh được trực tiếp, không còn phụ thuộc ngưỡng chọn sau khi đã thấy kết quả.</p></div>
+      <div class="sub"><div class="sl">01 · NGHIÊN CỨU · MÔ HÌNH</div><div class="st">Nghiên cứu thêm các mô hình khác tốt hơn</div><p>Đánh giá các bản GR00T mới hơn và các mô hình VLA mã nguồn mở khác (ví dụ π0, OpenVLA) trên cùng ba kịch bản và cùng cách chấm, để biết GR00T N1.7 đang đứng ở đâu. Pipeline standalone giao tiếp với model qua server ZMQ, nên chỉ cần viết thêm server cho model mới; scene, runner và notebook đánh giá dùng lại nguyên vẹn.</p></div>
       <div class="sub"><div class="sl">02 · MÔ PHỎNG · HÌNH ẢNH</div><div class="st">Domain randomization cho khung cảnh</div><p>Ngẫu nhiên hoá ánh sáng, vật liệu, nền, camera và vị trí vật khi tạo dữ liệu (phương pháp ở mục III.01), để model không phụ thuộc một khung cảnh: bài táo đang rơi từ 92 % xuống 56 % chỉ vì lệch ánh sáng. Đây là bước tiền đề cho sim2real.</p></div>
-      <div class="sub"><div class="sl">03 · MÔ PHỎNG · TỪNG TÁC VỤ</div><div class="st">Xử lý nút thắt riêng của mỗi kịch bản</div><p>Táo: pha nhìn và tiếp cận (domain randomization, cho robot "khởi động" vài chục tick trước khi giao quyền cho model). Quả: pha nắm (thêm demo nắm đa dạng). Búa: pha thả và lỗi reset làm robot ngã ở đầu episode.</p></div>
+      <div class="sub"><div class="sl">03 · MÔ PHỎNG · TÁI TẠO</div><div class="st">3D Gaussian Splatting để tái tạo môi trường thật</div><p>Quay ảnh hoặc video môi trường làm việc thật rồi dựng lại bằng 3D Gaussian Splatting, dùng làm nền render trong mô phỏng để ánh sáng và vật liệu giống thực tế; bài táo cho thấy chỉ lệch ánh sáng đã làm tỉ lệ rơi từ 92 % xuống 56 %. Kết hợp với real2sim, dữ liệu huấn luyện sẽ có cả chuyển động thật lẫn hình ảnh thật. Gaussian Splatting chỉ cho hình ảnh; vật lý vẫn cần mô hình va chạm riêng của bàn, kệ và vật thể.</p></div>
       <div class="sub"><div class="sl">04 · ĐÁNH GIÁ · VSS</div><div class="st">Xác nhận cách chấm bằng video</div><p>Chạy lại cảnh báo thời gian thực với <code>top_k: 1</code> trên episode mới, có cả episode robot ngã, để xác nhận con số 94,2 %; chạy lại tóm tắt video và hỏi đáp với cùng bản sửa. Nếu đạt, đây là cách chấm tự động cho robot thật, nơi không có trạng thái mô phỏng (mục IV.05).</p></div>
       <div class="sub"><div class="sl">05 · ROBOT THẬT · DỮ LIỆU</div><div class="st">Quy trình dữ liệu kết hợp</div><p>Teleop ít demo ngay tại môi trường làm việc → real2sim dựng lại khung cảnh → sinh thêm demo và lọc bằng mô phỏng → domain randomization → fine-tune, đánh giá trong mô phỏng rồi trên robot thật (mục II.04). Hai trong ba kỹ thuật đã được kiểm chứng ở giai đoạn này.</p></div>
-      <div class="sub"><div class="sl">06 · ROBOT THẬT · HẠ TẦNG</div><div class="st">Pipeline và hạ tầng cho vòng kín thật</div><p>Thêm backend robot thật cho pipeline standalone (phần còn lại dùng lại nguyên vẹn). Đặt máy chủ GPU gần robot hoặc cùng mạng nội bộ và gọi trước chuỗi action kế tiếp để robot không khựng; dùng kết nối có dây cho kính khi thu dữ liệu; dành riêng GPU cho fine-tune (mục I.02).</p></div>
+      <div class="sub"><div class="sl">06 · NGHIÊN CỨU · CẢM BIẾN</div><div class="st">Depth map giúp robot xác định khoảng cách tốt hơn</div><p>Model hiện chỉ nhận ảnh RGB từ camera đầu, trong khi nhiều thất bại nằm ở việc ước lượng khoảng cách: táo thả cách đĩa 9–20 cm, búa rơi ngoài thùng hoặc gác trên miệng thùng. Nghiên cứu dùng depth map từ camera RealSense D435 trên đầu G1 (hoặc ước lượng độ sâu từ ảnh) làm quan sát bổ sung cho model, hoặc để kiểm tra vị trí trước khi thả; cần thu dữ liệu và fine-tune có kèm độ sâu.</p></div>
     </div>
-    <div class="callout"><b>Thứ tự ưu tiên:</b> 01 và 04 tốn ít công nhất và làm cho mọi con số sau này đáng tin hơn; 02 là điều kiện cần trước khi lên robot thật; 05 và 06 là nội dung chính của giai đoạn 2. Mọi lần đánh giá tiếp theo nên giữ cách làm của giai đoạn này: 50–100 lần thử mỗi cấu hình, kèm khoảng tin cậy.</div>
+    <div class="callout"><b>Thứ tự ưu tiên:</b> 04 tốn ít công nhất và làm cho mọi con số sau này đáng tin hơn; 02 và 03 cùng nhắm vào khoảng cách hình ảnh, là điều kiện cần trước khi lên robot thật; 01 và 06 là hướng nghiên cứu để nâng năng lực model; 05 là nội dung chính của giai đoạn 2. Mọi lần đánh giá tiếp theo nên giữ cách làm của giai đoạn này: 50–100 lần thử mỗi cấu hình, kèm khoảng tin cậy.</div>
   </div>
 </section>
