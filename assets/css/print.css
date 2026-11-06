@@ -144,3 +144,6 @@
     .wrap{padding:14mm 12mm 16mm !important;box-decoration-break:clone}
   }
 }
+
+/* V.01 future directions: start on a new page rather than leave its intro split from the grid */
+@media print{.main .card.future{break-before:page}}

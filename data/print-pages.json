@@ -1,5 +1,5 @@
 {
- "hash": "cd5a725dba93",
+ "hash": "20ef23c4fb24",
  "sets": {
   "vi": {
    "s-tong-quan": 5,
@@ -125,9 +125,10 @@
    "c-danh-gia-1": 100,
    "c-danh-gia-2": 101,
    "c-danh-gia-3": 102,
-   "s-phu-luc": 103,
-   "c-phu-luc-1": 103,
-   "c-phu-luc-2": 104
+   "c-danh-gia-4": 103,
+   "s-phu-luc": 105,
+   "c-phu-luc-1": 105,
+   "c-phu-luc-2": 106
   },
   "en": {
    "s-tong-quan": 5,
@@ -253,9 +254,10 @@
    "c-danh-gia-1": 103,
    "c-danh-gia-2": 104,
    "c-danh-gia-3": 105,
-   "s-phu-luc": 106,
-   "c-phu-luc-1": 106,
-   "c-phu-luc-2": 107
+   "c-danh-gia-4": 106,
+   "s-phu-luc": 108,
+   "c-phu-luc-1": 108,
+   "c-phu-luc-2": 109
   },
   "ja": {
    "s-tong-quan": 5,
@@ -381,9 +383,10 @@
    "c-danh-gia-1": 104,
    "c-danh-gia-2": 105,
    "c-danh-gia-3": 106,
-   "s-phu-luc": 108,
-   "c-phu-luc-1": 108,
-   "c-phu-luc-2": 109
+   "c-danh-gia-4": 108,
+   "s-phu-luc": 110,
+   "c-phu-luc-1": 110,
+   "c-phu-luc-2": 111
   }
  }
 }

@@ -48,4 +48,18 @@
       <div class="sub"><div class="sl">07</div><div class="st">Fine-tune nhanh và rẻ</div><p>~1 giờ (200 episode) đến 2 giờ 15 (400 episode) trên 1 H100.</p></div>
     </div>
   </div>
+
+  <div class="card future">
+    <div class="card-head"><span class="num">4</span><h3>Định hướng tương lai</h3></div>
+    <p>Giai đoạn này đã chứng minh GR00T N1.7 điều khiển được G1 gắp–đặt vật trong mô phỏng và dựng được quy trình dữ liệu → fine-tune → đánh giá cho tác vụ mới. Bước tiếp theo đi theo hai nhóm: <b>củng cố kết quả trong mô phỏng</b>, rồi <b>chuẩn bị đưa model lên robot thật</b> (giai đoạn 2).</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">01 · MÔ PHỎNG · CHẤM ĐIỂM</div><div class="st">Chốt cách chấm trước khi chạy lại</div><p>Chấm "đứng yên" theo quãng dịch chuyển trong một khoảng thời gian (ví dụ 0,5 s) thay cho vận tốc tức thời, thống nhất với Shimizu rồi chạy lại bài búa một lần. Con số khi đó so sánh được trực tiếp, không còn phụ thuộc ngưỡng chọn sau khi đã thấy kết quả.</p></div>
+      <div class="sub"><div class="sl">02 · MÔ PHỎNG · HÌNH ẢNH</div><div class="st">Domain randomization cho khung cảnh</div><p>Ngẫu nhiên hoá ánh sáng, vật liệu, nền, camera và vị trí vật khi tạo dữ liệu (phương pháp ở mục III.01), để model không phụ thuộc một khung cảnh: bài táo đang rơi từ 92 % xuống 56 % chỉ vì lệch ánh sáng. Đây là bước tiền đề cho sim2real.</p></div>
+      <div class="sub"><div class="sl">03 · MÔ PHỎNG · TỪNG TÁC VỤ</div><div class="st">Xử lý nút thắt riêng của mỗi kịch bản</div><p>Táo: pha nhìn và tiếp cận (domain randomization, cho robot "khởi động" vài chục tick trước khi giao quyền cho model). Quả: pha nắm (thêm demo nắm đa dạng). Búa: pha thả và lỗi reset làm robot ngã ở đầu episode.</p></div>
+      <div class="sub"><div class="sl">04 · ĐÁNH GIÁ · VSS</div><div class="st">Xác nhận cách chấm bằng video</div><p>Chạy lại cảnh báo thời gian thực với <code>top_k: 1</code> trên episode mới, có cả episode robot ngã, để xác nhận con số 94,2 %; chạy lại tóm tắt video và hỏi đáp với cùng bản sửa. Nếu đạt, đây là cách chấm tự động cho robot thật, nơi không có trạng thái mô phỏng (mục IV.05).</p></div>
+      <div class="sub"><div class="sl">05 · ROBOT THẬT · DỮ LIỆU</div><div class="st">Quy trình dữ liệu kết hợp</div><p>Teleop ít demo ngay tại môi trường làm việc → real2sim dựng lại khung cảnh → sinh thêm demo và lọc bằng mô phỏng → domain randomization → fine-tune, đánh giá trong mô phỏng rồi trên robot thật (mục II.04). Hai trong ba kỹ thuật đã được kiểm chứng ở giai đoạn này.</p></div>
+      <div class="sub"><div class="sl">06 · ROBOT THẬT · HẠ TẦNG</div><div class="st">Pipeline và hạ tầng cho vòng kín thật</div><p>Thêm backend robot thật cho pipeline standalone (phần còn lại dùng lại nguyên vẹn). Đặt máy chủ GPU gần robot hoặc cùng mạng nội bộ và gọi trước chuỗi action kế tiếp để robot không khựng; dùng kết nối có dây cho kính khi thu dữ liệu; dành riêng GPU cho fine-tune (mục I.02).</p></div>
+    </div>
+    <div class="callout"><b>Thứ tự ưu tiên:</b> 01 và 04 tốn ít công nhất và làm cho mọi con số sau này đáng tin hơn; 02 là điều kiện cần trước khi lên robot thật; 05 và 06 là nội dung chính của giai đoạn 2. Mọi lần đánh giá tiếp theo nên giữ cách làm của giai đoạn này: 50–100 lần thử mỗi cấu hình, kèm khoảng tin cậy.</div>
+  </div>
 </section>

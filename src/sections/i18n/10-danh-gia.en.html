@@ -48,4 +48,18 @@
       <div class="sub"><div class="sl">07</div><div class="st">Fine-tuning is fast and cheap</div><p>~1 hour (200 episodes) to 2 h 15 (400 episodes) on 1 H100.</p></div>
     </div>
   </div>
+
+  <div class="card future">
+    <div class="card-head"><span class="num">4</span><h3>Future directions</h3></div>
+    <p>This phase showed that GR00T N1.7 can drive the G1 to pick and place objects in simulation, and built a data → fine-tune → evaluation process for new tasks. The next steps fall into two groups: <b>consolidating the results in simulation</b>, then <b>preparing to run the model on the real robot</b> (phase 2).</p>
+    <div class="grid two">
+      <div class="sub"><div class="sl">01 · SIMULATION · SCORING</div><div class="st">Settle the scoring before re-running</div><p>Judge "at rest" by how far the object moves over a time window (for example 0.5 s) instead of by its instantaneous speed, agree it with Shimizu, then re-run the hammer task once. The figure is then directly comparable and no longer depends on a threshold chosen after seeing the results.</p></div>
+      <div class="sub"><div class="sl">02 · SIMULATION · IMAGES</div><div class="st">Domain randomization of the scene</div><p>Randomize lighting, materials, background, camera and object positions when generating data (method in section III.01), so the model does not depend on one scene: the apple task drops from 92 % to 56 % from a lighting change alone. This is the groundwork for sim2real.</p></div>
+      <div class="sub"><div class="sl">03 · SIMULATION · PER TASK</div><div class="st">Fix each scenario's own bottleneck</div><p>Apple: the look-and-reach phase (domain randomization, and letting the robot "warm up" for a few dozen ticks before the model takes over). Fruits: the grasp phase (more varied grasp demos). Hammer: the release phase and the reset issue that makes the robot fall at the start of an episode.</p></div>
+      <div class="sub"><div class="sl">04 · EVALUATION · VSS</div><div class="st">Confirm video-based scoring</div><p>Re-run the real-time alert with <code>top_k: 1</code> on fresh episodes, including robot falls, to confirm the 94.2 %; re-run video summarization and Q&amp;A with the same fix. If it holds, this is an automatic scorer for the real robot, where there is no simulation state (section IV.05).</p></div>
+      <div class="sub"><div class="sl">05 · REAL ROBOT · DATA</div><div class="st">A combined data process</div><p>A few teleoperated demos in the actual workplace → real2sim to rebuild the scene → generate more demos and filter them in simulation → domain randomization → fine-tune, evaluate in simulation and then on the real robot (section II.04). Two of the three techniques were validated in this phase.</p></div>
+      <div class="sub"><div class="sl">06 · REAL ROBOT · INFRASTRUCTURE</div><div class="st">Pipeline and infrastructure for a real closed loop</div><p>Add a real-robot backend to the standalone pipeline (the rest is reused as is). Put the GPU server near the robot or on the same local network and request the next action chunk early so the robot does not stall; use a wired connection for the headset when collecting data; reserve a GPU for fine-tuning (section I.02).</p></div>
+    </div>
+    <div class="callout"><b>Priorities:</b> 01 and 04 take the least effort and make every later figure more trustworthy; 02 is a prerequisite before moving to the real robot; 05 and 06 are the core of phase 2. Every further evaluation should keep this phase's practice: 50–100 trials per configuration, always with a confidence interval.</div>
+  </div>
 </section>
