@@ -50,6 +50,7 @@
 .hero h1,.hero h2{margin:18px 0 0;font-size:38px;font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:pretty}
 .hero h1 .dot,.hero h2 .dot{color:var(--accent-dot)}
 .hero .lead{margin:15px 0 0;font-size:16px;color:var(--muted);line-height:1.62;text-align:justify;text-wrap:pretty}
+@media screen and (max-width:720px){.hero .lead{text-align:left}}   /* justify leaves wide gaps on phones */
 .hero .lead b{color:var(--accent-strong)}
 .meta{margin-top:26px;padding-top:22px;border-top:1px solid var(--line-2);display:flex;gap:46px;flex-wrap:wrap}
 .meta div{display:flex;flex-direction:column;gap:5px}

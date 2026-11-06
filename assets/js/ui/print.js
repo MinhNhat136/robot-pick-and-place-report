@@ -24,22 +24,35 @@
   /* Cover page: title from the I.01 hero (shown language), the three scenario photos with their sidebar
      names, and the report metadata from config/report.config.js. */
   const COVER = {
-    vi: { kind: "BÁO CÁO DỰ ÁN", client: "KHÁCH HÀNG", author: "THỰC HIỆN", period: "THỜI GIAN", version: "PHIÊN BẢN", date: "NGÀY PHÁT HÀNH" },
-    en: { kind: "PROJECT REPORT", client: "CLIENT", author: "PREPARED BY", period: "PERIOD", version: "VERSION", date: "ISSUED" },
-    ja: { kind: "プロジェクト報告書", client: "お客様", author: "作成", period: "期間", version: "バージョン", date: "発行日" },
+    vi: { a: "BÁO CÁO", b: "DỰ ÁN", client: "Khách hàng", author: "Thực hiện", period: "Thời gian", version: "Phiên bản", date: "Phát hành" },
+    en: { a: "PROJECT", b: "REPORT", client: "Client", author: "Prepared by", period: "Period", version: "Version", date: "Issued" },
+    ja: { a: "プロジェクト", b: "報告書", client: "お客様", author: "作成", period: "期間", version: "バージョン", date: "発行日" },
   };
-  const PHOTOS = ["images/task_apple.jpg", "images/task_fruits.jpg", "images/task_hammer.jpg"];
-  /* The cover element (with its photos) is created once at start-up and stays hidden on screen:
+  const HERO = "images/cover-g1.jpg";
+  const BLUE = "M111.6 61L215 61L215 78L150.4 78A84 84 0 0 1 106.8 232L131.3 205.9A64 64 0 0 0 90.4 85.5Z";
+  const TEAL = "M102.3 64A84 84 0 0 0 77.8 227.8L10 300L37.4 300L122.7 209.2A64 64 0 0 1 81.5 88.1Z";
+  const ICONS = {   // white glyphs on the round badges, 24 x 24 box
+    client: `<circle cx="12" cy="8.5" r="3.6"/><path d="M5 19.5c.8-3.9 3.6-5.8 7-5.8s6.2 1.9 7 5.8z"/>`,
+    period: `<rect x="4.5" y="6" width="15" height="13" rx="2" fill="none" stroke="#fff" stroke-width="2"/><path d="M4.5 10h15M8.5 4v4M15.5 4v4" stroke="#fff" stroke-width="2"/>`,
+    date: `<path d="M7 4h7l4 4v12H7z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M10 12h5M10 15.5h5" stroke="#fff" stroke-width="2"/>`,
+  };
+  /* The cover element (with its photo) is created once at start-up and stays hidden on screen:
      images inserted at print time are not loaded in time (headless Chrome even waits forever). */
   let cover = null;
   function makeCover() {
     cover = document.createElement("div");
     cover.className = "print-cover"; cover.dataset.hue = "blue";
     cover.innerHTML =
-      `<div class="pc-band"><div class="pc-kind"></div><div class="pc-title"></div>` +
-      `<div class="pc-sub">Unitree G1 × NVIDIA Isaac GR00T N1.7</div></div>` +
-      `<div class="pc-photos">${PHOTOS.map(src => `<figure><img src="${src}" alt="" loading="eager" decoding="sync"><figcaption></figcaption></figure>`).join("")}</div>` +
-      `<div class="pc-meta">${["client", "author", "period", "version", "date"].map(k => `<div data-k="${k}"><span class="pc-k"></span><span class="pc-v"></span></div>`).join("")}</div>`;
+      `<img class="pc-preload" src="${HERO}" alt="" loading="eager" decoding="sync">` +
+      `<svg class="pc-art" viewBox="0 0 210 297" preserveAspectRatio="none" aria-hidden="true">` +
+      `<defs><clipPath id="pc-clip"><circle cx="104" cy="148" r="56"/></clipPath></defs>` +
+      `<path d="${TEAL}" fill="#2aa7ba"/><path d="${BLUE}" fill="#2f6f9c"/>` +
+      `<image href="${HERO}" x="48" y="92" width="112" height="112" clip-path="url(#pc-clip)" preserveAspectRatio="xMidYMid slice"/></svg>` +
+      `<svg class="pc-logo" viewBox="0 0 24 28" aria-hidden="true"><path d="M0 0L24 14L0 14z" fill="#2f6f9c"/><path d="M0 14L24 14L0 28z" fill="#2aa7ba"/></svg>` +
+      `<div class="pc-org"></div><div class="pc-tag"></div>` +
+      `<div class="pc-titles"><div class="pc-title"><span class="pc-a"></span><span class="pc-b"></span></div><div class="pc-sub">UNITREE G1 × NVIDIA GR00T</div></div>` +
+      `<div class="pc-icons">${["client", "period", "date"].map((k, i) =>
+        `<div data-k="${k}"><svg viewBox="0 0 24 24" style="background:${i < 2 ? "#2aa7ba" : "#2f6f9c"}" fill="#fff">${ICONS[k]}</svg><span class="pc-k"></span><span class="pc-v"></span></div>`).join("")}</div>`;
     document.body.prepend(cover);
   }
   function fillCover(lang) {
@@ -47,13 +60,14 @@
     const L = COVER[lang] || COVER.vi, cfg = k => String(R.config ? R.config.get(k, lang) || "" : "");
     const hero = R.$$("#tong-quan > .hero").find(h => !hidden(h)) || R.$("#tong-quan > .hero");
     const h1 = hero ? R.$("h1, h2", hero) : null;
-    R.$(".pc-kind", cover).textContent = L.kind;
-    R.$(".pc-title", cover).textContent = h1 ? h1.textContent.replace(/[.。]\s*$/, "").trim() : cfg("project");
-    const groups = R.$$(".nav .nav-group");
-    const scen = groups[2] ? R.$$(".nav-items a span:last-child", groups[2]).map(x => x.textContent.trim()) : [];
-    R.$$("figcaption", cover).forEach((c, i) => (c.textContent = scen[i] || ""));
-    R.$$(".pc-meta > div", cover).forEach(d => {
-      R.$(".pc-k", d).textContent = L[d.dataset.k]; R.$(".pc-v", d).textContent = cfg(d.dataset.k);
+    R.$(".pc-org", cover).textContent = cfg("author");
+    R.$(".pc-tag", cover).textContent = h1 ? h1.textContent.replace(/[.。]\s*$/, "").trim() : cfg("project");
+    R.$(".pc-a", cover).textContent = L.a + (lang === "ja" ? "" : " ");   // no space between Japanese words
+    R.$(".pc-b", cover).textContent = L.b;
+    const val = { client: cfg("client"), period: cfg("period"), date: `${cfg("version")} · ${cfg("date")}` };
+    const key = { client: L.client, period: L.period, date: `${L.version} · ${L.date}` };
+    R.$$(".pc-icons > div", cover).forEach(d => {
+      R.$(".pc-k", d).textContent = key[d.dataset.k]; R.$(".pc-v", d).textContent = val[d.dataset.k];
     });
   }
 
@@ -72,7 +86,7 @@
     R.$$(".nav .nav-group").forEach(g => {
       const kicker = R.$(".nav-group-head .k", g)?.textContent.trim() || "";
       const title = R.$(".nav-group-head .t", g)?.textContent.trim() || "";
-      const roman = (kicker.match(/[IVX]+\s*$/) || [""])[0].trim();
+      const roman = (kicker.match(/\b[IVX]+\b/g) || [""]).pop();   // "PHẦN IV", "PART IV", "第 IV 部"
       const items = R.$$(".nav-items a", g);
       const firstId = items[0] ? items[0].getAttribute("href").slice(1) : "";
       toc += row("t1", kicker, title, `s-${firstId}`);
@@ -88,7 +102,7 @@
         sec.prepend(h);
         if (k === 0) {
           const p = document.createElement("div");
-          p.className = "print-part"; p.textContent = `${kicker}. ${title}`;
+          p.className = "print-part"; p.textContent = `${kicker}${/[IVX]$/.test(kicker) ? "." : ""} ${title}`;   // no dot after "第 IV 部"
           sec.prepend(p);
         }
         R.$$(".card-head h3", sec).filter(x => !hidden(x)).forEach((x, i) => {

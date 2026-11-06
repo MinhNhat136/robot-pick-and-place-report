@@ -200,3 +200,32 @@
 @media print{.pp-track{display:none}}
 .pp-io + .cmpbars,.cmpbars + .cmpbars,.perf + .ds-lab,.cmpbars + .vstack-wrap{margin-top:14px}
 @media screen and (max-width:1000px){.pp-io{grid-template-columns:1fr}.pp-box.step{border:0;border-top:1px solid var(--accent-border);border-bottom:1px solid var(--accent-border)}.pp-ar{height:0;justify-self:center}.pp-ar::after{transform:rotate(90deg)}}
+
+/* II.03 cards 6 and 8: tick zoom diagram and real-time time line (inline SVG) */
+.tk-fig svg.tk-svg{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 8px}
+.tk-svg .tk-t{font:700 12px var(--sans);fill:var(--ink)}
+.tk-svg .tk-s{font:500 10.5px var(--sans);fill:var(--muted)}
+.tk-svg .tk-ax{font:600 10px var(--mono);fill:var(--faint)}
+.tk-svg .tk-n{font:700 10px var(--mono);fill:#fff}
+.tk-svg .tk-n2{font:600 10.5px var(--sans);fill:var(--accent-ink);text-anchor:middle}
+.tk-svg .tk-bar{fill:oklch(0.82 0.06 var(--h))}
+.tk-svg .tk-hi{fill:var(--accent)}
+.tk-svg .tk-phys{fill:var(--accent-soft);stroke:var(--accent-border);stroke-width:1}
+.tk-svg .tk-zoom{fill:oklch(0.52 0.13 var(--h) / .07);stroke:oklch(0.52 0.13 var(--h) / .35);stroke-dasharray:3 3}
+.tk-svg .tk-call,.tk-svg .tk-calldot{fill:#d08a2e}
+.tk-svg .tk-callln{stroke:#d08a2e;stroke-width:1.6}
+.tk-svg .tk-arrow{stroke:var(--accent-ink);stroke-width:1.5}
+.tk-svg .tk-grid{stroke:var(--line);stroke-width:1}
+.tk-svg .tk-mv{fill:var(--accent)}
+.tk-svg .tk-st{fill:var(--warn-bg);stroke:var(--warn);stroke-width:1;stroke-dasharray:3 2}
+.tk-svg .tk-stt{font:600 9.5px var(--sans);fill:var(--warn)}
+.tk-svg .tk-ok{fill:oklch(0.45 0.12 150);font-weight:700}
+.tk-svg .tk-bad{fill:var(--warn);font-weight:700}
+.tk-svg .tk-band{fill:oklch(0.52 0.13 var(--h) / .05)}
+.tk-svg .tk-band2{fill:oklch(0.52 0.13 var(--h) / .11)}
+.tk-svg .tk-tgt{fill:none;stroke:#d08a2e;stroke-width:2.2;stroke-dasharray:6 4}
+.tk-svg .tk-ang{fill:none;stroke:var(--accent);stroke-width:2}
+.tk-svg .tk-angdot{fill:#fff;stroke:var(--accent);stroke-width:1.8}
+.tk-svg .tk-val{font:700 10px var(--mono);fill:var(--accent-ink)}
+.tk-svg .tk-tqp{fill:oklch(0.52 0.13 var(--h) / .75)}
+.tk-svg .tk-tqn{fill:var(--warn)}

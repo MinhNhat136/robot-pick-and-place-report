@@ -3,6 +3,7 @@
    [data-mo="ik"]   2-joint arm, analytic IK, click to aim   [data-mo="pd"]  PD step response (ωn, ζ)
    [data-mo="bal"]  centre of mass vs support, gravity in the body frame
    [data-mo="rate"] joint-rate limiter on a step command (0,2 rad per 20 ms tick)
+   [data-mo="car"]  a car with constant acceleration, position after every physics step
    All schematic; numbers shown come from the report text (ωn = 10·2π, ζ = 2, 0,2 rad/tick, 1,05 rad). */
 (function () {
   "use strict";
@@ -278,10 +279,121 @@
     render();
   }
 
+  /* ---------------- car on a road: position after every physics step (semi-implicit Euler) */
+  function setupCar(box) {
+    const svg = R.$("[data-car-svg]", box), out = R.$("[data-car-out]", box);
+    const inp = k => R.$(`[data-car="${k}"]`, box);
+    const Lg = langOf(box);
+    const CT = {
+      vi: { road: "mặt đường", start: "xuất phát", x: "vị trí x (m)", t: "thời gian t (s)", exact: "công thức chính xác (liên tục)", dots: "vị trí tính được sau mỗi bước",
+            k: "BƯỚC HIỆN TẠI", step: "Bước", time: "Thời điểm t", vel: "Vận tốc v", pos: "Vị trí x", m: "m", ms: "ms", s: "s", mps: "m/s", mps2: "m/s²",
+            idle: "Bấm ▶ Chạy để xem xe đi qua từng bước vật lý.", run: "Đang chạy · chậm 2× · xe chỉ nhảy tới vị trí mới khi một bước vật lý kết thúc",
+            done: (n, xc, xe, d, p) => `Sau 2 s (${n} bước): tính được <b>${xc} m</b>, đúng là <b>${xe} m</b>, sai <b>${d} m</b> (${p} %)`,
+            play: "▶ Chạy", pause: "❚❚ Dừng" },
+      en: { road: "road", start: "start", x: "position x (m)", t: "time t (s)", exact: "exact formula (continuous)", dots: "position computed after each step",
+            k: "CURRENT STEP", step: "Step", time: "Time t", vel: "Velocity v", pos: "Position x", m: "m", ms: "ms", s: "s", mps: "m/s", mps2: "m/s²",
+            idle: "Press ▶ Run to watch the car move through each physics step.", run: "Running · 2× slower · the car only jumps to its new position when a physics step ends",
+            done: (n, xc, xe, d, p) => `After 2 s (${n} steps): computed <b>${xc} m</b>, exact <b>${xe} m</b>, error <b>${d} m</b> (${p} %)`,
+            play: "▶ Run", pause: "❚❚ Pause" },
+      ja: { road: "道路", start: "スタート", x: "位置 x (m)", t: "時間 t (秒)", exact: "厳密な式（連続）", dots: "各ステップ後に計算された位置",
+            k: "現在のステップ", step: "ステップ", time: "時刻 t", vel: "速度 v", pos: "位置 x", m: "m", ms: "ms", s: "秒", mps: "m/s", mps2: "m/s²",
+            idle: "▶ 実行 を押すと、車が物理ステップごとに進む様子を見られます。", run: "実行中 · 2 倍スロー · 車は物理ステップが終わったときだけ新しい位置へ跳ぶ",
+            done: (n, xc, xe, d, p) => `2 秒後（${n} ステップ）：計算値 <b>${xc} m</b>、厳密値 <b>${xe} m</b>、誤差 <b>${d} m</b>（${p} %）`,
+            play: "▶ 実行", pause: "❚❚ 一時停止" },
+    }[Lg] || null;
+    const t = CT || {};
+    const DTS = [0.005, 0.02, 0.05, 0.1, 0.2], T = 2, SLOW = 2;
+    const X0 = 46, X1 = 506, RY = 34, RH = 40, PY0 = 214, PY1 = 112;
+    const playBtn = R.$("[data-car-play]", box), resetBtn = R.$("[data-car-reset]", box);
+    let steps = [], xmax = 1, shown = 0, raf = 0, t0 = 0;
+
+    function compute() {
+      const dt = DTS[+inp("dt").value], v0 = +inp("v0").value, a = +inp("a").value;
+      R.$('[data-car-v="dt"]', box).textContent = `${fmt(dt * 1000, 0, Lg)} ${t.ms}`;
+      R.$('[data-car-v="v0"]', box).textContent = `${fmt(v0, 1, Lg)} ${t.mps}`;
+      R.$('[data-car-v="a"]', box).textContent = `${fmt(a, 1, Lg)} ${t.mps2}`;
+      const n = Math.round(T / dt);
+      steps = [{ n: 0, t: 0, v: v0, x: 0 }];
+      let v = v0, x = 0;
+      for (let i = 1; i <= n; i++) { v += a * dt; x += v * dt; steps.push({ n: i, t: i * dt, v, x }); }
+      const exact = tt => v0 * tt + 0.5 * a * tt * tt;
+      const top = Math.max(exact(T), x, 1);
+      xmax = Math.ceil(top / 5) * 5 + (top % 5 > 4 ? 5 : 0);
+      return { dt, v0, a, exact };
+    }
+    let P = compute();
+
+    function car(px) {
+      return `<g transform="translate(${(px - 34).toFixed(1)},${RY + 6})">
+        <path d="M2 18 L6 9 Q8 5 13 5 L24 5 Q28 5 31 9 L36 15 L36 22 L2 22 Z" fill="${A}"/>
+        <path d="M10 10 L13 7 L19 7 L19 12 L10 12 Z M21 7 L25 7 L29 12 L21 12 Z" fill="#dfe9f7"/>
+        <circle cx="10" cy="23" r="4" fill="${INK}"/><circle cx="28" cy="23" r="4" fill="${INK}"/></g>`;
+    }
+
+    function render(k) {
+      shown = k;
+      const s = steps[k], last = steps.length - 1;
+      const sx = x => X0 + (X1 - X0) * x / xmax, st = tt => X0 + (X1 - X0) * tt / T, sy = x => PY0 - (PY0 - PY1) * x / xmax;
+      const every = Math.max(1, Math.ceil(last / 10));
+      let g = `<rect x="${X0 - 10}" y="${RY}" width="${X1 - X0 + 20}" height="${RH}" rx="6" fill="#e9ecef"/>
+        <line x1="${X0 - 10}" y1="${RY + RH - 6}" x2="${X1 + 10}" y2="${RY + RH - 6}" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>`;
+      for (let m = 0; m <= xmax; m += 5) g += `<line x1="${sx(m)}" y1="${RY + RH}" x2="${sx(m)}" y2="${RY + RH + 5}" stroke="${MUTE}"/>${lbl(sx(m), RY + RH + 16, `${m}`, 'text-anchor="middle"')}`;
+      g += lbl(X0 - 10, RY - 6, `${t.road} · ${t.x}`);
+      for (let i = 0; i <= k; i++) {
+        const big = i === k;
+        g += `<circle cx="${sx(steps[i].x).toFixed(1)}" cy="${RY + RH - 6}" r="${big ? 4.2 : last > 100 ? 1.6 : 2.8}" fill="${big ? "#d08a2e" : A}" opacity="${big ? 1 : .8}"/>`;
+        if (last <= 60 && i % every === 0 && i > 0) g += `<text x="${sx(steps[i].x).toFixed(1)}" y="${RY + 13}" class="r2s-lbl" text-anchor="middle" style="font-size:8.5px;fill:#8a929e">${i}</text>`;
+      }
+      g += car(sx(s.x));
+      // x - t plot
+      g += `<line x1="${X0}" y1="${PY0}" x2="${X1}" y2="${PY0}" stroke="#c5ccd6"/><line x1="${X0}" y1="${PY0}" x2="${X0}" y2="${PY1 - 6}" stroke="#c5ccd6"/>`;
+      for (let q = 0; q <= T; q += 0.5) g += `<line x1="${st(q)}" y1="${PY0}" x2="${st(q)}" y2="${PY0 + 4}" stroke="${MUTE}"/>${lbl(st(q), PY0 + 15, fmt(q, 1, Lg), 'text-anchor="middle"')}`;
+      g += lbl(X1, PY0 + 29, t.t, 'text-anchor="end"') + lbl(X0 + 4, PY1 - 10, t.x);
+      let path = "";
+      for (let i = 0; i <= 80; i++) { const tt = T * i / 80; path += `${i ? "L" : "M"}${st(tt).toFixed(1)},${sy(P.exact(tt)).toFixed(1)}`; }
+      g += `<path d="${path}" fill="none" stroke="${MUTE}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      for (let i = 0; i <= k; i++) g += `<circle cx="${st(steps[i].t).toFixed(1)}" cy="${sy(steps[i].x).toFixed(1)}" r="${last > 100 ? 1.5 : 2.6}" fill="${i === k ? "#d08a2e" : A}"/>`;
+      g += `<line x1="${st(s.t)}" y1="${PY1 - 6}" x2="${st(s.t)}" y2="${PY0}" stroke="#d08a2e" stroke-width="1" stroke-dasharray="2 3"/>`;
+      g += `<path d="M${X1 - 236} ${PY1 - 2}h16" stroke="${MUTE}" stroke-width="2" stroke-dasharray="5 4"/>${lbl(X1 - 214, PY1 + 2, t.exact)}`;
+      g += `<circle cx="${X1 - 228}" cy="${PY1 + 12}" r="2.8" fill="${A}"/>${lbl(X1 - 214, PY1 + 16, t.dots)}`;
+      svg.innerHTML = g;
+      const xe = P.exact(s.t), err = Math.abs(steps[last].x - P.exact(T));
+      const verdict = k === last && k > 0
+        ? `<div class="gen-verdict ${err / Math.max(P.exact(T), 1e-9) < 0.01 ? "ok" : "bad"}">${t.done(last, fmt(steps[last].x, 2, Lg), fmt(P.exact(T), 2, Lg), fmt(err, 3, Lg), fmt(100 * err / Math.max(P.exact(T), 1e-9), 1, Lg))}</div>`
+        : `<div class="gen-verdict">${raf ? t.run : t.idle}</div>`;
+      out.innerHTML = `<span class="ds-k">${t.k}</span>
+        <ul><li><span>${t.step}</span><b>${s.n} / ${last}</b></li><li><span>${t.time}</span><b>${fmt(s.t * 1000, 0, Lg)} ${t.ms}</b></li>
+        <li><span>${t.vel}</span><b>${fmt(s.v, 2, Lg)} ${t.mps}</b></li><li><span>${t.pos}</span><b>${fmt(s.x, 3, Lg)} ${t.m}</b></li></ul>${verdict}`;
+      void xe;
+    }
+
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; playBtn.textContent = t.play; }
+    function frame(now) {
+      // the first rAF timestamp can be slightly earlier than performance.now() at the click: clamp at 0
+      const simT = Math.max(0, (now - t0) / 1000 / SLOW);
+      const k = Math.max(0, Math.min(steps.length - 1, Math.floor(simT / P.dt + 1e-9)));
+      if (k !== shown) render(k);
+      if (k >= steps.length - 1) { stop(); render(k); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    playBtn.addEventListener("click", () => {
+      if (raf) { stop(); render(shown); return; }
+      if (shown >= steps.length - 1) shown = 0;
+      t0 = performance.now() - shown * P.dt * SLOW * 1000;
+      playBtn.textContent = t.pause;
+      raf = requestAnimationFrame(frame);
+      render(shown);
+    });
+    resetBtn.addEventListener("click", () => { stop(); render(0); });
+    ["dt", "v0", "a"].forEach(k => inp(k).addEventListener("input", () => { stop(); P = compute(); render(steps.length - 1); }));
+    playBtn.textContent = t.play;
+    render(steps.length - 1);   // full path by default (also what the PDF shows)
+  }
+
   R.motion = {
     init() {
       if (!R.$("#dong-hoc")) return;
-      const map = { body: setupBody, fk: setupFK, ik: setupIK, pd: setupPD, bal: setupBal, rate: setupRate };
+      const map = { body: setupBody, fk: setupFK, ik: setupIK, pd: setupPD, bal: setupBal, rate: setupRate, car: setupCar };
       R.$$("[data-mo]").forEach(box => { try { map[box.dataset.mo] && map[box.dataset.mo](box); } catch (e) { console.error("motion", box.dataset.mo, e); } });
     },
   };

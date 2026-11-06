@@ -115,24 +115,28 @@
   .print-toc .t3 .toc-tl{border-bottom-color:#d3d8e0}
 }
 
-/* Cover page (ui/print.js): first page of the PDF, without a page number */
+/* Cover page (ui/print.js): first page of the PDF, full bleed, without a page number. Layout after the
+   reference cover: logo, organisation and tagline at the top left; a ring of two bands (teal, blue)
+   around a round photo; two-tone title, subtitle and three round badges at the bottom right. */
 .print-cover{display:none}
-@page :first{@bottom-right{content:none}}
+@page :first{margin:0;@bottom-right{content:none}}
 @media print{
-  .print-cover{display:flex;flex-direction:column;height:262mm;break-after:page;font-family:var(--sans);color:var(--ink)}
-  .print-cover .pc-band{border-radius:6mm;padding:20mm 14mm 16mm;color:#fff;
-    background:linear-gradient(135deg,oklch(0.42 0.13 var(--h)),oklch(0.55 0.14 calc(var(--h) - 20)))}
-  .print-cover .pc-kind{font:700 10pt/1 var(--mono);letter-spacing:.22em;opacity:.85}
-  .print-cover .pc-title{font:800 30pt/1.15 var(--sans);letter-spacing:-.015em;margin:9mm 0 7mm}
-  .print-cover .pc-sub{font:600 12pt/1.3 var(--sans);opacity:.9;padding-top:5mm;border-top:1px solid rgba(255,255,255,.45)}
-  .print-cover .pc-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin:10mm 0 0}
-  .print-cover figure{margin:0}
-  .print-cover img{display:block;width:100%;height:46mm;object-fit:cover;border-radius:3.5mm}
-  .print-cover figcaption{font:600 9pt/1.3 var(--sans);color:var(--ink-3);margin-top:2.5mm;text-align:center}
-  .print-cover .pc-meta{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6mm 8mm;padding-top:7mm;border-top:2px solid var(--accent)}
-  .print-cover .pc-meta > div{display:flex;flex-direction:column;gap:1.5mm}
-  .print-cover .pc-k{font:700 7.5pt/1 var(--mono);letter-spacing:.16em;color:var(--accent)}
-  .print-cover .pc-v{font:700 11pt/1.3 var(--sans);color:var(--ink)}
+  .print-cover{display:block;position:relative;width:210mm;height:296.5mm;overflow:hidden;break-after:page;
+    font-family:var(--sans);color:#1c2a3a;background:#fff}
+  .print-cover .pc-preload{position:absolute;width:1px;height:1px;opacity:0}
+  .print-cover .pc-art{position:absolute;left:0;top:0;width:210mm;height:297mm}
+  .print-cover .pc-logo{position:absolute;left:16.4mm;top:15.5mm;width:11.5mm;height:13.5mm}
+  .print-cover .pc-org{position:absolute;left:34mm;top:18mm;font:800 17pt/1 var(--sans);letter-spacing:.01em;text-transform:uppercase;color:#1c2a3a}
+  .print-cover .pc-tag{position:absolute;left:16.4mm;top:33mm;width:86mm;font:400 10pt/1.45 var(--sans);color:#7a8494}
+  .print-cover .pc-titles{position:absolute;right:10mm;bottom:28mm;width:150mm;text-align:right}
+  .print-cover .pc-title{font:800 27pt/1.05 var(--sans);letter-spacing:-.005em;color:#1c2a3a;white-space:nowrap}
+  .print-cover .pc-b{color:#2f6f9c}
+  .print-cover .pc-sub{font:500 15pt/1.2 var(--sans);letter-spacing:.01em;color:#8a929e;margin-top:2.2mm}
+  .print-cover .pc-icons{position:absolute;right:6mm;bottom:5mm;display:flex;gap:3mm}
+  .print-cover .pc-icons > div{width:22mm;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .print-cover .pc-icons svg{width:9.4mm;height:9.4mm;border-radius:50%;padding:2mm;box-sizing:border-box}
+  .print-cover .pc-k{font:700 5.6pt/1.2 var(--sans);color:#1c2a3a;margin-top:1.6mm}
+  .print-cover .pc-v{font:400 5.6pt/1.25 var(--sans);color:#7a8494}
 }
 
 /* Firefox does not support @page margin boxes, so it prints its own header and footer (title, URL,
