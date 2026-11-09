@@ -50,7 +50,7 @@
       `<image href="${HERO}" x="48" y="92" width="112" height="112" clip-path="url(#pc-clip)" preserveAspectRatio="xMidYMid slice"/></svg>` +
       `<svg class="pc-logo" viewBox="0 0 24 28" aria-hidden="true"><path d="M0 0L24 14L0 14z" fill="#2f6f9c"/><path d="M0 14L24 14L0 28z" fill="#2aa7ba"/></svg>` +
       `<div class="pc-org"></div><div class="pc-tag"></div>` +
-      `<div class="pc-titles"><div class="pc-title"><span class="pc-a"></span><span class="pc-b"></span></div><div class="pc-sub">UNITREE G1 × NVIDIA GR00T</div></div>` +
+      `<div class="pc-titles"><div class="pc-title"></div><div class="pc-sub"></div></div>` +
       `<div class="pc-icons">${["client", "period", "date"].map((k, i) =>
         `<div data-k="${k}"><svg viewBox="0 0 24 24" style="background:${i < 2 ? "#2aa7ba" : "#2f6f9c"}" fill="#fff">${ICONS[k]}</svg><span class="pc-k"></span><span class="pc-v"></span></div>`).join("")}</div>`;
     document.body.prepend(cover);
@@ -62,8 +62,15 @@
     const h1 = hero ? R.$("h1, h2", hero) : null;
     R.$(".pc-org", cover).textContent = cfg("author");
     R.$(".pc-tag", cover).textContent = h1 ? h1.textContent.replace(/[.。]\s*$/, "").trim() : cfg("project");
-    R.$(".pc-a", cover).textContent = L.a + (lang === "ja" ? "" : " ");   // no space between Japanese words
-    R.$(".pc-b", cover).textContent = L.b;
+    // big title = report title from the config, "NVIDIA GR00T" in the accent colour; report kind below it
+    const title = cfg("title"), hi = "NVIDIA GR00T", at = title.indexOf(hi);
+    const ttl = R.$(".pc-title", cover); ttl.textContent = "";
+    if (at < 0) ttl.textContent = title;
+    else {
+      const b = document.createElement("span"); b.className = "pc-b"; b.textContent = hi;
+      ttl.append(title.slice(0, at), b, title.slice(at + hi.length));
+    }
+    R.$(".pc-sub", cover).textContent = `${L.a}${lang === "ja" ? "" : " "}${L.b} · UNITREE G1`;
     const val = { client: cfg("client"), period: cfg("period"), date: `${cfg("version")} · ${cfg("date")}` };
     const key = { client: L.client, period: L.period, date: `${L.version} · ${L.date}` };
     R.$$(".pc-icons > div", cover).forEach(d => {
@@ -76,6 +83,7 @@
     const wrap = R.$(".wrap"); if (!wrap) return;
     const lang = document.documentElement.lang || "vi";
     fillCover(lang);
+    if (R.config) document.title = R.config.get("title", lang) || document.title;   // PDF document title
     const pages = pageSet(lang) || {};
     const pg = k => pages[k] || "";
     const mark = (el, k) => { if (PAGINATE) el.insertAdjacentHTML("beforeend", `<span class="pg-mark">@@${k}@@</span>`); };

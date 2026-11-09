@@ -128,9 +128,9 @@
   .print-cover .pc-logo{position:absolute;left:16.4mm;top:15.5mm;width:11.5mm;height:13.5mm}
   .print-cover .pc-org{position:absolute;left:34mm;top:18mm;font:800 17pt/1 var(--sans);letter-spacing:.01em;text-transform:uppercase;color:#1c2a3a}
   .print-cover .pc-tag{position:absolute;left:16.4mm;top:33mm;width:86mm;font:400 10pt/1.45 var(--sans);color:#7a8494}
-  .print-cover .pc-titles{position:absolute;right:10mm;bottom:28mm;width:150mm;text-align:right}
-  .print-cover .pc-title{font:800 27pt/1.05 var(--sans);letter-spacing:-.005em;color:#1c2a3a;white-space:nowrap}
-  .print-cover .pc-b{color:#2f6f9c}
+  .print-cover .pc-titles{position:absolute;right:10mm;bottom:28mm;width:108mm;text-align:right}   /* stays right of the teal band */
+  .print-cover .pc-title{font:800 22pt/1.14 var(--sans);letter-spacing:-.005em;color:#1c2a3a;text-wrap:balance;word-break:auto-phrase}
+  .print-cover .pc-b{color:#2f6f9c;white-space:nowrap}
   .print-cover .pc-sub{font:500 15pt/1.2 var(--sans);letter-spacing:.01em;color:#8a929e;margin-top:2.2mm}
   .print-cover .pc-icons{position:absolute;right:6mm;bottom:5mm;display:flex;gap:3mm}
   .print-cover .pc-icons > div{width:22mm;display:flex;flex-direction:column;align-items:center;text-align:center}
