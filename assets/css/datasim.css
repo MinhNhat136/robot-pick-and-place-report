@@ -152,3 +152,11 @@
 @media screen and (max-width:1200px){.vstack-wrap{grid-template-columns:1fr}}
 @media screen and (max-width:760px){.ds-steps.three{grid-template-columns:1fr}.vl.l2,.vl.l3{margin:0}}
 
+
+/* II.03 card 6: falling apple, time bar under the plot (ui/motion.js setupApple) */
+.ap-left{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ap-left svg{display:block;width:100%;height:auto;background:oklch(0.985 0.006 var(--h));border-radius:12px;touch-action:none;cursor:ew-resize}
+.ap-time{display:flex;flex-direction:column;gap:4px;font:600 10px var(--mono);letter-spacing:.06em;color:var(--ink-3)}
+.ap-time b{font:700 11px var(--mono);color:var(--ink);margin-left:6px}
+.ap-time input{accent-color:var(--accent);width:100%}
+@media print{.ap-time{display:none}}

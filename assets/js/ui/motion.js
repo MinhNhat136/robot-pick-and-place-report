@@ -4,6 +4,9 @@
    [data-mo="bal"]  centre of mass vs support, gravity in the body frame
    [data-mo="rate"] joint-rate limiter on a step command (0,2 rad per 20 ms tick)
    [data-mo="car"]  a car with constant acceleration, position after every physics step
+   [data-mo="apple"] a falling apple, height after every 5 ms physics-engine tick (200 Hz), time bar to scrub
+   [data-mo="ctl"]  motion tick: 40 joint commands at 50 Hz, each held over 4 physics ticks of PD
+   [data-mo="rel"]  how the two ticks nest: GR00T chunk → 40 motion ticks → decimation physics ticks, decimation slider
    All schematic; numbers shown come from the report text (ωn = 10·2π, ζ = 2, 0,2 rad/tick, 1,05 rad). */
 (function () {
   "use strict";
@@ -390,10 +393,423 @@
     render(steps.length - 1);   // full path by default (also what the PDF shows)
   }
 
+  /* ---------------- falling apple: one physics-engine tick = 5 ms (200 Hz), gravity only, semi-implicit Euler */
+  function setupApple(box) {
+    const svg = R.$("[data-apple-svg]", box), out = R.$("[data-apple-out]", box), slider = R.$("[data-apple-k]", box);
+    const playBtn = R.$("[data-apple-play]", box), speedBtn = R.$("[data-apple-speed]", box);
+    const Lg = langOf(box);
+    const t = {
+      vi: { h: "độ cao h (m)", tm: "thời gian t (s)", ground: "mặt đất", exact: "rơi tự do lý tưởng (liên tục)", dots: "vị trí tại mỗi tick",
+            k: "TICK HIỆN TẠI", tick: "Tick", time: "Thời điểm t", vel: "Vận tốc v", hh: "Độ cao h", dh: "Quãng rơi trong tick này",
+            start: "Tick 0: vừa thả táo, h = 2 m, v = 0. Kéo thanh thời gian hoặc bấm + 1 tick.",
+            land: (k, ms, ex) => `Chạm đất ở tick ${k} (t = ${ms} ms). Rơi tự do lý tưởng: ${ex} ms. Sai khác nhỏ hơn 1 tick.`,
+            mid: "Giữa hai tick, engine không tính gì: táo nhảy thẳng từ vị trí cũ sang vị trí mới.",
+            play: "▶ Chạy", pause: "❚❚ Dừng", slow: "Chậm 10×", real: "Tốc độ thật" },
+      en: { h: "height h (m)", tm: "time t (s)", ground: "ground", exact: "ideal free fall (continuous)", dots: "position at each tick",
+            k: "CURRENT TICK", tick: "Tick", time: "Time t", vel: "Velocity v", hh: "Height h", dh: "Fall during this tick",
+            start: "Tick 0: the apple is released, h = 2 m, v = 0. Drag the time bar or press + 1 tick.",
+            land: (k, ms, ex) => `Hits the ground at tick ${k} (t = ${ms} ms). Ideal free fall: ${ex} ms. The difference is less than one tick.`,
+            mid: "Between two ticks the engine computes nothing: the apple jumps straight from its old position to the new one.",
+            play: "▶ Run", pause: "❚❚ Pause", slow: "10× slower", real: "Real speed" },
+      ja: { h: "高さ h (m)", tm: "時間 t (秒)", ground: "地面", exact: "理想的な自由落下（連続）", dots: "各 tick での位置",
+            k: "現在の TICK", tick: "Tick", time: "時刻 t", vel: "速度 v", hh: "高さ h", dh: "この tick での落下量",
+            start: "Tick 0：リンゴを放した瞬間、h = 2 m、v = 0。タイムバーをドラッグするか + 1 tick を押してください。",
+            land: (k, ms, ex) => `tick ${k}（t = ${ms} ms）で地面に到達。理想的な自由落下では ${ex} ms。差は 1 tick 未満です。`,
+            mid: "tick と tick の間、エンジンは何も計算しません。リンゴは前の位置から新しい位置へ一気に移ります。",
+            play: "▶ 実行", pause: "❚❚ 一時停止", slow: "10 倍スロー", real: "実時間" },
+    }[Lg] || {};
+    const G = 9.81, DT = 0.005, H0 = 2;
+    // ticks until the apple reaches the ground (the last one is clamped to h = 0)
+    const S = [{ t: 0, v: 0, h: H0 }];
+    for (let v = 0, h = H0, i = 1; h > 0; i++) { v -= G * DT; h += v * DT; if (h <= 0) h = 0; S.push({ t: i * DT, v, h }); }
+    const N = S.length - 1, TF = Math.sqrt(2 * H0 / G), TMAX = 0.7;
+    slider.max = N;
+    // shared height axis for the ruler (left) and the h–t plot (right)
+    const GY = 262, TY = 34, sy = h => GY - (GY - TY) * h / H0;
+    const AX = 98, PX0 = 214, PX1 = 506, st = tt => PX0 + (PX1 - PX0) * tt / TMAX;
+    let k = Math.min(N, +slider.value), raf = 0, slow = true, t0 = 0, k0 = 0;
+
+    const apple = (x, y) => `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})">
+      <path d="M0 -9 C6 -14 13 -9 12 -1 C11 8 5 12 0 10 C-5 12 -11 8 -12 -1 C-13 -9 -6 -14 0 -9Z" fill="#d1453b"/>
+      <path d="M0 -9 C0 -13 1 -16 3 -18" stroke="#6b4a2b" stroke-width="1.6" fill="none"/>
+      <path d="M2 -14 C6 -18 10 -17 11 -15 C8 -13 5 -13 2 -14Z" fill="#5a9b48"/>
+      <ellipse cx="-5" cy="-4" rx="2.4" ry="3.6" fill="#fff" opacity=".35"/></g>`;
+
+    function render() {
+      const s = S[k];
+      R.$("[data-apple-v]", box).textContent = `${t.tick} ${k} / ${N} · ${fmt(s.t * 1000, 0, Lg)} ms`;
+      if (+slider.value !== k) slider.value = k;
+      let g = "";
+      // ruler
+      g += `<line x1="${AX - 52}" y1="${TY}" x2="${AX - 52}" y2="${GY}" stroke="#c5ccd6"/>`;
+      for (let m = 0; m <= H0 + 1e-9; m += 0.25) {
+        const major = Math.abs(m * 2 - Math.round(m * 2)) < 1e-9;
+        g += `<line x1="${AX - 52}" y1="${sy(m)}" x2="${AX - (major ? 44 : 48)}" y2="${sy(m)}" stroke="${MUTE}"/>`;
+        if (major) g += lbl(AX - 58, sy(m) + 3.5, fmt(m, 1, Lg), 'text-anchor="end"');
+        g += `<line x1="${PX0}" y1="${sy(m)}" x2="${PX1}" y2="${sy(m)}" stroke="#eef0f3"/>`;
+      }
+      g += lbl(6, 16, t.h);
+      g += `<rect x="${AX - 52}" y="${GY}" width="${PX1 - AX + 52}" height="6" fill="#d9cbb3"/>${lbl(AX - 46, GY + 20, t.ground)}`;
+      // past positions (stroboscope column) and the apple
+      for (let i = 0; i < k; i++) g += `<circle cx="${AX - 26}" cy="${sy(S[i].h).toFixed(1)}" r="1.8" fill="${A}" opacity=".45"/>`;
+      g += `<circle cx="${AX - 26}" cy="${sy(s.h).toFixed(1)}" r="3.2" fill="#d08a2e"/>`;
+      g += apple(AX + 6, sy(s.h) - 10);
+      g += `<line x1="${AX + 20}" y1="${sy(s.h).toFixed(1)}" x2="${st(s.t).toFixed(1)}" y2="${sy(s.h).toFixed(1)}" stroke="#d08a2e" stroke-width="1" stroke-dasharray="2 3"/>`;
+      // h–t plot: time axis with one mark per tick
+      g += `<line x1="${PX0}" y1="${TY - 6}" x2="${PX0}" y2="${GY}" stroke="#c5ccd6"/>`;
+      for (let i = 0; i <= N; i++) g += `<line x1="${st(i * DT).toFixed(1)}" y1="${GY + 6}" x2="${st(i * DT).toFixed(1)}" y2="${GY + (i % 20 ? 9 : 12)}" stroke="${i % 20 ? "#cfd4db" : "#8a929e"}"/>`;
+      for (let q = 0; q <= 0.6 + 1e-9; q += 0.1) g += lbl(st(q), GY + 24, fmt(q, 1, Lg), 'text-anchor="middle"');
+      g += lbl(PX1, GY + 37, t.tm, 'text-anchor="end"');
+      let path = "";
+      for (let i = 0; i <= 60; i++) { const tt = TF * i / 60; path += `${i ? "L" : "M"}${st(tt).toFixed(1)},${sy(H0 - 0.5 * G * tt * tt).toFixed(1)}`; }
+      g += `<path d="${path}" fill="none" stroke="${MUTE}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      for (let i = 0; i <= k; i++) g += `<circle cx="${st(S[i].t).toFixed(1)}" cy="${sy(S[i].h).toFixed(1)}" r="${i === k ? 4 : 1.7}" fill="${i === k ? "#d08a2e" : A}"/>`;
+      g += `<line x1="${st(s.t).toFixed(1)}" y1="${TY - 6}" x2="${st(s.t).toFixed(1)}" y2="${GY + 6}" stroke="#d08a2e" stroke-width="1" stroke-dasharray="2 3"/>`;
+      // legend
+      // legend: upper right, above the curve
+      g += `<path d="M334 40h16" stroke="${MUTE}" stroke-width="2" stroke-dasharray="5 4"/>${lbl(356, 44, t.exact)}`;
+      g += `<circle cx="342" cy="56" r="2.6" fill="${A}"/>${lbl(356, 60, t.dots)}`;
+      svg.innerHTML = g;
+
+      const dh = k ? S[k - 1].h - s.h : 0;
+      const f = (x, d) => fmt(x, d, Lg);
+      const g9 = f(G, 2), dt = f(DT, 3);
+      const eq = k ? `<div class="mo-eq">v<sub>${k}</sub> = ${f(S[k - 1].v, 3)} − ${g9} × ${dt}<br>&emsp;= ${f(s.v, 3)} m/s<br>h<sub>${k}</sub> = ${f(S[k - 1].h, 4)} + (${f(s.v, 3)}) × ${dt}<br>&emsp;= ${k === N ? `${f(S[k - 1].h + s.v * DT, 4)} → 0 (${t.ground})` : `${f(s.h, 4)} m`}</div>` : "";
+      const verdict = k === 0 ? `<div class="gen-verdict">${t.start}</div>`
+        : k === N ? `<div class="gen-verdict ok">${t.land(N, f(N * DT * 1000, 0), f(TF * 1000, 1))}</div>`
+        : `<div class="gen-verdict">${t.mid}</div>`;
+      out.innerHTML = `<span class="ds-k">${t.k}</span>
+        <ul><li><span>${t.tick}</span><b>${k} / ${N}</b></li><li><span>${t.time}</span><b>${f(s.t * 1000, 0)} ms</b></li>
+        <li><span>${t.vel}</span><b>${f(s.v, 3)} m/s</b></li><li><span>${t.hh}</span><b>${f(s.h, 4)} m</b></li>
+        <li><span>${t.dh}</span><b>${f(dh * 1000, 1)} mm</b></li></ul>${eq}${verdict}`;
+    }
+
+    const go = n => { k = Math.max(0, Math.min(N, n)); render(); };
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; playBtn.textContent = t.play; }
+    function frame(now) {
+      const simT = Math.max(0, (now - t0) / 1000) / (slow ? 10 : 1);
+      const n = Math.min(N, k0 + Math.floor(simT / DT + 1e-9));
+      if (n !== k) go(n);
+      if (n >= N) { stop(); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() {
+      if (k >= N) go(0);
+      k0 = k; t0 = performance.now();
+      playBtn.textContent = t.pause;
+      raf = requestAnimationFrame(frame);
+    }
+    playBtn.addEventListener("click", () => (raf ? stop() : start()));
+    R.$("[data-apple-prev]", box).addEventListener("click", () => { stop(); go(k - 1); });
+    R.$("[data-apple-next]", box).addEventListener("click", () => { stop(); go(k + 1); });
+    speedBtn.addEventListener("click", () => {
+      slow = !slow; speedBtn.textContent = slow ? t.slow : t.real;
+      if (raf) { stop(); start(); }
+    });
+    slider.addEventListener("input", () => { stop(); go(+slider.value); });
+    // drag on the h–t plot moves the time cursor too
+    const toTick = e => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 520;
+      return Math.round((x - PX0) / (PX1 - PX0) * TMAX / DT);
+    };
+    let drag = false;
+    svg.addEventListener("pointerdown", e => { const r = svg.getBoundingClientRect(); if ((e.clientX - r.left) / r.width * 520 < PX0 - 6) return; drag = true; svg.setPointerCapture(e.pointerId); stop(); go(toTick(e)); });
+    svg.addEventListener("pointermove", e => { if (drag) go(toTick(e)); });
+    svg.addEventListener("pointerup", () => { drag = false; });
+    svg.addEventListener("pointercancel", () => { drag = false; });
+    playBtn.textContent = t.play; speedBtn.textContent = t.slow;
+    render();
+  }
+
+  /* ---------------- motion (control) tick: one shoulder joint, 40 commands at 50 Hz, PD over 4 physics ticks each */
+  function setupCtl(box) {
+    const svg = R.$("[data-ctl-svg]", box), out = R.$("[data-ctl-out]", box), slider = R.$("[data-ctl-n]", box);
+    const playBtn = R.$("[data-ctl-play]", box), speedBtn = R.$("[data-ctl-speed]", box);
+    const Lg = langOf(box);
+    const t = {
+      vi: { ang: "góc khớp (rad)", tm: "thời gian t (s)", chunk: "CHUỖI 40 LỆNH TỪ GR00T", used: "đã dùng", cur: "đang giữ",
+            cmd: "lệnh (đổi mỗi 20 ms)", act: "góc thực (mỗi 5 ms)", torso: "thân", tgt: "lệnh", real: "thực",
+            zoom: "20 MS = 4 TICK VẬT LÝ", k: "TICK HIỆN TẠI", ctl: "Tick chuyển động", phy: "Tick vật lý trong tick này", tot: "Tổng tick vật lý",
+            time: "Thời điểm t", cmdv: "Lệnh đang giữ", actv: "Góc thực", err: "Sai lệch",
+            v0: "Chưa bắt đầu: tay đứng yên ở 0 rad. Bấm + 1 tick vật lý hoặc kéo thanh thời gian.",
+            vNew: j => `Tick chuyển động mới: lấy lệnh số ${j} trong chuỗi và giữ nguyên 20 ms.`,
+            vHold: m => `Lệnh không đổi. Engine chạy tick vật lý ${m}/4, bộ PD kéo khớp về phía lệnh.`,
+            vEnd: "Đã dùng hết 40 lệnh sau 0,8 s: tick chuyển động tiếp theo lấy lệnh đầu của chuỗi mới.",
+            play: "▶ Chạy", pause: "❚❚ Dừng", slow: "Chậm 10×", realSp: "Tốc độ thật" },
+      en: { ang: "joint angle (rad)", tm: "time t (s)", chunk: "CHUNK OF 40 COMMANDS FROM GR00T", used: "used", cur: "held now",
+            cmd: "command (changes every 20 ms)", act: "actual angle (every 5 ms)", torso: "torso", tgt: "command", real: "actual",
+            zoom: "1 MOTION TICK (20 MS) = 4 TICKS", k: "CURRENT TICK", ctl: "Motion tick", phy: "Physics tick in this tick", tot: "Total physics ticks",
+            time: "Time t", cmdv: "Command held", actv: "Actual angle", err: "Error",
+            v0: "Not started: the arm rests at 0 rad. Press + 1 physics tick or drag the time bar.",
+            vNew: j => `New motion tick: take command ${j} from the chunk and hold it for 20 ms.`,
+            vHold: m => `The command does not change. The engine runs physics tick ${m}/4 and PD pulls the joint toward the command.`,
+            vEnd: "All 40 commands used after 0.8 s: the next motion tick takes the first command of the new chunk.",
+            play: "▶ Run", pause: "❚❚ Pause", slow: "10× slower", realSp: "Real speed" },
+      ja: { ang: "関節角度 (rad)", tm: "時間 t (秒)", chunk: "GR00T からの 40 個の指令", used: "使用済み", cur: "保持中",
+            cmd: "指令（20 ms ごとに変化）", act: "実際の角度（5 ms ごと）", torso: "胴体", tgt: "指令", real: "実際",
+            zoom: "動作 1 TICK = 物理 4 TICK", k: "現在の TICK", ctl: "動作 tick", phy: "この中の物理 tick", tot: "物理 tick の合計",
+            time: "時刻 t", cmdv: "保持中の指令", actv: "実際の角度", err: "誤差",
+            v0: "開始前：腕は 0 rad で静止。+ 物理 1 tick を押すか、タイムバーをドラッグしてください。",
+            vNew: j => `新しい動作 tick：チャンクの ${j} 番目の指令を取り出し、20 ms 保持します。`,
+            vHold: m => `指令は変わりません。エンジンが物理 tick ${m}/4 を実行し、PD が関節を指令の方へ引きます。`,
+            vEnd: "0.8 秒で 40 個の指令を使い切りました。次の動作 tick は新しいチャンクの最初の指令を使います。",
+            play: "▶ 実行", pause: "❚❚ 一時停止", slow: "10 倍スロー", realSp: "実時間" },
+    }[Lg] || {};
+    const DT = 0.005, DEC = 4, NC = 40, N = NC * DEC, WN = 10 * 2 * Math.PI, Z = 2, TOP = 0.8;
+    // the 40 commands of one chunk: a smooth raise from 0 to 0.8 rad between command 5 and 25, then hold
+    const ss = x => { const u = Math.max(0, Math.min(1, x)); return u * u * (3 - 2 * u); };
+    const CMD = Array.from({ length: NC }, (_, j) => TOP * ss((j - 4) / 20));
+    // physics: semi-implicit Euler, PD on the held command (per unit inertia)
+    const S = [{ th: 0, w: 0, a: 0, c: 0 }];
+    for (let n = 1, th = 0, w = 0; n <= N; n++) {
+      const c = CMD[Math.floor((n - 1) / DEC)], a = WN * WN * (c - th) - 2 * Z * WN * w;
+      w += a * DT; th += w * DT; S.push({ th, w, a, c });
+    }
+    slider.max = N;
+    const GY = 250, TY = 66, AMAX = 1, sy = v => GY - (GY - TY) * v / AMAX;
+    const PX0 = 214, PX1 = 506, TMAX = N * DT, st = tt => PX0 + (PX1 - PX0) * tt / TMAX;
+    const CY = 30, CH = 12;                            // chunk strip
+    const ZX0 = 362, ZX1 = 506, ZY0 = 156, ZY1 = 238;  // zoom inset
+    const PV = [96, 92], L = 104;                       // arm pivot, link length
+    let n = Math.min(N, +slider.value), raf = 0, slow = true, t0 = 0, n0 = 0;
+    const f = (x, d) => fmt(x, d, Lg);
+    const ctlOf = k => (k ? Math.floor((k - 1) / DEC) : -1), subOf = k => (k ? (k - 1) % DEC + 1 : 0);
+
+    function render() {
+      const s = S[n], j = ctlOf(n), m = subOf(n), cHeld = j < 0 ? 0 : CMD[j];
+      R.$("[data-ctl-v]", box).textContent = `${n} / ${N} · ${f(n * DT * 1000, 0)} ms`;
+      if (+slider.value !== n) slider.value = n;
+      let g = "";
+      // arm: torso, target link (dashed orange), actual link (blue)
+      const end = th => [PV[0] + L * Math.sin(th), PV[1] + L * Math.cos(th)];
+      g += `<rect x="${PV[0] - 40}" y="${PV[1] - 30}" width="34" height="150" rx="12" fill="#e3e7ec"/>${lbl(PV[0] - 40, PV[1] - 38, t.torso)}`;
+      const [tx, ty] = end(cHeld), [ax, ay] = end(s.th);
+      g += `<line x1="${PV[0]}" y1="${PV[1]}" x2="${PV[0]}" y2="${PV[1] + L + 14}" stroke="#d5d9df" stroke-dasharray="3 3"/>`;
+      g += `<line x1="${PV[0]}" y1="${PV[1]}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="#d08a2e" stroke-width="3" stroke-dasharray="6 4"/>`;
+      g += `<line x1="${PV[0]}" y1="${PV[1]}" x2="${ax.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="${A}" stroke-width="12" stroke-linecap="round"/>`;
+      g += `<circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="9" fill="${INK}"/><circle cx="${PV[0]}" cy="${PV[1]}" r="8" fill="#fff" stroke="${INK}" stroke-width="3"/>`;
+      g += `<circle cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="5" fill="#fff" stroke="#d08a2e" stroke-width="2"/>`;
+      g += lbl(tx + 10, ty - 6, `${t.tgt} ${f(cHeld, 2)}`, 'style="fill:#b06f1c"') + lbl(ax + 12, ay + 20, `${t.real} ${f(s.th, 2)}`, 'style="fill:oklch(0.45 0.12 255)"');
+      // chunk strip: 40 cells, used / held / waiting
+      const cw = (PX1 - PX0) / NC;
+      g += `<text x="${PX0}" y="${CY - 6}" class="r2s-lbl" style="font-size:8.5px;letter-spacing:.06em">${t.chunk}</text>`;
+      for (let i = 0; i < NC; i++) {
+        const fill = i < j ? "oklch(0.8 0.06 255)" : i === j ? "#d08a2e" : "#eef0f3";
+        g += `<rect x="${(PX0 + i * cw + 0.6).toFixed(1)}" y="${CY}" width="${(cw - 1.2).toFixed(1)}" height="${CH}" rx="1.5" fill="${fill}"/>`;
+      }
+      if (j >= 0) g += `<text x="${(PX0 + (j + 0.5) * cw).toFixed(1)}" y="${CY + CH + 10}" class="r2s-lbl" text-anchor="middle" style="font-size:8.5px;fill:#b06f1c">${j + 1}</text>`;
+      // plot: bands per motion tick, axes
+      for (let i = 0; i < NC; i += 2) g += `<rect x="${st(i * DEC * DT).toFixed(1)}" y="${TY - 4}" width="${cw.toFixed(1)}" height="${GY - TY + 4}" fill="oklch(0.52 0.13 255 / .045)"/>`;
+      if (j >= 0) g += `<rect x="${st(j * DEC * DT).toFixed(1)}" y="${TY - 4}" width="${cw.toFixed(1)}" height="${GY - TY + 4}" fill="#d08a2e" opacity=".14"/>`;
+      g += `<line x1="${PX0}" y1="${GY}" x2="${PX1}" y2="${GY}" stroke="#c5ccd6"/><line x1="${PX0}" y1="${GY}" x2="${PX0}" y2="${TY - 6}" stroke="#c5ccd6"/>`;
+      for (let v = 0; v <= AMAX + 1e-9; v += 0.25) g += `<line x1="${PX0 - 4}" y1="${sy(v)}" x2="${PX0}" y2="${sy(v)}" stroke="${MUTE}"/>${lbl(PX0 - 7, sy(v) + 3.5, f(v, 2), 'text-anchor="end"')}`;
+      for (let k = 0; k <= N; k++) g += `<line x1="${st(k * DT).toFixed(1)}" y1="${GY}" x2="${st(k * DT).toFixed(1)}" y2="${GY + (k % DEC ? 3 : 7)}" stroke="${k % DEC ? "#d5d9df" : "#8a929e"}"/>`;
+      for (let q = 0; q <= TMAX + 1e-9; q += 0.2) g += lbl(st(q), GY + 19, f(q, 1), 'text-anchor="middle"');
+      g += lbl(PX1, GY + 32, t.tm, 'text-anchor="end"') + lbl(PX0 - 36, TY - 12, t.ang);
+      // full command staircase (faint), used part bold
+      const stair = upto => { let d = `M${st(0)},${sy(0)}`; for (let i = 0; i <= upto; i++) d += `L${st(i * DEC * DT).toFixed(1)},${sy(CMD[i]).toFixed(1)}L${st((i + 1) * DEC * DT).toFixed(1)},${sy(CMD[i]).toFixed(1)}`; return d; };
+      g += `<path d="${stair(NC - 1)}" fill="none" stroke="#d08a2e" stroke-width="1.4" opacity=".3"/>`;
+      if (j >= 0) g += `<path d="${stair(j)}" fill="none" stroke="#d08a2e" stroke-width="2.2"/>`;
+      for (let k = 0; k <= n; k++) g += `<circle cx="${st(k * DT).toFixed(1)}" cy="${sy(S[k].th).toFixed(1)}" r="${k === n ? 3.8 : 1.5}" fill="${k === n ? INK : A}"/>`;
+      g += `<line x1="${st(n * DT).toFixed(1)}" y1="${TY - 6}" x2="${st(n * DT).toFixed(1)}" y2="${GY}" stroke="${INK}" stroke-width="1" stroke-dasharray="2 3"/>`;
+      // legend
+      g += `<path d="M${PX0 + 10} ${TY + 4}h16" stroke="#d08a2e" stroke-width="2.2"/>${lbl(PX0 + 32, TY + 8, t.cmd)}`;
+      g += `<circle cx="${PX0 + 18}" cy="${TY + 18}" r="2.6" fill="${A}"/>${lbl(PX0 + 32, TY + 22, t.act)}`;
+      // zoom inset: the current motion tick and its 4 physics ticks
+      const jj = Math.max(0, j), k0 = jj * DEC, pts = S.slice(k0, Math.min(n, k0 + DEC) + 1);
+      const lo = Math.min(CMD[jj], ...S.slice(k0, k0 + DEC + 1).map(p => p.th)), hi = Math.max(CMD[jj], ...S.slice(k0, k0 + DEC + 1).map(p => p.th));
+      const pad = Math.max((hi - lo) * 0.18, 0.01);
+      const zx = i => ZX0 + 16 + (ZX1 - ZX0 - 32) * i / DEC, zy = v => ZY1 - 12 - (ZY1 - ZY0 - 30) * (v - lo + pad) / (hi - lo + 2 * pad);
+      g += `<rect x="${ZX0}" y="${ZY0 - 14}" width="${ZX1 - ZX0}" height="${ZY1 - ZY0 + 14}" rx="8" fill="#fff" stroke="oklch(0.86 0.04 255)"/>`;
+      g += `<text x="${ZX0 + 8}" y="${ZY0}" class="r2s-lbl" style="font-size:7.5px;letter-spacing:.03em">${t.zoom}</text>`;
+      if (j >= 0) {
+        g += `<line x1="${zx(0)}" y1="${zy(CMD[jj]).toFixed(1)}" x2="${zx(DEC)}" y2="${zy(CMD[jj]).toFixed(1)}" stroke="#d08a2e" stroke-width="2"/>`;
+        g += lbl(zx(DEC), zy(CMD[jj]) - 4, `${t.tgt} ${jj + 1}`, 'text-anchor="end" style="font-size:8.5px;fill:#b06f1c"');
+        pts.forEach((p, i) => {
+          const x = zx(i), y = zy(p.th);
+          if (i) g += `<line x1="${zx(i - 1)}" y1="${zy(pts[i - 1].th).toFixed(1)}" x2="${x}" y2="${y.toFixed(1)}" stroke="${A}" stroke-width="1" opacity=".5"/>`;
+          g += `<circle cx="${x}" cy="${y.toFixed(1)}" r="${i === pts.length - 1 ? 4 : 3}" fill="${i === pts.length - 1 ? INK : A}"/>`;
+        });
+        for (let i = 1; i <= DEC; i++) g += `<text x="${zx(i)}" y="${ZY1 + 0}" class="r2s-lbl" text-anchor="middle" style="font-size:8px;fill:${i === m ? INK : "#8a929e"}">${i}</text>`;
+      }
+      svg.innerHTML = g;
+
+      const verdict = n === 0 ? `<div class="gen-verdict">${t.v0}</div>`
+        : n === N ? `<div class="gen-verdict ok">${t.vEnd}</div>`
+        : m === 1 ? `<div class="gen-verdict ok">${t.vNew(j + 1)}</div>`
+        : `<div class="gen-verdict">${t.vHold(m)}</div>`;
+      const eq = n ? `<div class="mo-eq">α = ωn²·(${f(s.c, 3)} − ${f(S[n - 1].th, 3)}) − 2ζωn·${f(S[n - 1].w, 2)}<br>&emsp;= ${f(s.a, 0)} rad/s²<br>ω = ${f(S[n - 1].w, 2)} + α·0${Lg === "vi" ? "," : "."}005 = ${f(s.w, 2)} rad/s<br>θ = ${f(S[n - 1].th, 3)} + ω·0${Lg === "vi" ? "," : "."}005 = ${f(s.th, 3)} rad</div>` : "";
+      out.innerHTML = `<span class="ds-k">${t.k}</span>
+        <ul><li><span>${t.ctl}</span><b>${j < 0 ? "–" : j + 1} / ${NC}</b></li><li><span>${t.phy}</span><b>${m || "–"} / ${DEC}</b></li>
+        <li><span>${t.tot}</span><b>${n} / ${N}</b></li><li><span>${t.time}</span><b>${f(n * DT * 1000, 0)} ms</b></li>
+        <li><span>${t.cmdv}</span><b>${f(cHeld, 3)} rad</b></li><li><span>${t.actv}</span><b>${f(s.th, 3)} rad</b></li>
+        <li><span>${t.err}</span><b>${f(cHeld - s.th, 3)} rad</b></li></ul>${eq}${verdict}`;
+    }
+
+    const go = k => { n = Math.max(0, Math.min(N, k)); render(); };
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; playBtn.textContent = t.play; }
+    function frame(now) {
+      const simT = Math.max(0, (now - t0) / 1000) / (slow ? 10 : 1);
+      const k = Math.min(N, n0 + Math.floor(simT / DT + 1e-9));
+      if (k !== n) go(k);
+      if (k >= N) { stop(); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (n >= N) go(0); n0 = n; t0 = performance.now(); playBtn.textContent = t.pause; raf = requestAnimationFrame(frame); }
+    playBtn.addEventListener("click", () => (raf ? stop() : start()));
+    R.$("[data-ctl-prev]", box).addEventListener("click", () => { stop(); go(n - 1); });
+    R.$("[data-ctl-next]", box).addEventListener("click", () => { stop(); go(n + 1); });
+    // jump to the first physics tick of the next motion tick
+    R.$("[data-ctl-next4]", box).addEventListener("click", () => { stop(); go(n === 0 ? 1 : (ctlOf(n) + 1) * DEC + 1); });
+    speedBtn.addEventListener("click", () => { slow = !slow; speedBtn.textContent = slow ? t.slow : t.realSp; if (raf) { stop(); start(); } });
+    slider.addEventListener("input", () => { stop(); go(+slider.value); });
+    const toTick = e => { const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 520; return Math.round((x - PX0) / (PX1 - PX0) * N); };
+    let drag = false;
+    svg.addEventListener("pointerdown", e => {
+      const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 520, y = (e.clientY - r.top) / r.height * 300;
+      if (x < PX0 - 6 || (x > ZX0 && y > ZY0 - 14)) return;
+      drag = true; svg.setPointerCapture(e.pointerId); stop(); go(toTick(e));
+    });
+    svg.addEventListener("pointermove", e => { if (drag) go(toTick(e)); });
+    svg.addEventListener("pointerup", () => { drag = false; });
+    svg.addEventListener("pointercancel", () => { drag = false; });
+    playBtn.textContent = t.play; speedBtn.textContent = t.slow;
+    render();
+  }
+
+  /* ---------------- relation of the two ticks: GR00T chunk → 40 motion ticks → decimation physics ticks each */
+  function setupRel(box) {
+    const svg = R.$("[data-rel-svg]", box), out = R.$("[data-rel-out]", box), slider = R.$("[data-rel-p]", box), decIn = R.$("[data-rel-d]", box);
+    const playBtn = R.$("[data-rel-play]", box), speedBtn = R.$("[data-rel-speed]", box);
+    const Lg = langOf(box);
+    const t = {
+      vi: { l1: d => `TẦNG 1 · 1 LẦN GỌI GR00T = 40 TICK CHUYỂN ĐỘNG · ${d}`, l2: (n, d) => `TẦNG 2 · 1 TICK CHUYỂN ĐỘNG = ${n} TICK VẬT LÝ · ${d}`,
+            l3: "TẦNG 3 · BÊN TRONG 1 TICK VẬT LÝ · 5 MS", phy: "vật lý", steps: ["PD tính mô-men", "PhysX: vận tốc mới", "PhysX: vị trí mới"],
+            code: "VÒNG LẶP TRONG CODE", c1: d => `mỗi tick chuyển động (${d}):`, c2: "  lệnh = chuỗi[k]", c3: "  hết chuỗi? → gọi GR00T lấy 40 lệnh mới",
+            c4: n => `  lặp ${n} lần (decimation):`, c5: "    sim.step()  · 5 ms · PD → PhysX", ck: (k) => `k = ${k} / 40`, cj: (j, n) => `lần ${j} / ${n}`,
+            k: "ĐANG Ở ĐÂU", call: "Lần gọi GR00T", ctl: "Tick chuyển động", inT: "Tick vật lý trong tick này", tot: "Tổng tick vật lý", time: "Thời gian mô phỏng",
+            hz: "Tần số chuyển động", dur: "Một chuỗi 40 lệnh kéo dài", s: "s",
+            ok: "Cấu hình dự án: mỗi lệnh giữ đúng 20 ms, khớp nhịp 50 Hz của dữ liệu demo.",
+            slow: (ms, d, r) => `Mỗi lệnh bị giữ ${ms} ms thay vì 20 ms: chuỗi 0,8 s bị kéo thành ${d} s, robot làm chậm hơn ${r} lần so với lúc học.`,
+            fast: (ms, d, r) => `Mỗi lệnh chỉ được giữ ${ms} ms: chuỗi chạy hết trong ${d} s, nhanh gấp ${r} lần lúc học. Khớp khó theo kịp, model phải được gọi thường hơn.`,
+            play: "▶ Chạy", pause: "❚❚ Dừng", slowB: "Chậm 10×", real: "Tốc độ thật" },
+      en: { l1: d => `LEVEL 1 · 1 GR00T CALL = 40 MOTION TICKS · ${d}`, l2: (n, d) => `LEVEL 2 · 1 MOTION TICK = ${n} PHYSICS TICK${n > 1 ? "S" : ""} · ${d}`,
+            l3: "LEVEL 3 · INSIDE 1 PHYSICS TICK · 5 MS", phy: "physics", steps: ["PD computes torque", "PhysX: new velocity", "PhysX: new position"],
+            code: "THE LOOP IN THE CODE", c1: d => `every motion tick (${d}):`, c2: "  command = chunk[k]", c3: "  chunk used up? → call GR00T for 40 new commands",
+            c4: n => `  repeat ${n} time${n > 1 ? "s" : ""} (decimation):`, c5: "    sim.step()  · 5 ms · PD → PhysX", ck: (k) => `k = ${k} / 40`, cj: (j, n) => `pass ${j} / ${n}`,
+            k: "WHERE WE ARE", call: "GR00T call", ctl: "Motion tick", inT: "Physics tick in this tick", tot: "Total physics ticks", time: "Simulation time",
+            hz: "Motion rate", dur: "One chunk of 40 commands lasts", s: "s",
+            ok: "Project setting: each command is held for exactly 20 ms, matching the 50 Hz rhythm of the demo data.",
+            slow: (ms, d, r) => `Each command is held ${ms} ms instead of 20 ms: the 0.8 s chunk stretches to ${d} s and the robot moves ${r}× slower than during training.`,
+            fast: (ms, d, r) => `Each command is held only ${ms} ms: the chunk is used up in ${d} s, ${r}× faster than during training. The joints struggle to follow and the model must be called more often.`,
+            play: "▶ Run", pause: "❚❚ Pause", slowB: "10× slower", real: "Real speed" },
+      ja: { l1: d => `第 1 層 · GR00T 呼び出し 1 回 = 動作 TICK 40 回 · ${d}`, l2: (n, d) => `第 2 層 · 動作 TICK 1 回 = 物理 TICK ${n} 回 · ${d}`,
+            l3: "第 3 層 · 物理 TICK 1 回の中身 · 5 MS", phy: "物理", steps: ["PD がトルク計算", "PhysX：新しい速度", "PhysX：新しい位置"],
+            code: "コード内のループ", c1: d => `動作 tick ごと（${d}）：`, c2: "  指令 = チャンク[k]", c3: "  使い切った？ → GR00T を呼び 40 個の新しい指令",
+            c4: n => `  ${n} 回繰り返す（decimation）：`, c5: "    sim.step()  · 5 ms · PD → PhysX", ck: (k) => `k = ${k} / 40`, cj: (j, n) => `${j} / ${n} 回目`,
+            k: "現在位置", call: "GR00T 呼び出し", ctl: "動作 tick", inT: "この中の物理 tick", tot: "物理 tick の合計", time: "シミュレーション時間",
+            hz: "動作の周波数", dur: "40 個の指令の長さ", s: "秒",
+            ok: "本プロジェクトの設定：各指令はちょうど 20 ms 保持され、デモデータの 50 Hz と一致します。",
+            slow: (ms, d, r) => `各指令が 20 ms ではなく ${ms} ms 保持されます。0.8 秒のチャンクが ${d} 秒に伸び、ロボットは学習時より ${r} 倍遅く動きます。`,
+            fast: (ms, d, r) => `各指令は ${ms} ms しか保持されません。チャンクは ${d} 秒で使い切られ、学習時の ${r} 倍速になります。関節が追いつきにくく、モデルもより頻繁に呼ぶ必要があります。`,
+            play: "▶ 実行", pause: "❚❚ 一時停止", slowB: "10 倍スロー", real: "実時間" },
+    }[Lg] || {};
+    const DECS = [1, 2, 4, 5, 8, 10], DT = 0.005, NC = 40, X0 = 20, X1 = 500;
+    const f = (x, d) => fmt(x, d, Lg);
+    const ms = x => `${f(x, 0)} ms`;
+    let dec = DECS[+decIn.value], NP = NC * dec, p = Math.min(+slider.value, NP - 1), raf = 0, slow = true, t0 = 0, p0 = 0;
+    const ORG = "#d08a2e", PAST = "oklch(0.86 0.05 255)", WAIT = "#eef0f3";
+    const head = (x, y, s) => `<text x="${x}" y="${y}" class="r2s-lbl" style="font-size:8.5px;letter-spacing:.05em;font-weight:700">${s}</text>`;
+
+    function render() {
+      const k = Math.floor(p / dec), j = p % dec, ctlMs = dec * DT * 1000;
+      R.$("[data-rel-dv]", box).textContent = `${dec} → ${f(200 / dec, 0)} Hz`;
+      R.$("[data-rel-v]", box).textContent = `${p + 1} / ${NP} · ${ms((p + 1) * DT * 1000)}`;
+      slider.max = NP - 1; if (+slider.value !== p) slider.value = p;
+      let g = "";
+      // level 1: the chunk, 40 motion-tick cells
+      const cw = (X1 - X0) / NC, c1y = 20, c1h = 18;
+      g += head(X0, 12, t.l1(`${f(NC * ctlMs / 1000, 1)} ${t.s}`));
+      for (let i = 0; i < NC; i++) g += `<rect x="${(X0 + i * cw + 0.6).toFixed(1)}" y="${c1y}" width="${(cw - 1.2).toFixed(1)}" height="${c1h}" rx="2" fill="${i < k ? PAST : i === k ? ORG : WAIT}"/>`;
+      g += `<text x="${(X0 + (k + 0.5) * cw).toFixed(1)}" y="${c1y + 12.5}" text-anchor="middle" style="font:700 8px var(--mono);fill:#fff">${k + 1}</text>`;
+      // zoom 1 → 2
+      const c2y = 72, c2h = 40, bw = (X1 - X0) / dec;
+      g += `<path d="M${(X0 + k * cw).toFixed(1)} ${c1y + c1h} L${X0} ${c2y} L${X1} ${c2y} L${(X0 + (k + 1) * cw).toFixed(1)} ${c1y + c1h}Z" fill="${ORG}" opacity=".08" stroke="${ORG}" stroke-opacity=".35" stroke-dasharray="3 3"/>`;
+      g += head(X0, c2y - 8, t.l2(dec, ms(ctlMs)));
+      for (let i = 0; i < dec; i++) {
+        const x = X0 + i * bw;
+        g += `<rect x="${(x + 1).toFixed(1)}" y="${c2y}" width="${(bw - 2).toFixed(1)}" height="${c2h}" rx="5" fill="${i < j ? PAST : i === j ? A : WAIT}"/>`;
+        if (bw >= 40) g += `<text x="${(x + bw / 2).toFixed(1)}" y="${c2y + 17}" text-anchor="middle" style="font:700 9.5px var(--mono);fill:${i === j ? "#fff" : INK}">${t.phy} ${i + 1}</text><text x="${(x + bw / 2).toFixed(1)}" y="${c2y + 30}" text-anchor="middle" style="font:500 8.5px var(--mono);fill:${i === j ? "#e5edf9" : "#7a828e"}">5 ms</text>`;
+        else g += `<text x="${(x + bw / 2).toFixed(1)}" y="${c2y + 24}" text-anchor="middle" style="font:700 9px var(--mono);fill:${i === j ? "#fff" : INK}">${i + 1}</text>`;
+      }
+      // zoom 2 → 3
+      const c3y = 140, c3h = 26, sw = (X1 - X0) / 3;
+      g += `<path d="M${(X0 + j * bw + 1).toFixed(1)} ${c2y + c2h} L${X0} ${c3y} L${X1} ${c3y} L${(X0 + (j + 1) * bw - 1).toFixed(1)} ${c2y + c2h}Z" fill="${A}" opacity=".07" stroke="${A}" stroke-opacity=".35" stroke-dasharray="3 3"/>`;
+      g += head(X0, c3y - 8, t.l3);
+      t.steps.forEach((s, i) => {
+        const x = X0 + i * sw;
+        g += `<rect x="${(x + 1).toFixed(1)}" y="${c3y}" width="${(sw - 12).toFixed(1)}" height="${c3h}" rx="5" fill="#fff" stroke="oklch(0.8 0.06 255)"/>`;
+        g += `<text x="${(x + (sw - 10) / 2).toFixed(1)}" y="${c3y + 17}" text-anchor="middle" style="font:600 9.5px var(--sans);fill:${INK}">${s}</text>`;
+        if (i < 2) g += `<path d="M${(x + sw - 9).toFixed(1)} ${c3y + 13}l6 0 m-3 -3 l3 3 -3 3" stroke="${A}" fill="none" stroke-width="1.4"/>`;
+      });
+      // the loop in the code, lines lit by the current state
+      const ly = 196, lh = 17;
+      g += `<rect x="${X0 - 6}" y="${ly - 14}" width="${X1 - X0 + 12}" height="${lh * 5 + 26}" rx="8" fill="#1f2a3a"/>`;
+      g += `<text x="${X0 + 2}" y="${ly - 2}" style="font:700 8px var(--mono);letter-spacing:.08em;fill:#8fa3bd">${t.code}</text>`;
+      const lines = [
+        [t.c1(ms(ctlMs)), j === 0, ""],
+        [t.c2, j === 0, t.ck(k + 1)],
+        [t.c3, j === 0 && k === 0, ""],
+        [t.c4(dec), true, ""],
+        [t.c5, true, t.cj(j + 1, dec)],
+      ];
+      lines.forEach(([s, on, tag], i) => {
+        const y = ly + 12 + i * lh;
+        if (on && i !== 3) g += `<rect x="${X0 - 2}" y="${y - 12}" width="${X1 - X0 + 4}" height="${lh - 2}" rx="3" fill="${i === 4 ? A : ORG}" opacity="${i === 4 ? .6 : .5}"/>`;
+        g += `<text x="${X0 + 4}" y="${y}" style="font:600 9.5px var(--mono);fill:${on ? "#fff" : "#7d8ba0"};white-space:pre" xml:space="preserve">${s}</text>`;
+        if (tag) g += `<text x="${X1 - 4}" y="${y}" text-anchor="end" style="font:700 9.5px var(--mono);fill:${on ? "#fff" : "#7d8ba0"}">${tag}</text>`;
+      });
+      svg.innerHTML = g;
+
+      const r = dec / 4, hold = ctlMs, chunkS = NC * ctlMs / 1000;
+      const verdict = dec === 4 ? `<div class="gen-verdict ok">${t.ok}</div>`
+        : dec > 4 ? `<div class="gen-verdict bad">${t.slow(f(hold, 0), f(chunkS, 1), f(r, r % 1 ? 2 : 0))}</div>`
+        : `<div class="gen-verdict bad">${t.fast(f(hold, 0), f(chunkS, 1), f(1 / r, 0))}</div>`;
+      out.innerHTML = `<span class="ds-k">${t.k}</span>
+        <ul><li><span>${t.call}</span><b>1</b></li><li><span>${t.ctl}</span><b>${k + 1} / ${NC}</b></li>
+        <li><span>${t.inT}</span><b>${j + 1} / ${dec}</b></li><li><span>${t.tot}</span><b>${p + 1} / ${NP}</b></li>
+        <li><span>${t.time}</span><b>${ms((p + 1) * DT * 1000)}</b></li><li><span>${t.hz}</span><b>${f(200 / dec, 0)} Hz</b></li>
+        <li><span>${t.dur}</span><b>${f(chunkS, 1)} ${t.s}</b></li></ul>${verdict}`;
+    }
+
+    const go = q => { p = Math.max(0, Math.min(NP - 1, q)); render(); };
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; playBtn.textContent = t.play; }
+    function frame(now) {
+      const simT = Math.max(0, (now - t0) / 1000) / (slow ? 10 : 1);
+      const q = Math.min(NP - 1, p0 + Math.floor(simT / DT + 1e-9));
+      if (q !== p) go(q);
+      if (q >= NP - 1) { stop(); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (p >= NP - 1) go(0); p0 = p; t0 = performance.now(); playBtn.textContent = t.pause; raf = requestAnimationFrame(frame); }
+    playBtn.addEventListener("click", () => (raf ? stop() : start()));
+    R.$("[data-rel-next]", box).addEventListener("click", () => { stop(); go(p + 1); });
+    R.$("[data-rel-next4]", box).addEventListener("click", () => { stop(); go((Math.floor(p / dec) + 1) * dec); });
+    speedBtn.addEventListener("click", () => { slow = !slow; speedBtn.textContent = slow ? t.slowB : t.real; if (raf) { stop(); start(); } });
+    slider.addEventListener("input", () => { stop(); go(+slider.value); });
+    decIn.addEventListener("input", () => {
+      stop();
+      const k = Math.floor(p / dec);                       // stay on the same motion tick
+      dec = DECS[+decIn.value]; NP = NC * dec; go(k * dec);
+    });
+    playBtn.textContent = t.play; speedBtn.textContent = t.slowB;
+    render();
+  }
+
   R.motion = {
     init() {
       if (!R.$("#dong-hoc")) return;
-      const map = { body: setupBody, fk: setupFK, ik: setupIK, pd: setupPD, bal: setupBal, rate: setupRate, car: setupCar };
+      const map = { body: setupBody, fk: setupFK, ik: setupIK, pd: setupPD, bal: setupBal, rate: setupRate, car: setupCar, apple: setupApple, ctl: setupCtl, rel: setupRel };
       R.$$("[data-mo]").forEach(box => { try { map[box.dataset.mo] && map[box.dataset.mo](box); } catch (e) { console.error("motion", box.dataset.mo, e); } });
     },
   };
